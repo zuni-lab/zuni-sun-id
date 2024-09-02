@@ -1,0 +1,3 @@
+[install.scopes]
+# registry with token
+"@zuni-lab" = { token = "$NPM_TOKEN", url = "https://npm.pkg.github.com" }
