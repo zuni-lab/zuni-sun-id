@@ -1,5 +1,8 @@
 name: Linting
-on: [push]
+on: 
+  push:
+    branches:
+      - no_branch
 jobs:
   linting:
     runs-on: ubuntu-latest
