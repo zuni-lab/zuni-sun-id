@@ -16,5 +16,11 @@
   "workspaces": [
     "ui",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@tronweb3/tronwallet-abstract-adapter": "^1.1.6",
+    "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.7",
+    "@tronweb3/tronwallet-adapter-react-ui": "^1.1.8",
+    "@tronweb3/tronwallet-adapters": "^1.2.2"
+  }
 }

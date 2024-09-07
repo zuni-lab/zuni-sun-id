@@ -1,28 +1,43 @@
 'use client';
-import { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { injectStyle } from 'react-toastify/dist/inject-style';
+import { WalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { TronLinkAdapter } from '@tronweb3/tronwallet-adapters';
+import { WalletModalProvider } from '@tronweb3/tronwallet-adapter-react-ui';
+import {
+  WalletDisconnectedError,
+  WalletError,
+  WalletNotFoundError,
+} from '@tronweb3/tronwallet-abstract-adapter';
+import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 
 import { Footer } from '@/components/Footer';
 import { Authentication } from './Authentication';
 
-import TronWeb from '@zuni-lab/tronweb-ts';
-
-const tronWeb = new TronWeb({
-  fullHost: 'https://api.trongrid.io',
-  headers: { 'TRON-PRO-API-KEY': 'your api key' },
-  privateKey: 'your private key',
-} as any);
-
-console.log({ tronWeb });
-
 export const WrapperClientLayout: IComponent = ({ children }) => {
+  function onError(e: WalletError) {
+    if (e instanceof WalletNotFoundError) {
+      // some alert for wallet not found
+    } else if (e instanceof WalletDisconnectedError) {
+      // some alert for wallet not connected
+    } else {
+      console.error(e.message);
+    }
+  }
+  const adapters = useMemo(function () {
+    const tronLink = new TronLinkAdapter();
+    return [tronLink];
+  }, []);
+
   useEffect(() => {
     injectStyle();
   }, []);
 
   return (
     <div className="w-full h-auto relative text-white">
-      {children}
+      <WalletProvider onError={onError} adapters={adapters}>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
       <Footer />
       <Suspense>
         <Authentication />
