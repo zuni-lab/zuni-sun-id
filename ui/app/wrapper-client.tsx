@@ -6,6 +6,7 @@ import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 
 import { Footer } from '@/components/Footer';
 import { Authentication } from './Authentication';
+import { Navigation } from '@/components/Navigation';
 
 export const WrapperClientLayout: IComponent = ({ children }) => {
   useEffect(() => {
@@ -14,6 +15,7 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
 
   return (
     <div className="w-full h-auto relative text-white">
+      <Navigation />
       {children}
       <Footer />
       <Suspense>

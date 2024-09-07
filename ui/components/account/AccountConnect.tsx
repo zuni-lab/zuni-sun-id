@@ -188,7 +188,7 @@ type TronWebWithExt = TronWeb & {
   contract: any;
 };
 
-export const ConnectButton: IComponent = () => {
+export const AccountConnect: IComponent = () => {
   const { address, connected, wallet, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
 
