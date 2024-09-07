@@ -18,7 +18,7 @@ export const Navigation: IComponent = () => {
       <Link href="/">
         <LogoSvg className="w-10 h-10" />
       </Link>
-      <div className="w-1/2">
+      <div className="grow">
         <Search
           onSearchChange={(val) => {
             console.log({ val });
@@ -26,7 +26,7 @@ export const Navigation: IComponent = () => {
           placeholder="Search by claim, schema, address, etc."
         />
       </div>
-      <div className="flex justify-end items-center grow">
+      <div className="w-1/3 flex justify-end items-center pr-4">
         <NavigationMenu>
           <NavigationMenuList>
             {Object.entries(AppRouter)

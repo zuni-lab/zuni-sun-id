@@ -1,27 +1,22 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { clsx } from 'clsx';
-import { CircleUserRoundIcon } from 'lucide-react';
-import { useAccount } from 'wagmi';
 import { AccountInfoPanel } from './AccountInfoPanel';
+import { Identicon } from './Idention';
 
 const DropdownMenuContentStyle = {
   marginTop: '-22px',
 };
 
 export const AccountDropdown: IComponent = () => {
-  const { address } = useAccount();
-
+  const { address } = useWallet();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <div className="flex h-8 w-8 items-center justify-center">
           {address && (
-            <button
-              type="button"
-              aria-label="Disconnect"
-              className="bg-primary hover:opacity-90 p-1.5 rounded-lg border border-primary/40">
-              {/* <Avatar address={address} /> */}
-              <CircleUserRoundIcon className="w-6 h-6" />
+            <button className="p-1 rounded-full border-2 border-muted-foreground">
+              <Identicon value={address} size={40} />
             </button>
           )}
         </div>

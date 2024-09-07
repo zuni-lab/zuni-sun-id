@@ -7,7 +7,7 @@ import classNames from 'classnames';
 export const cx: typeof classNames = classNames;
 
 export const formatWalletAddress = (address: string) => {
-  return `${address.slice(0, 6)}...${address.slice(-6)}`;
+  return `${address.slice(0, 8)}...${address.slice(-8)}`;
 };
 
 export const getFomattedTimeAndDate = (inputDate: string | number) => {
