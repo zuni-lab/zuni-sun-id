@@ -2,6 +2,7 @@
 
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
+import { TronWeb } from '@tronweb3/tronwallet-adapters';
 
 const abi = [
   {
@@ -180,6 +181,13 @@ const abi = [
   },
 ];
 
+type TronWebWithExt = TronWeb & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  event: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  contract: any;
+};
+
 export const ConnectButton: IComponent = () => {
   const { address, connected, wallet, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
@@ -187,13 +195,13 @@ export const ConnectButton: IComponent = () => {
   const handleRegister = async () => {
     if (connected && window.tronWeb) {
       console.log('called');
-      const events = await window.tronWeb.event.getEventsByTransactionID(
+      const events = await (window.tronWeb as TronWebWithExt).event.getEventsByTransactionID(
         '97039890e29f2b1dad110e283a59c39c712a1ca902ca687ae29c6b0f1580fbd2',
         { only_confirmed: true }
       );
       console.log(events);
 
-      const contract = await (window.tronWeb as any).contract(
+      const contract = await (window.tronWeb as TronWebWithExt).contract(
         abi,
         'TG7ZW9xPDU4FoHdJJfQgs9zoX72ThukLZz'
       );
