@@ -1,6 +1,6 @@
-type TRule = TRuleNumeric | TRuleBytes | TRuleAddress | TRuleBool | TRuleString;
+type TDataType = TNumeric | TBytes | TAddress | TBool | TString;
 
-type TRuleNumeric =
+type TNumeric =
   | 'int8'
   | 'int16'
   | 'int24'
@@ -16,7 +16,7 @@ type TRuleNumeric =
   | 'uint128'
   | 'uint256';
 
-type TRuleBytes =
+type TBytes =
   | 'bytes1'
   | 'bytes2'
   | 'bytes3'
@@ -26,14 +26,14 @@ type TRuleBytes =
   | 'bytes32'
   | 'bytes';
 
-type TRuleAddress = 'address';
+type TAddress = 'address';
 
-type TRuleBool = 'bool';
+type TBool = 'bool';
 
-type TRuleString = 'string';
+type TString = 'string';
 
 type TDeclareStmt = {
-  type: TRuleType;
+  type: TDataType;
   token: string;
 };
 

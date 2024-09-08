@@ -2,7 +2,7 @@
 
 import { SchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
-import { ITEMS_PER_PAGE } from '@/constants/items';
+import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { useState } from 'react';
 
 const Data: TPresentableSchema[] = Array.from({ length: 5000 }, (_, i) => {
