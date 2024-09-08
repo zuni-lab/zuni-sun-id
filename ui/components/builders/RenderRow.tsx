@@ -1,3 +1,5 @@
+'use client';
+
 import { getRelativeTime } from '@/utils/tools';
 import { TableCell, TableRow } from '../shadcn/Table';
 import { HexLink } from './HexLink';

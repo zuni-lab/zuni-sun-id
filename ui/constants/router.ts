@@ -4,6 +4,7 @@ export const AppRouter = {
   Home: '/',
   Schema: '/schema',
   Claim: '/claim',
+  Docs: '/docs',
 };
 
 export type RouterKey = keyof typeof AppRouter;
@@ -13,6 +14,7 @@ export const RouterMeta: Record<RouterKey, { title: string; description?: string
   Home: { title: 'Home', description: 'HOME', icon: null },
   Schema: { title: 'Schema', description: 'Schema', icon: null },
   Claim: { title: 'Claim', description: 'Claim', icon: null },
+  Docs: { title: 'Docs', description: 'Docs', icon: null },
 };
 
 /**

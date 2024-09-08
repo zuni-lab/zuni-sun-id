@@ -21,7 +21,7 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <Button>Make claim</Button>
+        <Button>Make claim</Button> {/* TODO: Add link */}
       </section>
       <SunTable
         title="Recent Claims"
@@ -33,7 +33,7 @@ export default function Page() {
           { label: 'Type', className: '' },
           { label: 'Time', className: '' },
         ]}
-        data={MOCK_CLAIMS}
+        items={MOCK_CLAIMS}
         renderRow={ClaimRow}
         footerButton="View all claims"
       />
@@ -46,9 +46,9 @@ export default function Page() {
           { label: 'Resolver Address', className: '' },
           { label: 'Claims', className: '' },
         ]}
-        data={MOCK_PRESENTABLE_SCHEMA}
+        items={MOCK_PRESENTABLE_SCHEMA}
         renderRow={SchemaRow}
-        renderRightTop={<Button>Make schema</Button>}
+        renderRightTop={<Button>Make schema</Button>} // TODO: Add link
         footerButton="View all schemas"
       />
     </main>
