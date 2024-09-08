@@ -86,3 +86,41 @@ export const MOCK_PRESENTABLE_SCHEMA: TPresentableSchema[] = [
     numberOfClaims: 100,
   },
 ];
+
+export const MOCK_CLAIMS: TClaim[] = [
+  {
+    uuid: '0x123',
+    schemaId: 1,
+    from: '0x000',
+    to: '0x111',
+    type: 'OFFCHAIN',
+    time: 1725774021,
+  },
+
+  {
+    uuid: '0x456',
+    schemaId: 2,
+    from: '0x000',
+    to: '0x111',
+    type: 'OFFCHAIN',
+    time: 1725774021,
+  },
+
+  {
+    uuid: '0x789',
+    schemaId: 3,
+    from: '0x000',
+    to: '0x111',
+    type: 'OFFCHAIN',
+    time: 1725774021,
+  },
+
+  {
+    uuid: '0xabc',
+    schemaId: 4,
+    from: '0x000',
+    to: '0x111',
+    type: 'OFFCHAIN',
+    time: 1725774021,
+  },
+];

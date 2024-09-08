@@ -1,6 +1,9 @@
 import moment from 'moment';
 import classNames from 'classnames';
 
+// timeUtils.ts
+import { formatDistanceToNow } from 'date-fns';
+
 /**
  * Mapping hotkey into className package for better usage
  */
@@ -33,6 +36,11 @@ export const toUtcTime = (date: Date) => {
   const time = new Date(date);
   time.setMinutes(time.getMinutes() - time.getTimezoneOffset());
   return time;
+};
+
+export const getRelativeTime = (unixTimestamp: number): string => {
+  const date = new Date(unixTimestamp * 1000); // Convert seconds to milliseconds
+  return formatDistanceToNow(date, { addSuffix: true });
 };
 
 // hex
