@@ -1,0 +1,1 @@
+export const SCHEMA_REGISTRY_ADDRESS = 'TG7ZW9xPDU4FoHdJJfQgs9zoX72ThukLZz';

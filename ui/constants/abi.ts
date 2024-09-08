@@ -1,4 +1,4 @@
-export const ABI = [
+export const SCHEMA_REGISTRY_ABI = [
   {
     inputs: [],
     name: 'AlreadyExists',

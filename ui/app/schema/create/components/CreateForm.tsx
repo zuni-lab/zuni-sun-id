@@ -32,6 +32,9 @@ import { PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
+import { SCHEMA_REGISTRY_ADDRESS } from '@/constants/contracts';
+import { TronWebWithExt } from '@/types/tronWeb';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -78,7 +81,7 @@ const baseFormSchema = z.object({
 });
 
 export const CreateSchemaForm: IComponent = () => {
-  const { address } = useWallet();
+  const { address, connected } = useWallet();
   const isConnected = !!address;
 
   const form = useForm({
@@ -113,32 +116,54 @@ export const CreateSchemaForm: IComponent = () => {
     [remove]
   );
 
-  const handlePressSubmit = handleSubmit((values) => {
-    const declareStmts = values[SchemaFieldKeys.DeclareStmts] as { token: string; type: string }[];
+  const handlePressSubmit = handleSubmit(async (values) => {
+    if (connected && window.tronWeb) {
+      const declareStmts = values[SchemaFieldKeys.DeclareStmts] as {
+        token: string;
+        type: string;
+      }[];
 
-    if (declareStmts.length === 0) {
-      form.setError(SchemaFieldKeys.DeclareStmts, {
-        message: 'At least one schema declaration is required',
+      if (declareStmts.length === 0) {
+        form.setError(SchemaFieldKeys.DeclareStmts, {
+          message: 'At least one schema declaration is required',
+        });
+      }
+
+      declareStmts.forEach(({ token, type }, index) => {
+        if (!token) {
+          form.setError(SchemaDeclareTokenKey(index), {
+            message: "Field name can't be empty",
+          });
+          return;
+        }
+
+        if (!type) {
+          form.setError(SchemaDeclareTypeKey(index), {
+            message: "Field type can't be empty",
+          });
+          return;
+        }
       });
+
+      const contract = await (window.tronWeb as TronWebWithExt).contract(
+        SCHEMA_REGISTRY_ABI,
+        SCHEMA_REGISTRY_ADDRESS
+      );
+
+      // [fieldType, fieldName, fieldDescription]
+      const schemaFields = [
+        ['uint256', 'age', 'Your age'],
+        ['string', 'name', 'Your full name'],
+      ];
+      const revocable = false;
+      const tx = await contract.register(schemaFields, SCHEMA_REGISTRY_ADDRESS, revocable).send();
+      const events = await (
+        window.tronWeb as TronWebWithExt
+      ).event.getEventsByTransactionID<RegisterSchemaEvent>(tx);
+      console.log(events[0].result);
+
+      ToastTemplate.Schema.Submit();
     }
-
-    declareStmts.forEach(({ token, type }, index) => {
-      if (!token) {
-        form.setError(SchemaDeclareTokenKey(index), {
-          message: "Field name can't be empty",
-        });
-        return;
-      }
-
-      if (!type) {
-        form.setError(SchemaDeclareTypeKey(index), {
-          message: "Field type can't be empty",
-        });
-        return;
-      }
-    });
-
-    ToastTemplate.Schema.Submit();
   });
 
   const renderInputField = useCallback(
