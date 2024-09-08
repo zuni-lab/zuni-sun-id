@@ -1,9 +1,10 @@
 import { ClaimRow, SchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
-import { Button } from '@/components/shadcn/Button';
+import { buttonVariants } from '@/components/shadcn/Button';
 import { MOCK_CLAIMS, MOCK_PRESENTABLE_SCHEMA, MOCK_STATS } from '@/constants/mock';
-import { RouterMeta } from '@/constants/router';
+import { AppRouter, RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = RouterMeta.Home;
 
@@ -21,7 +22,9 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <Button>Make claim</Button> {/* TODO: Add link */}
+        <Link className={buttonVariants()} href={`${AppRouter.Claim}/create`}>
+          Make claim
+        </Link>
       </section>
       <SunTable
         title="Recent Claims"
@@ -48,7 +51,11 @@ export default function Page() {
         ]}
         items={MOCK_PRESENTABLE_SCHEMA}
         renderRow={SchemaRow}
-        renderRightTop={<Button>Make schema</Button>} // TODO: Add link
+        renderRightTop={
+          <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
+            Create schema
+          </Link>
+        }
         footerButton="View all schemas"
       />
     </main>

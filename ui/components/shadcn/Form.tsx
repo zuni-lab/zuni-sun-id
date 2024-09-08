@@ -91,11 +91,11 @@ const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>,
     return (
       <Label
         ref={ref}
-        className={cn(error && 'text-destructive', 'text-gray-700', className)}
+        className={cn(error && 'text-main', 'text-gray-300 text-lg', className)}
         htmlFor={formItemId}
         {...props}>
         {props.children}
-        {required && <span className="text-destructive text-sm">*</span>}
+        {required && <span className="text-main text-sm">*</span>}
         {renderSuffix && <span>{renderSuffix}</span>}
       </Label>
     );
@@ -153,7 +153,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-sm font-medium text-destructive', className)}
+      className={cn('text-sm font-medium text-main', className)}
       {...props}>
       {body}
     </p>

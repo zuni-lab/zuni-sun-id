@@ -13,7 +13,7 @@ import { Button } from '../shadcn/Button';
 import { useEffect, useRef } from 'react';
 import { Skeleton } from '../shadcn/Skeleton';
 import { PaginationButton } from '../PaginationButton';
-import { ITEMS_PER_PAGE } from '@/constants/items';
+import { ITEMS_PER_PAGE } from '@/constants/configs';
 
 interface SunTableProps<T> {
   title: string;

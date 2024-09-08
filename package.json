@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
     "@tronweb3/tronwallet-abstract-adapter": "^1.1.6",
     "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.7",
     "@tronweb3/tronwallet-adapter-react-ui": "^1.1.8",

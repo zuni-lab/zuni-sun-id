@@ -1,7 +1,8 @@
-import { Button } from '@/components/shadcn/Button';
+import { buttonVariants } from '@/components/shadcn/Button';
 import { MOCK_STATS } from '@/constants/mock';
-import { RouterMeta } from '@/constants/router';
+import { AppRouter, RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { SchemaList } from './SchemaList';
 
 export const metadata: Metadata = RouterMeta.Schema;
@@ -24,7 +25,9 @@ export default function Page() {
               </div>
             ))}
           </div>
-          <Button>Create schema</Button> {/* TODO: Add link */}
+          <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
+            Create schema
+          </Link>{' '}
         </section>
         <SchemaList />
       </div>
