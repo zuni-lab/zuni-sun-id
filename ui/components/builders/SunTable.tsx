@@ -14,6 +14,10 @@ import { useEffect, useRef } from 'react';
 import { Skeleton } from '../shadcn/Skeleton';
 import { PaginationButton } from '../PaginationButton';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
+import { TronWebWithExt } from '@/types/tronWeb';
+import { SCHEMA_REGISTRY_ADDRESS } from '@/constants/contracts';
+import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
+import { tronWeb } from '@/api/tronWeb';
 
 interface SunTableProps<T> {
   title: string;
@@ -42,6 +46,8 @@ export const SunTable = <T,>({
   pagination,
   initialSkeleton = 10,
 }: SunTableProps<T>) => {
+  // const [items, setItems] = useState<SchemaData[]>([]);
+
   if (pagination && footerButton) {
     throw new Error('Cannot have both pagination and footer button');
   }
@@ -49,6 +55,32 @@ export const SunTable = <T,>({
   const maxPage = items && Math.ceil((pagination?.totalItems ?? 0) / ITEMS_PER_PAGE);
 
   const prevItemCount = useRef(initialSkeleton);
+
+  const fetchSchemeList = async () => {
+    const events = await (
+      tronWeb as TronWebWithExt
+    ).event.getEventsByContractAddress<RegisterSchemaEvent>(SCHEMA_REGISTRY_ADDRESS, {
+      page: 1,
+      size: 10,
+    });
+    const schemas = events.map((event) => '0x' + event.result.uid);
+
+    const contract = await (tronWeb as TronWebWithExt).contract(
+      SCHEMA_REGISTRY_ABI,
+      SCHEMA_REGISTRY_ADDRESS
+    );
+    const schemaCalls = [];
+    for (const schema of schemas) {
+      const getSchemaCall = await contract.getSchema(schema).call();
+      schemaCalls.push(getSchemaCall);
+    }
+    const schemaList: SchemaData[] = await Promise.all(schemaCalls);
+    console.log(schemaList);
+  };
+
+  useEffect(() => {
+    fetchSchemeList();
+  }, []);
 
   useEffect(() => {
     if (items && items.length > 0) {
