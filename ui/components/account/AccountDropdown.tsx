@@ -12,11 +12,11 @@ export const AccountDropdown: IComponent = () => {
   const { address } = useWallet();
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <div className="flex h-8 w-8 items-center justify-center">
+      <DropdownMenu.Trigger asChild className="w-4 h-4">
+        <div className="flex h-4 w-4 items-center justify-center">
           {address && (
             <button className="p-1 rounded-full border-2 border-muted-foreground">
-              <Identicon value={address} size={40} />
+              <Identicon value={address} size={32} />
             </button>
           )}
         </div>

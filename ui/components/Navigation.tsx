@@ -14,7 +14,7 @@ import { Search } from './Search';
 
 export const Navigation: IComponent = () => {
   return (
-    <div className="flex items-center py-8 px-16 gap-12">
+    <div className="flex items-center py-6 px-16 gap-12 border-b border-accent shadow-accent shadow-sm">
       <Link href="/">
         <LogoSvg className="w-10 h-10" />
       </Link>

@@ -41,7 +41,7 @@ export const Search: IComponent<{
       <Button
         size={'lg'}
         variant={'link'}
-        className="h-fit w-fit px-1 py-2 text-white cursor-pointer border border-muted-foreground hover:text-gray-500 hover:border-muted-foreground"
+        className="h-fit w-fit mr-2 px-1 py-2 text-white cursor-pointer border border-muted-foreground hover:text-gray-500 hover:border-muted-foreground"
         onClick={clearSearch}>
         <Slash className="w-4 h-4" />
       </Button>

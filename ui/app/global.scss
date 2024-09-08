@@ -28,7 +28,8 @@ input:focus {
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 359 81% 46%;
+    // --primary: 359 81% 46%;
+    --primary: 29 100% 50%;
     --primary-foreground: 255 100% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -89,7 +90,7 @@ input:focus {
 
 section,
 .section {
-  @apply max-w-6xl min-h-[48vh] mx-auto py-16;
+  @apply max-w-7xl min-h-[12vh] mx-auto p-8 bg-accent shadow-sm shadow-accent rounded-lg;
 }
 
 h1.title {
