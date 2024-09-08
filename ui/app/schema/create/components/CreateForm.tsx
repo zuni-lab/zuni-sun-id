@@ -2,23 +2,23 @@
 
 import { Button } from '@/shadcn/Button';
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/shadcn/Form';
 import { Input } from '@/shadcn/Input';
 
 import { AccountConnect } from '@/components/account/AccountConnect';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/shadcn/Select';
 import { Switch } from '@/components/shadcn/Switch';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
