@@ -14,6 +14,7 @@ export const AccountConnect: IComponent = () => {
       {connected && <AccountDropdown />}
       {!connected && (
         <Button
+          type="button"
           size={'lg'}
           className="bg-muted hover:bg-muted hover:scale-105 transition-all duration-150 px-4"
           onClick={() => setVisible(true)}>

@@ -21,20 +21,22 @@ import {
   SelectValue,
 } from '@/components/shadcn/Select';
 import { Switch } from '@/components/shadcn/Switch';
+import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
+import { MOCK_RESOLVER_ADDRESS } from '@/constants/mock';
 import { ToastTemplate } from '@/constants/toast';
+import { useTxResult } from '@/states/useTxResult';
+import { TonContract } from '@/tron/contract';
 import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
+import { ProjectENV } from '@env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
-import { PlusIcon, TrashIcon } from 'lucide-react';
-import { useCallback } from 'react';
+import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
-import { SCHEMA_REGISTRY_ADDRESS } from '@/constants/contracts';
-import { TronWebWithExt } from '@/types/tronWeb';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -54,12 +56,11 @@ const SchemaDeclareTokenKey = (index: number) => `${SchemaFieldKeys.DeclareStmts
 
 const SchemaDeclareTypeKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.type`;
 
+const SchemaDeclareDescKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.desc`;
+
 const baseFormSchema = z.object({
-  [SchemaFieldKeys.Name]: z
-    .string()
-    .transform((val) => val.trim())
-    .refine((val) => val.length > 0, 'Name is required'),
-  [SchemaFieldKeys.Description]: z.optional(z.string().transform((val) => val.trim())),
+  [SchemaFieldKeys.Name]: z.string().optional(),
+  // [SchemaFieldKeys.Description]: z.optional(z.string().transform((val) => val.trim())),
   [SchemaFieldKeys.ResolverAddress]: z
     .string()
     .transform((val) => val.trim())
@@ -68,32 +69,47 @@ const baseFormSchema = z.object({
       'Invalid resolver address'
     ),
   [SchemaFieldKeys.Revocable]: z.boolean(),
-  [SchemaFieldKeys.DeclareStmts]: z.array(
-    z.object({
-      token: z.string({
-        message: 'This field is required',
-      }),
-      type: z.string({
-        message: 'This field is required',
-      }),
-    })
-  ),
+  [SchemaFieldKeys.DeclareStmts]: z
+    .array(
+      z.object({
+        type: z
+          .string({
+            message: 'The field type is required',
+          })
+          .refine((val) => val.trim().length > 0, {
+            message: 'This field is required',
+          }),
+        token: z
+          .string({
+            message: 'This field is required',
+          })
+          .refine((val) => val.trim().length > 0, {
+            message: 'Please enter the field name',
+          }),
+        desc: z.string().optional(),
+      })
+    )
+    .nonempty({ message: 'At least one schema declaration is required' }),
 });
 
 export const CreateSchemaForm: IComponent = () => {
   const { address, connected } = useWallet();
   const isConnected = !!address;
 
+  const [submitting, setSubmitting] = useState(false);
+  const { open: openTxResult } = useTxResult();
+
   const form = useForm({
     resolver: zodResolver(baseFormSchema),
     defaultValues: {
       [SchemaFieldKeys.Name]: '',
-      [SchemaFieldKeys.Description]: '',
+      // [SchemaFieldKeys.Description]: '',
       [SchemaFieldKeys.ResolverAddress]: '',
       [SchemaFieldKeys.Revocable]: false,
       [SchemaFieldKeys.DeclareStmts]: Array.from({ length: 2 }).map(() => ({
         token: '',
         type: '',
+        desc: '',
       })),
     },
   });
@@ -117,52 +133,36 @@ export const CreateSchemaForm: IComponent = () => {
   );
 
   const handlePressSubmit = handleSubmit(async (values) => {
+    setSubmitting(true);
     if (connected && window.tronWeb) {
-      const declareStmts = values[SchemaFieldKeys.DeclareStmts] as {
-        token: string;
-        type: string;
-      }[];
-
-      if (declareStmts.length === 0) {
-        form.setError(SchemaFieldKeys.DeclareStmts, {
-          message: 'At least one schema declaration is required',
-        });
-      }
-
-      declareStmts.forEach(({ token, type }, index) => {
-        if (!token) {
-          form.setError(SchemaDeclareTokenKey(index), {
-            message: "Field name can't be empty",
-          });
-          return;
-        }
-
-        if (!type) {
-          form.setError(SchemaDeclareTypeKey(index), {
-            message: "Field type can't be empty",
-          });
-          return;
-        }
-      });
-
-      const contract = await (window.tronWeb as TronWebWithExt).contract(
+      const contract = new TonContract(
         SCHEMA_REGISTRY_ABI,
-        SCHEMA_REGISTRY_ADDRESS
+        ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
       );
 
-      // [fieldType, fieldName, fieldDescription]
-      const schemaFields = [
-        ['uint256', 'age', 'Your age'],
-        ['string', 'name', 'Your full name'],
-      ];
-      const revocable = false;
-      const tx = await contract.register(schemaFields, SCHEMA_REGISTRY_ADDRESS, revocable).send();
-      const events = await (
-        window.tronWeb as TronWebWithExt
-      ).event.getEventsByTransactionID<RegisterSchemaEvent>(tx);
-      console.log(events[0].result);
+      const schemaFields = (
+        values[SchemaFieldKeys.DeclareStmts] as {
+          token: string;
+          type: string;
+          desc: string;
+        }[]
+      ).map((item) => [item.type, item.token, item.desc]);
 
-      ToastTemplate.Schema.Submit();
+      try {
+        const tx = await contract.call('register', [
+          schemaFields,
+          MOCK_RESOLVER_ADDRESS,
+          values[SchemaFieldKeys.Revocable],
+        ]);
+        ToastTemplate.Schema.Submit(tx);
+        setSubmitting(false);
+        openTxResult(tx);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        console.error(error);
+        ToastTemplate.Schema.SubmitError();
+        setSubmitting(false);
+      }
     }
   });
 
@@ -220,14 +220,15 @@ export const CreateSchemaForm: IComponent = () => {
           name: SchemaFieldKeys.Name as TSchemaInput<TAPP_NAME>,
           label: 'Name',
           placeholder: 'The name of the schema',
+          required: false,
         })}
 
-        {renderInputField({
+        {/* {renderInputField({
           name: SchemaFieldKeys.Description as TSchemaInput<TAPP_NAME>,
           label: 'Description',
           placeholder: 'The description of the vault',
           required: false,
-        })}
+        })} */}
 
         <div className="space-y-3">
           <FormLabel required>Schema declaration: </FormLabel>
@@ -237,16 +238,11 @@ export const CreateSchemaForm: IComponent = () => {
                 <div
                   key={item.key}
                   className="flex justify-between p-4 bg-muted-foreground gap-4 rounded-lg">
-                  {renderInputField({
-                    name: SchemaDeclareTokenKey(index) as TSchemaInput<TAPP_NAME>,
-                    placeholder: 'Enter field name',
-                    containerClassName: 'grow space-y-0',
-                  })}
                   <FormField
                     control={control}
                     name={SchemaDeclareTypeKey(index)}
                     render={({ field }) => (
-                      <FormItem className="w-1/3">
+                      <FormItem className="w-1/5">
                         <Select onValueChange={field.onChange} defaultValue={field.value as string}>
                           <FormControl>
                             <SelectTrigger>
@@ -268,6 +264,16 @@ export const CreateSchemaForm: IComponent = () => {
                       </FormItem>
                     )}
                   />
+                  {renderInputField({
+                    name: SchemaDeclareTokenKey(index) as TSchemaInput<TAPP_NAME>,
+                    placeholder: 'Enter field name',
+                    containerClassName: 'grow space-y-0',
+                  })}
+                  {renderInputField({
+                    name: SchemaDeclareDescKey(index) as TSchemaInput<TAPP_NAME>,
+                    placeholder: 'Enter field description',
+                    containerClassName: 'grow space-y-0',
+                  })}
                   <Button
                     disabled={fields.length === 1}
                     type="button"
@@ -323,17 +329,15 @@ export const CreateSchemaForm: IComponent = () => {
           {!isConnected && <AccountConnect />}
           {isConnected && (
             <Button
-              type="submit"
+              type={'submit'}
               className="px-4 bg-orange-600 hover:bg-orange-500"
               size={'lg'}
-              //    disabled={isPending || isConfirming}
-            >
-              {/* {isPending || isConfirming ? (
+              disabled={submitting}>
+              {submitting ? (
                 <Loader className="w-4 h-4 text-background animate-spin" />
               ) : (
-                
-              )} */}
-              Create schema
+                'Create schema'
+              )}
             </Button>
           )}
         </div>

@@ -32,5 +32,5 @@ export type TronWebWithExt = TronWeb & {
     getEventsByTransactionID<T = unknown>(transactionID: string): Promise<EventResult<T>[]>;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  contract: any;
+  contract: (abi: any, address: string) => Promise<any>;
 };

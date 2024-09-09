@@ -15,9 +15,7 @@ import { Skeleton } from '../shadcn/Skeleton';
 import { PaginationButton } from '../PaginationButton';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { TronWebWithExt } from '@/types/tronWeb';
-import { SCHEMA_REGISTRY_ADDRESS } from '@/constants/contracts';
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
-import { tronWeb } from '@/api/tronWeb';
 
 interface SunTableProps<T> {
   title: string;
