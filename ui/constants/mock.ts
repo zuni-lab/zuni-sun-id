@@ -1,8 +1,12 @@
+import { ProjectENV } from '@env';
+
 export const MOCK_STATS = [
   'Total Claim: 1,000,000',
   'Total Schema: 1,000',
   'Verified Claim: 1,000',
 ];
+
+export const MOCK_RESOLVER_ADDRESS = ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS;
 
 export const MOCK_PRESENTABLE_SCHEMA: TPresentableSchema[] = [
   {

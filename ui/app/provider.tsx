@@ -1,5 +1,6 @@
 'use client';
 
+import TronProvider from '@/components/TronProvider';
 import { ToastTemplate } from '@/constants/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -36,9 +37,11 @@ function Providers({ children }: React.PropsWithChildren) {
 
   return (
     <QueryClientProvider client={client}>
-      <WalletProvider onError={onError} adapters={adapters}>
-        <WalletModalProvider>{children}</WalletModalProvider>
-      </WalletProvider>
+      <TronProvider>
+        <WalletProvider onError={onError} adapters={adapters}>
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </WalletProvider>
+      </TronProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

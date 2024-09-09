@@ -9,9 +9,13 @@ export const ToastTemplate = {
     Unknown: createToast('Unknown error', { type: 'error' }),
   },
   Schema: {
-    Submit: createToast(
-      'You have subbmitted the new schema. Please wait for the on-chain transaction to be confirmed.',
-      { type: 'success' }
-    ),
+    Submit: (tx: string) =>
+      createToast(
+        'You have subbmitted the new schema. Please wait for the on-chain transaction to be confirmed.\n' +
+          'Transaction hash: ' +
+          tx,
+        { type: 'success' }
+      ),
+    SubmitError: createToast('Failed to submit the schema', { type: 'error' }),
   },
 };
