@@ -18,6 +18,10 @@ const TronWebProvider: IComponent = ({ children }) => {
       fullHost: 'https://api.shasta.trongrid.io',
       privateKey: MOCK_PRIVATE_KEY,
     });
+
+    if (typeof window !== 'undefined' && !window.tronWeb) {
+      window.tronWeb = globalTronWeb ? globalTronWeb : undefined;
+    }
   }
 
   return <TronWebContext.Provider value={globalTronWeb}>{children}</TronWebContext.Provider>;
