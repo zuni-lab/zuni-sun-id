@@ -9,13 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/shadcn/Table';
-import { Button } from '../shadcn/Button';
 import { useEffect, useRef } from 'react';
-import { Skeleton } from '../shadcn/Skeleton';
 import { PaginationButton } from '../PaginationButton';
-import { ITEMS_PER_PAGE } from '@/constants/configs';
-import { TronWebWithExt } from '@/types/tronWeb';
-import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
+import { Button } from '../shadcn/Button';
+import { Skeleton } from '../shadcn/Skeleton';
 
 interface SunTableProps<T> {
   title: string;
@@ -26,6 +23,7 @@ interface SunTableProps<T> {
   isLoading?: boolean;
   footerButton?: string;
   initialSkeleton?: number;
+  maxItems?: number;
   pagination?: {
     currentPage: number;
     totalItems: number;
@@ -41,44 +39,17 @@ export const SunTable = <T,>({
   renderRightTop,
   isLoading,
   footerButton,
+  maxItems = 10,
   pagination,
   initialSkeleton = 10,
 }: SunTableProps<T>) => {
-  // const [items, setItems] = useState<SchemaData[]>([]);
-
   if (pagination && footerButton) {
     throw new Error('Cannot have both pagination and footer button');
   }
 
-  const maxPage = items && Math.ceil((pagination?.totalItems ?? 0) / ITEMS_PER_PAGE);
+  const maxPage = items && Math.ceil((pagination?.totalItems ?? 0) / maxItems);
 
   const prevItemCount = useRef(initialSkeleton);
-
-  const fetchSchemeList = async () => {
-    const events = await (
-      tronWeb as TronWebWithExt
-    ).event.getEventsByContractAddress<RegisterSchemaEvent>(SCHEMA_REGISTRY_ADDRESS, {
-      page: 1,
-      size: 10,
-    });
-    const schemas = events.map((event) => '0x' + event.result.uid);
-
-    const contract = await (tronWeb as TronWebWithExt).contract(
-      SCHEMA_REGISTRY_ABI,
-      SCHEMA_REGISTRY_ADDRESS
-    );
-    const schemaCalls = [];
-    for (const schema of schemas) {
-      const getSchemaCall = await contract.getSchema(schema).call();
-      schemaCalls.push(getSchemaCall);
-    }
-    const schemaList: SchemaData[] = await Promise.all(schemaCalls);
-    console.log(schemaList);
-  };
-
-  useEffect(() => {
-    fetchSchemeList();
-  }, []);
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -138,8 +109,8 @@ export const SunTable = <T,>({
       {!isLoading && items.length > 0 && pagination && !!maxPage && maxPage > 1 && (
         <div className="mt-4 flex justify-end gap-4 items-center border-t py-4">
           <span className="hidden sm:flex">
-            {(pagination?.currentPage ?? 1) * ITEMS_PER_PAGE - ITEMS_PER_PAGE + 1} -{' '}
-            {(pagination?.currentPage ?? 1) * ITEMS_PER_PAGE} / {pagination.totalItems}
+            {(pagination?.currentPage ?? 1) * maxItems - maxItems + 1} -{' '}
+            {(pagination?.currentPage ?? 1) * maxItems} / {pagination.totalItems}
           </span>
           <PaginationButton
             // size={36}

@@ -24,33 +24,36 @@ export const ClaimRow = ({ uuid, schemaId, from, to, type, time }: TClaim) => (
   </TableRow>
 );
 
-export const SchemaRow = ({
-  id,
-  uuid,
-  schema,
-  resolverAddresss,
-  numberOfClaims,
-}: TPresentableSchema) => (
-  <TableRow key={uuid}>
-    <TableCell>
+export const SchemaRow = ({ uid, schema, resolver, revocable }: SchemaData) => (
+  <TableRow key={uid}>
+    {/* <TableCell>
       <IdChip id={id} />
-    </TableCell>
+    </TableCell> */}
     <TableCell>
-      <HexLink content={uuid} />
+      <HexLink content={uid} />
     </TableCell>
     <TableCell className="w-120">
       <ul className="flex flex-wrap gap-3">
-        {schema.map(({ token, type }) => (
+        {schema.map(({ fieldName, fieldType }) => (
           <li
-            key={token}
+            key={fieldName}
             className="py-1 px-4 border-radius bg-black w-fit rounded-md flex flex-col border">
-            <span className="uppercase text-[10px] text-gray-400 font-medium">{type}</span>
-            <span className="font-semibold">{token}</span>
+            <span className="uppercase text-[10px] text-gray-400 font-medium">{fieldType}</span>
+            <span className="font-semibold">{fieldName}</span>
+            {/* <span>{fieldDescription}</span> */}
           </li>
         ))}
       </ul>
     </TableCell>
-    <TableCell>{resolverAddresss}</TableCell>
-    <TableCell>{numberOfClaims}</TableCell>
+    <TableCell>
+      <span
+        className={`text-sm font-semibold text-white bg-${revocable ? 'destructive' : 'green'}-500 px-2 py-1 rounded-md`}>
+        {revocable ? 'Yes' : 'No'}
+      </span>
+    </TableCell>
+    <TableCell>
+      <HexLink content={resolver} />
+    </TableCell>
+    <TableCell>{99999}</TableCell>
   </TableRow>
 );

@@ -8,4 +8,22 @@ export class EventQuery {
       transactionID
     );
   }
+  static async getEventsByContractAddress<T = unknown>(
+    contractAddress: string,
+    options?: {
+      fromTimestamp?: number;
+      eventName?: string;
+      blockNumber?: number;
+      size?: number;
+      page?: number;
+      onlyConfirmed?: boolean;
+      onlyUnconfirmed?: boolean;
+      filters?: object;
+    }
+  ): Promise<EventResult<T>[]> {
+    return await (window.tronWeb as TronWebWithExt).event.getEventsByContractAddress<T>(
+      contractAddress,
+      options
+    );
+  }
 }

@@ -37,6 +37,7 @@ import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useQueryClient } from '@tanstack/react-query';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -98,6 +99,7 @@ export const CreateSchemaForm: IComponent = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const { open: openTxResult } = useTxResult();
+  const queryClient = useQueryClient();
 
   const form = useForm({
     resolver: zodResolver(baseFormSchema),
@@ -149,13 +151,16 @@ export const CreateSchemaForm: IComponent = () => {
       ).map((item) => [item.type, item.token, item.desc]);
 
       try {
-        const tx = await contract.call('register', [
+        const tx = await contract.send('register', [
           schemaFields,
           MOCK_RESOLVER_ADDRESS,
           values[SchemaFieldKeys.Revocable],
         ]);
         ToastTemplate.Schema.Submit(tx);
         setSubmitting(false);
+        queryClient.invalidateQueries({
+          queryKey: ['schemas'],
+        });
         openTxResult(tx);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
