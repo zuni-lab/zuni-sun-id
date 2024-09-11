@@ -4,7 +4,7 @@ import { SchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
-import { TonContract } from '@/tron/contract';
+import { TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/events';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
@@ -23,10 +23,11 @@ export const SchemaList: IComponent = () => {
           size: ITEMS_PER_PAGE.SCHEMA, // default 20, max 200
         }
       );
+      console.log('events', events);
 
       const schemas = events.map((event) => '0x' + event.result.uid);
 
-      const contract = new TonContract(
+      const contract = new TronContract(
         SCHEMA_REGISTRY_ABI,
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
       );

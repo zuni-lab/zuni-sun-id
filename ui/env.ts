@@ -5,7 +5,7 @@ const ProjectENVSchema = z.object({
    * Feature flags, comma separated
    */
   NEXT_PUBLIC_ENV: z.string().default('development'),
-  NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS: z.string().default(''),
+  NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS: z.string().default('TWNVf1Ex7kkr6xwCT1cS5Cpt8HkB8aXHdn'),
 });
 
 /**
