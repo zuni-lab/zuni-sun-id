@@ -45,38 +45,27 @@ export const SchemaList: IComponent = () => {
         timestamps.push(event.timestamp);
       }
 
-      console.log({ schemas });
-
-      // const result = await contract.call({
-      //   method: 'getSchemas',
-      //   args: [schemas],
-      // });
-
-      const result = await contract.call({
+      const result = (await contract.call({
         method: 'getSchemas',
-        args: [
-          ['0xe8c645a940d47f080c4ee2f3b2b9e4ea0903db60a4155a654ddedec8081dc45f'] as THexString[],
-        ],
+        args: [schemas],
+      })) as unknown as SchemaData[];
+
+      return result.map((r, index) => {
+        return {
+          uid: r.uid,
+          resolver: r.resolver,
+          revocable: r.revocable,
+          schema: r.schema.map((field) => ({
+            fieldType: field.fieldType,
+            fieldName: field.fieldName,
+            fieldDescription: field.fieldDescription,
+          })),
+          timestamp: timestamps[index] / 1000,
+        };
       });
-
-      console.log({ result });
-
-      // return result[0].map((s, index) => ({
-      //   uid: s.uid,
-      //   resolver: s.resolver,
-      //   revocable: s.revocable,
-      //   schema: s.schema.map((field) => ({
-      //     fieldType: field.fieldType,
-      //     fieldName: field.fieldName,
-      //     fieldDescription: field.fieldDescription,
-      //   })),
-      //   timestamp: timestamps[index],
-      // }));
     },
     enabled: !!events && events.length > 0,
   });
-
-  console.log({ items });
 
   return (
     <SunTable

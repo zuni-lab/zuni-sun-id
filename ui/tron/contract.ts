@@ -35,7 +35,12 @@ export class TronContract<TAbi extends Abi> {
     method: functionName;
     args: AbiParametersToPrimitiveTypes<abiFunction['inputs'], 'inputs'>;
   }): Promise<string> {
-    return await this.#contract[config.method](config.args).send();
+    try {
+      return await this.#contract[config.method](...config.args).send();
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error.message);
+    }
   }
 
   public async call<

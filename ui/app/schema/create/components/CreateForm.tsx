@@ -38,7 +38,6 @@ import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 type TSchemaInput<T extends string> =
   | `${T}_Name`
   | `${T}_Description`
@@ -64,6 +63,7 @@ const baseFormSchema = z.object({
   // [SchemaFieldKeys.Description]: z.optional(z.string().transform((val) => val.trim())),
   [SchemaFieldKeys.ResolverAddress]: z
     .string()
+    .default('0x0000000000000000000000000000000000000000')
     .transform((val) => val.trim())
     .refine(
       (val) =>
@@ -154,22 +154,15 @@ export const CreateSchemaForm: IComponent = () => {
           type: string;
           desc: string;
         }[]
-      ).map((item) => {
-        return {
-          fieldType: item.type,
-          fieldName: item.token,
-          fieldDescription: item.desc,
-        };
-      });
-
-      // .map((item) => [item.type, item.token, item.desc]);
+      ).map((item) => [item.type, item.token, item.desc]);
 
       try {
         const tx = await contract.send({
           method: 'register',
           args: [
-            schemaFields,
-            values[SchemaFieldKeys.ResolverAddress] as THexString,
+            schemaFields as [string, string, string][] as any,
+            (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
+              ('0x0000000000000000000000000000000000000000' as THexString),
             values[SchemaFieldKeys.Revocable] as boolean,
           ],
         });
@@ -177,7 +170,7 @@ export const CreateSchemaForm: IComponent = () => {
         ToastTemplate.Schema.Submit(tx);
         setSubmitting(false);
         queryClient.invalidateQueries({
-          queryKey: ['schemas'],
+          queryKey: ['schemasEvent'],
         });
         openTxResult(tx);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -186,7 +179,11 @@ export const CreateSchemaForm: IComponent = () => {
         ToastTemplate.Schema.SubmitError();
         setSubmitting(false);
       }
+      return;
     }
+
+    ToastTemplate.Schema.SubmitError();
+    setSubmitting(false);
   });
 
   const renderInputField = useCallback(

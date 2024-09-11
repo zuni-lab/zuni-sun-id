@@ -34,9 +34,9 @@ export const SchemaRow = ({ uid, schema, resolver, revocable, timestamp }: Schem
     </TableCell>
     <TableCell className="w-120">
       <ul className="flex flex-wrap gap-3">
-        {schema?.map(({ fieldName, fieldType }) => (
+        {schema?.map(({ fieldName, fieldType }, index) => (
           <li
-            key={fieldName}
+            key={index}
             className="py-1 px-4 border-radius bg-black w-fit rounded-md flex flex-col border">
             <span className="uppercase text-[10px] text-gray-400 font-medium">{fieldType}</span>
             <span className="font-semibold">{fieldName}</span>
