@@ -24,7 +24,7 @@ export const ClaimRow = ({ uuid, schemaId, from, to, type, time }: TClaim) => (
   </TableRow>
 );
 
-export const SchemaRow = ({ uid, schema, resolver, revocable }: SchemaData) => (
+export const SchemaRow = ({ uid, schema, resolver, revocable, timestamp }: SchemaData) => (
   <TableRow key={uid}>
     {/* <TableCell>
       <IdChip id={id} />
@@ -34,7 +34,7 @@ export const SchemaRow = ({ uid, schema, resolver, revocable }: SchemaData) => (
     </TableCell>
     <TableCell className="w-120">
       <ul className="flex flex-wrap gap-3">
-        {schema.map(({ fieldName, fieldType }) => (
+        {schema?.map(({ fieldName, fieldType }) => (
           <li
             key={fieldName}
             className="py-1 px-4 border-radius bg-black w-fit rounded-md flex flex-col border">
@@ -54,6 +54,7 @@ export const SchemaRow = ({ uid, schema, resolver, revocable }: SchemaData) => (
     <TableCell>
       <HexLink content={resolver} />
     </TableCell>
-    <TableCell>{99999}</TableCell>
+    <TableCell>{0}</TableCell>
+    <TableCell>{getRelativeTime(timestamp ?? 0)}</TableCell>
   </TableRow>
 );

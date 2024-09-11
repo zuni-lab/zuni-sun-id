@@ -12,4 +12,5 @@ type SchemaData = {
     fieldName: string;
     fieldDescription: string;
   }[];
+  timestamp: number;
 };

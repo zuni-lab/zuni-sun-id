@@ -12,34 +12,71 @@ import { useState } from 'react';
 
 export const SchemaList: IComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
-
-  const { data: items, isLoading: isFetching } = useQuery({
-    queryKey: ['schemas'],
+  const { data: events, isLoading: isEventLoading } = useQuery({
+    queryKey: ['schemasEvent'],
     queryFn: async () => {
-      const events = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
+      return await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS,
         {
           page: currentPage,
           size: ITEMS_PER_PAGE.SCHEMA, // default 20, max 200
         }
       );
-      console.log('events', events);
+    },
+  });
 
-      const schemas = events.map((event) => '0x' + event.result.uid);
+  const { data: items, isLoading: isFetching } = useQuery({
+    queryKey: ['schemas'],
+    queryFn: async () => {
+      if (!events) {
+        return [];
+      }
 
-      const contract = new TronContract(
+      const contract = await TronContract.new(
         SCHEMA_REGISTRY_ABI,
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
       );
 
-      const schemaCalls = [];
-      for (const schema of schemas) {
-        const getSchemaCall = contract.call('getSchema', [schema]) as Promise<SchemaData>;
-        schemaCalls.push(getSchemaCall);
+      const schemas: THexString[] = [];
+      const timestamps: number[] = [];
+
+      for (const event of events) {
+        schemas.push(('0x' + event.result.uid) as THexString);
+        timestamps.push(event.timestamp);
       }
-      return Promise.all(schemaCalls);
+
+      console.log({ schemas });
+
+      // const result = await contract.call({
+      //   method: 'getSchemas',
+      //   args: [schemas],
+      // });
+
+      const result = await contract.call({
+        method: 'getSchemas',
+        args: [
+          ['0xe8c645a940d47f080c4ee2f3b2b9e4ea0903db60a4155a654ddedec8081dc45f'] as THexString[],
+        ],
+      });
+
+      console.log({ result });
+
+      // return result[0].map((s, index) => ({
+      //   uid: s.uid,
+      //   resolver: s.resolver,
+      //   revocable: s.revocable,
+      //   schema: s.schema.map((field) => ({
+      //     fieldType: field.fieldType,
+      //     fieldName: field.fieldName,
+      //     fieldDescription: field.fieldDescription,
+      //   })),
+      //   timestamp: timestamps[index],
+      // }));
     },
+    enabled: !!events && events.length > 0,
   });
+
+  console.log({ items });
 
   return (
     <SunTable
@@ -50,9 +87,10 @@ export const SchemaList: IComponent = () => {
         { label: 'Revocable', className: '' },
         { label: 'Resolver', className: '' },
         { label: 'Claims', className: '' },
+        { label: 'Time', className: 'w-40' },
       ]}
       items={items ?? []}
-      isLoading={isFetching}
+      isLoading={isFetching || isEventLoading}
       renderRow={SchemaRow}
       maxItems={ITEMS_PER_PAGE.SCHEMA}
       pagination={{

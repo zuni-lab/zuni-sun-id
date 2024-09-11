@@ -1,10 +1,5 @@
 export const SCHEMA_REGISTRY_ABI = [
   {
-    inputs: [],
-    name: 'AlreadyExists',
-    type: 'error',
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -14,60 +9,14 @@ export const SCHEMA_REGISTRY_ABI = [
         type: 'bytes32',
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: 'address',
         name: 'registerer',
         type: 'address',
       },
-      {
-        components: [
-          {
-            internalType: 'bytes32',
-            name: 'uid',
-            type: 'bytes32',
-          },
-          {
-            internalType: 'contract ISchemaResolver',
-            name: 'resolver',
-            type: 'address',
-          },
-          {
-            internalType: 'bool',
-            name: 'revocable',
-            type: 'bool',
-          },
-          {
-            components: [
-              {
-                internalType: 'string',
-                name: 'fieldType',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldName',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldDescription',
-                type: 'string',
-              },
-            ],
-            internalType: 'struct SchemaField[]',
-            name: 'schema',
-            type: 'tuple[]',
-          },
-        ],
-        indexed: false,
-        internalType: 'struct SchemaRecord',
-        name: 'schema',
-        type: 'tuple',
-      },
     ],
     name: 'Registered',
     type: 'event',
-    stateMutability: 'nonpayable',
   },
   {
     inputs: [
@@ -87,7 +36,7 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bytes32',
           },
           {
-            internalType: 'contract ISchemaResolver',
+            internalType: 'address',
             name: 'resolver',
             type: 'address',
           },
@@ -130,6 +79,64 @@ export const SCHEMA_REGISTRY_ABI = [
   {
     inputs: [
       {
+        internalType: 'bytes32[]',
+        name: 'uids',
+        type: 'bytes32[]',
+      },
+    ],
+    name: 'getSchemas',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'resolver',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            components: [
+              {
+                internalType: 'string',
+                name: 'fieldType',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldName',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldDescription',
+                type: 'string',
+              },
+            ],
+            internalType: 'struct SchemaField[]',
+            name: 'schema',
+            type: 'tuple[]',
+          },
+        ],
+        internalType: 'struct SchemaRecord[]',
+        name: '',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         components: [
           {
             internalType: 'string',
@@ -152,7 +159,7 @@ export const SCHEMA_REGISTRY_ABI = [
         type: 'tuple[]',
       },
       {
-        internalType: 'contract ISchemaResolver',
+        internalType: 'address',
         name: 'resolver',
         type: 'address',
       },
@@ -173,4 +180,4 @@ export const SCHEMA_REGISTRY_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

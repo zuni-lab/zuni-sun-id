@@ -8,7 +8,7 @@ import { createContext, memo, useContext } from 'react';
 
 const MOCK_PRIVATE_KEY = '0000000000000000000000000000000000000000000000000000000000000001';
 
-let globalTronWeb: TronWebWithExt | null = null;
+export let globalTronWeb: TronWebWithExt | null = null;
 
 const TronWebContext = createContext<TronWebWithExt | null>(null);
 

@@ -21,23 +21,23 @@ import {
   SelectValue,
 } from '@/components/shadcn/Select';
 import { Switch } from '@/components/shadcn/Switch';
+import { globalTronWeb } from '@/components/TronProvider';
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
-import { MOCK_RESOLVER_ADDRESS } from '@/constants/mock';
 import { ToastTemplate } from '@/constants/toast';
 import { useTxResult } from '@/states/useTxResult';
-import { TonContract } from '@/tron/contract';
+import { TronContract } from '@/tron/contract';
 import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
 import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useQueryClient } from '@tanstack/react-query';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -66,7 +66,13 @@ const baseFormSchema = z.object({
     .string()
     .transform((val) => val.trim())
     .refine(
-      (val) => (val.trim().length === 0 ? true : isValidAddress(val)),
+      (val) =>
+        val.trim().length === 0
+          ? true
+          : globalTronWeb
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (globalTronWeb as any).isAddress(val.replace('0x', ''))
+            : isValidAddress(val),
       'Invalid resolver address'
     ),
   [SchemaFieldKeys.Revocable]: z.boolean(),
@@ -137,7 +143,7 @@ export const CreateSchemaForm: IComponent = () => {
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
     if (connected && window.tronWeb) {
-      const contract = new TonContract(
+      const contract = await TronContract.new(
         SCHEMA_REGISTRY_ABI,
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
       );
@@ -148,14 +154,26 @@ export const CreateSchemaForm: IComponent = () => {
           type: string;
           desc: string;
         }[]
-      ).map((item) => [item.type, item.token, item.desc]);
+      ).map((item) => {
+        return {
+          fieldType: item.type,
+          fieldName: item.token,
+          fieldDescription: item.desc,
+        };
+      });
+
+      // .map((item) => [item.type, item.token, item.desc]);
 
       try {
-        const tx = await contract.send('register', [
-          schemaFields,
-          MOCK_RESOLVER_ADDRESS,
-          values[SchemaFieldKeys.Revocable],
-        ]);
+        const tx = await contract.send({
+          method: 'register',
+          args: [
+            schemaFields,
+            values[SchemaFieldKeys.ResolverAddress] as THexString,
+            values[SchemaFieldKeys.Revocable] as boolean,
+          ],
+        });
+
         ToastTemplate.Schema.Submit(tx);
         setSubmitting(false);
         queryClient.invalidateQueries({
