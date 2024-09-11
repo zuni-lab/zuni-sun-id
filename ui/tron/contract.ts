@@ -37,6 +37,7 @@ export class TronContract<TAbi extends Abi> {
   }): Promise<string> {
     try {
       return await this.#contract[config.method](...config.args).send();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       throw new Error(error.message);

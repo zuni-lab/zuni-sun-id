@@ -38,6 +38,7 @@ import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
 type TSchemaInput<T extends string> =
   | `${T}_Name`
   | `${T}_Description`
@@ -160,6 +161,7 @@ export const CreateSchemaForm: IComponent = () => {
         const tx = await contract.send({
           method: 'register',
           args: [
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             schemaFields as [string, string, string][] as any,
             (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
               ('0x0000000000000000000000000000000000000000' as THexString),
