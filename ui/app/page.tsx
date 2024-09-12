@@ -1,10 +1,12 @@
-import { ClaimRow, SchemaRow } from '@/components/builders/RenderRow';
+import { ClaimRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { buttonVariants } from '@/components/shadcn/Button';
-import { MOCK_CLAIMS, MOCK_PRESENTABLE_SCHEMA, MOCK_STATS } from '@/constants/mock';
+import { MOCK_CLAIMS, MOCK_STATS } from '@/constants/mock';
 import { AppRouter, RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { RecentSchemas } from './RecentSchemas';
+import { TableHeaders } from './schema/config';
 
 export const metadata: Metadata = RouterMeta.Home;
 
@@ -28,36 +30,22 @@ export default function Page() {
       </section>
       <SunTable
         title="Recent Claims"
-        columns={[
-          { label: 'UUID', className: 'w-40' },
-          { label: 'Schema', className: '' },
-          { label: 'From', className: 'w-80' },
-          { label: 'To', className: 'w-80' },
-          { label: 'Type', className: '' },
-          { label: 'Time', className: '' },
-        ]}
+        columns={TableHeaders}
         items={MOCK_CLAIMS}
         renderRow={ClaimRow}
-        footerButton="View all claims"
-      />
-      <SunTable
-        title="Recent Schemas"
-        columns={[
-          { label: '#', className: '' },
-          { label: 'UUID', className: 'w-40' },
-          { label: 'Schema', className: '' },
-          { label: 'Resolver Address', className: '' },
-          { label: 'Claims', className: '' },
-        ]}
-        items={MOCK_PRESENTABLE_SCHEMA}
-        renderRow={SchemaRow}
-        renderRightTop={
-          <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
-            Create schema
+        footerButton={
+          <Link
+            className={buttonVariants({
+              variant: 'link',
+              className: 'w-full',
+            })}
+            href={AppRouter.Claim}>
+            View all claims
           </Link>
         }
-        footerButton="View all schemas"
       />
+
+      <RecentSchemas />
     </main>
   );
 }

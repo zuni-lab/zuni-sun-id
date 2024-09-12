@@ -9,9 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/shadcn/Table';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PaginationButton } from '../PaginationButton';
-import { Button } from '../shadcn/Button';
 import { Skeleton } from '../shadcn/Skeleton';
 
 interface SunTableProps<T> {
@@ -21,7 +20,7 @@ interface SunTableProps<T> {
   renderRow: (row: T, index?: number) => JSX.Element;
   renderRightTop?: JSX.Element;
   isLoading?: boolean;
-  footerButton?: string;
+  footerButton?: React.ReactNode;
   initialSkeleton?: number;
   maxItems?: number;
   pagination?: {
@@ -96,11 +95,7 @@ export const SunTable = <T,>({
         {footerButton && (
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={columns.length}>
-                <Button className="w-full" variant="link">
-                  {footerButton}
-                </Button>
-              </TableCell>
+              <TableCell colSpan={columns.length}>{footerButton}</TableCell>
             </TableRow>
           </TableFooter>
         )}

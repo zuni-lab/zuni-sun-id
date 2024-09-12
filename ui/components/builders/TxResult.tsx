@@ -84,8 +84,8 @@ export const TxResult: IComponent = () => {
                           <strong>Name:</strong> {event.name}
                         </p>
                         <p>
-                          <strong>Timestamp:</strong>{' '}
-                          {new Date(event.timestamp).toLocaleDateString()}
+                          <strong>Timestamp:</strong> {new Date(event.timestamp).toDateString()} -{' '}
+                          {new Date(event.timestamp).toLocaleTimeString()}
                         </p>
 
                         {/* <p className="truncate" title={JSON.stringify(event.result)}>

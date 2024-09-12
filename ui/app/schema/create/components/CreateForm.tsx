@@ -38,6 +38,7 @@ import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { SchemaKeys } from '../../config';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -101,8 +102,7 @@ const baseFormSchema = z.object({
 });
 
 export const CreateSchemaForm: IComponent = () => {
-  const { address, connected } = useWallet();
-  const isConnected = !!address;
+  const { connected } = useWallet();
 
   const [submitting, setSubmitting] = useState(false);
   const { open: openTxResult } = useTxResult();
@@ -172,7 +172,7 @@ export const CreateSchemaForm: IComponent = () => {
         ToastTemplate.Schema.Submit(tx);
         setSubmitting(false);
         queryClient.invalidateQueries({
-          queryKey: ['schemasEvent'],
+          queryKey: [SchemaKeys.Event],
         });
         openTxResult(tx);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -348,8 +348,8 @@ export const CreateSchemaForm: IComponent = () => {
           )}
         />
         <div className="flex items-center justify-center !mt-4">
-          {!isConnected && <AccountConnect />}
-          {isConnected && (
+          {!connected && <AccountConnect />}
+          {connected && (
             <Button
               type={'submit'}
               className="px-4 bg-orange-600 hover:bg-orange-500"
