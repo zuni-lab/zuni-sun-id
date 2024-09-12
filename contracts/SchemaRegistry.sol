@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/ISchemaRegistry.sol";
+import {ISchemaRegistry, SchemaRecord, SchemaField} from "./ISchemaRegistry.sol";
+import {ISchemaResolver} from "./ISchemaResolver.sol";
 
 /// @title SchemaRegistry
 /// @notice The global schema registry.
@@ -10,12 +11,15 @@ contract SchemaRegistry is ISchemaRegistry {
     mapping(bytes32 uid => SchemaRecord schemaRecord) private _registry;
 
     /// @inheritdoc ISchemaRegistry
-    function register(SchemaField[] memory schema, address resolver, bool revocable) external returns (bytes32) {
+    function register(SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
+        external
+        returns (bytes32)
+    {
         SchemaRecord memory schemaRecord =
-            SchemaRecord({uid: EMPTY_UID, schema: schema, resolver: resolver, revocable: revocable});
+            SchemaRecord({uid: 0, schema: schema, resolver: resolver, revocable: revocable});
 
         bytes32 uid = _getUID(schemaRecord);
-        require(_registry[uid].uid == EMPTY_UID, "Already registered");
+        require(_registry[uid].uid == 0, "already exists");
 
         _registry[uid].uid = uid;
         _registry[uid].resolver = resolver;
@@ -32,6 +36,15 @@ contract SchemaRegistry is ISchemaRegistry {
     /// @inheritdoc ISchemaRegistry
     function getSchema(bytes32 uid) external view returns (SchemaRecord memory) {
         return _registry[uid];
+    }
+
+    /// @inheritdoc ISchemaRegistry
+    function getSchemas(bytes32[] memory uids) external view returns (SchemaRecord[] memory) {
+        SchemaRecord[] memory records = new SchemaRecord[](uids.length);
+        for (uint256 i = 0; i < uids.length; i++) {
+            records[i] = _registry[uids[i]];
+        }
+        return records;
     }
 
     /// @dev Calculates a UID for a given schema.
