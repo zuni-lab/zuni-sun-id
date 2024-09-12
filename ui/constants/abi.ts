@@ -85,3 +85,345 @@ export const SCHEMA_REGISTRY_ABI = [
     type: 'function',
   },
 ] as const;
+
+export const SUN_ID_ABI = [
+  {
+    inputs: [
+      {
+        internalType: 'contract ISchemaRegistry',
+        name: 'registry',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'issuer',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'schemaUID',
+        type: 'bytes32',
+      },
+    ],
+    name: 'Issued',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'issuer',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'schemaUID',
+        type: 'bytes32',
+      },
+    ],
+    name: 'Revoked',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'revoker',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'data',
+        type: 'bytes32',
+      },
+      {
+        indexed: true,
+        internalType: 'uint64',
+        name: 'timestamp',
+        type: 'uint64',
+      },
+    ],
+    name: 'RevokedOffchain',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'data',
+        type: 'bytes32',
+      },
+      {
+        indexed: true,
+        internalType: 'uint64',
+        name: 'timestamp',
+        type: 'uint64',
+      },
+    ],
+    name: 'Timestamped',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+    ],
+    name: 'getCredential',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'schema',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint64',
+            name: 'time',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'expirationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'revocationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'refUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'issuer',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'data',
+            type: 'bytes[]',
+          },
+        ],
+        internalType: 'struct Credential',
+        name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'revoker',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'data',
+        type: 'bytes32',
+      },
+    ],
+    name: 'getRevokeOffchain',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getSchemaRegistry',
+    outputs: [
+      {
+        internalType: 'contract ISchemaRegistry',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+    ],
+    name: 'isCredentialValid',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'schemaUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+          },
+          {
+            internalType: 'uint64',
+            name: 'expirationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'refUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'data',
+            type: 'bytes[]',
+          },
+        ],
+        internalType: 'struct CredentialRequest',
+        name: 'request',
+        type: 'tuple',
+      },
+    ],
+    name: 'issue',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'schemaUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'credentialUID',
+            type: 'bytes32',
+          },
+        ],
+        internalType: 'struct RevocationRequest',
+        name: 'request',
+        type: 'tuple',
+      },
+    ],
+    name: 'revoke',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'data',
+        type: 'bytes32',
+      },
+    ],
+    name: 'revokeOffchain',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: '',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const;
