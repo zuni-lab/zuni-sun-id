@@ -17,6 +17,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         }
       );
     },
+    refetchOnMount: true,
   });
 
   const { data: items, isLoading: isFetching } = useQuery({

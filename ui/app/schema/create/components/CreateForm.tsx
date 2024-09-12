@@ -31,14 +31,12 @@ import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
 import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { SchemaKeys } from '../../config';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -106,8 +104,6 @@ export const CreateSchemaForm: IComponent = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const { open: openTxResult } = useTxResult();
-  const queryClient = useQueryClient();
-
   const form = useForm({
     resolver: zodResolver(baseFormSchema),
     defaultValues: {
@@ -171,9 +167,6 @@ export const CreateSchemaForm: IComponent = () => {
 
         ToastTemplate.Schema.Submit(tx);
         setSubmitting(false);
-        queryClient.invalidateQueries({
-          queryKey: [SchemaKeys.Event],
-        });
         openTxResult(tx);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {

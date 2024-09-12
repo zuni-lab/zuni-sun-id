@@ -54,7 +54,7 @@ export const SchemaRow = ({ uid, schema, resolver, revocable, timestamp }: Schem
     <TableCell>
       <HexLink content={resolver} />
     </TableCell>
-    <TableCell>{0}</TableCell>
+    {/* <TableCell>{0}</TableCell> */}
     <TableCell>{getRelativeTime(timestamp ?? 0)}</TableCell>
   </TableRow>
 );

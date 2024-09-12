@@ -1,11 +1,12 @@
 'use client';
 
+import { SchemaKeys } from '@/app/schema/config';
 import { useTxResult } from '@/states/useTxResult';
 import { EventQuery } from '@/tron/events';
 import { cx } from '@/utils/tools';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
 export const TxResult: IComponent = () => {
   const { visible, txHash, close } = useTxResult();
   const [count, setCount] = useState(0);
+  const queryClient = useQueryClient();
 
   const {
     data: events,
@@ -34,6 +36,13 @@ export const TxResult: IComponent = () => {
   });
 
   const isLoading = isFetching || (count < 5 && (!events || events.length === 0));
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: [SchemaKeys.Event],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Dialog open={visible}>
