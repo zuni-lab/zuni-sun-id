@@ -9,4 +9,5 @@ export const TableHeaders = [
 export const SchemaKeys = {
   Event: 'schemasEvent',
   Schema: 'schemasSchema',
+  TotalSchema: 'totalSchema',
 };

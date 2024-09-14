@@ -5,6 +5,18 @@ import { EventQuery } from '@/tron/events';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 
+let schemaContract: TronContract<typeof SCHEMA_REGISTRY_ABI> | null = null;
+
+const getchemaContract = async () => {
+  if (!schemaContract) {
+    schemaContract = await TronContract.new(
+      SCHEMA_REGISTRY_ABI,
+      ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
+    );
+  }
+
+  return schemaContract;
+};
 const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   const { data: events, isLoading: isEventLoading } = useQuery({
     queryKey: [SchemaKeys.Event],
@@ -12,25 +24,23 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
       return await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS,
         {
-          page, // Assuming currentPage is 1 for simplicity
+          page: 2, // Assuming currentPage is 1 for simplicity
           size: limit,
         }
       );
     },
     refetchOnMount: true,
+    refetchInterval: 3000,
   });
 
   const { data: items, isLoading: isFetching } = useQuery({
-    queryKey: [SchemaKeys.Schema, limit],
+    queryKey: [SchemaKeys.Schema, page],
     queryFn: async () => {
       if (!events) {
         return [];
       }
 
-      const contract = await TronContract.new(
-        SCHEMA_REGISTRY_ABI,
-        ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
-      );
+      const contract = await getchemaContract();
 
       const schemas: THexString[] = [];
       const timestamps: number[] = [];
@@ -59,6 +69,8 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         };
       });
     },
+    refetchInterval: 2000,
+    refetchOnMount: true,
     enabled: !!events && events.length > 0,
   });
 
@@ -66,6 +78,22 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
     items,
     isFetching: isFetching || isEventLoading,
   };
+};
+
+export const useCountSchemas = () => {
+  return useQuery({
+    queryKey: [SchemaKeys.TotalSchema],
+    queryFn: async () => {
+      const contract = await getchemaContract();
+
+      return await contract.call({
+        method: 'totalSchemas',
+        args: [],
+      });
+    },
+    refetchInterval: 2000,
+    refetchOnMount: true,
+  });
 };
 
 export default useSchemas;

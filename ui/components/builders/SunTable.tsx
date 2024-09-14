@@ -105,7 +105,10 @@ export const SunTable = <T,>({
         <div className="mt-4 flex justify-end gap-4 items-center border-t py-4">
           <span className="hidden sm:flex">
             {(pagination?.currentPage ?? 1) * maxItems - maxItems + 1} -{' '}
-            {(pagination?.currentPage ?? 1) * maxItems} / {pagination.totalItems}
+            {(pagination?.currentPage ?? 1) * maxItems > pagination.totalItems
+              ? pagination.totalItems
+              : (pagination?.currentPage ?? 1) * maxItems}{' '}
+            / {pagination.totalItems}
           </span>
           <PaginationButton
             // size={36}

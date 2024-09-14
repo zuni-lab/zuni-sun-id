@@ -38,11 +38,13 @@ export const TxResult: IComponent = () => {
   const isLoading = isFetching || (count < 5 && (!events || events.length === 0));
 
   useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: [SchemaKeys.Event],
-    });
+    if (events?.length) {
+      queryClient.invalidateQueries({
+        queryKey: [SchemaKeys.Event, SchemaKeys.Schema],
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [events?.length]);
 
   return (
     <Dialog open={visible}>
