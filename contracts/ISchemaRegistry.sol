@@ -13,6 +13,7 @@ struct SchemaField {
 /// @notice A struct representing a record for a submitted schema.
 struct SchemaRecord {
     bytes32 uid; // The unique identifier of the schema.
+    string name; // The name of the schema.
     ISchemaResolver resolver; // Optional schema resolver.
     bool revocable; // Whether the schema allows revocations explicitly.
     SchemaField[] schema; // Custom specification of the schema (e.g., an ABI).
@@ -27,11 +28,12 @@ interface ISchemaRegistry {
     event Registered(bytes32 indexed uid, address indexed registerer);
 
     /// @notice Submits and reserves a new schema
+    /// @param name The name of the schema.
     /// @param schema The schema data schema.
     /// @param resolver An optional schema resolver.
     /// @param revocable Whether the schema allows revocations explicitly.
     /// @return The UID of the new schema.
-    function register(SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
+    function register(string memory name, SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
         external
         returns (bytes32);
 
