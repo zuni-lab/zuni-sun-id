@@ -1,12 +1,10 @@
-import { ClaimRow } from '@/components/builders/RenderRow';
-import { SunTable } from '@/components/builders/SunTable';
 import { buttonVariants } from '@/components/shadcn/Button';
-import { MOCK_CLAIMS, MOCK_STATS } from '@/constants/mock';
+import { MOCK_STATS } from '@/constants/mock';
 import { AppRouter, RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { RecentSchemas } from './RecentSchemas';
-import { TableHeaders } from './schema/config';
+import { RecentCredentials } from './components/RecentCredentials';
+import { RecentSchemas } from './components/RecentSchemas';
 
 export const metadata: Metadata = RouterMeta.Home;
 
@@ -24,27 +22,11 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <Link className={buttonVariants()} href={`${AppRouter.Claim}/create`}>
-          Make claim
+        <Link className={buttonVariants()} href={`${AppRouter.Credential}/create`}>
+          Issue Credential
         </Link>
       </section>
-      <SunTable
-        title="Recent Claims"
-        columns={TableHeaders}
-        items={MOCK_CLAIMS}
-        renderRow={ClaimRow}
-        footerButton={
-          <Link
-            className={buttonVariants({
-              variant: 'link',
-              className: 'w-full',
-            })}
-            href={AppRouter.Claim}>
-            View all claims
-          </Link>
-        }
-      />
-
+      <RecentCredentials />
       <RecentSchemas />
     </main>
   );

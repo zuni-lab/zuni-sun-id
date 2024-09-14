@@ -7,7 +7,7 @@ import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import useSchemas from '@/hooks/useSchemas';
 import Link from 'next/link';
-import { TableHeaders } from './schema/config';
+import { SchemaTableHeaders } from '../schema/config';
 
 export const RecentSchemas: IComponent = () => {
   const { items, isFetching } = useSchemas({
@@ -18,14 +18,14 @@ export const RecentSchemas: IComponent = () => {
   return (
     <SunTable
       title="Recent Schemas"
-      columns={TableHeaders}
+      columns={SchemaTableHeaders}
       items={items ?? []}
       isLoading={isFetching}
       renderRow={SchemaRow}
       maxItems={ITEMS_PER_PAGE.HOME}
       renderRightTop={
         <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
-          Create schema
+          Create Schema
         </Link>
       }
       footerButton={

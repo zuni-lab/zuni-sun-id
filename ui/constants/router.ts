@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 export const AppRouter = {
   Home: '/',
   Schema: '/schema',
-  Claim: '/claim',
+  Credential: '/credential',
   Docs: '/docs',
 };
 
@@ -17,8 +17,8 @@ export const RouterMeta: Record<RouterKey, { title: string; description?: string
     description: 'View all SunID Schema',
     icon: null,
   },
-  Claim: {
-    title: 'Schema | View all SunID Credential',
+  Credential: {
+    title: 'Credential | View all SunID Credential',
     description: 'View all SunID Credential',
     icon: null,
   },
