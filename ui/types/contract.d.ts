@@ -5,6 +5,7 @@ type RegisterSchemaEvent = {
 
 type SchemaData = {
   uid: string;
+  name: string;
   resolver: string;
   revocable: boolean;
   schema: {

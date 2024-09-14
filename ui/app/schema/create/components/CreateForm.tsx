@@ -158,6 +158,7 @@ export const CreateSchemaForm: IComponent = () => {
           method: 'register',
           args: [
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            values[SchemaFieldKeys.Name] as string,
             schemaFields as [string, string, string][] as any,
             (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
               ('0x0000000000000000000000000000000000000000' as THexString),

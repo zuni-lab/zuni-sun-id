@@ -24,11 +24,12 @@ export const ClaimRow = ({ uuid, schemaId, from, to, type, time }: TClaim) => (
   </TableRow>
 );
 
-export const SchemaRow = ({ uid, schema, resolver, revocable, timestamp }: SchemaData) => (
+export const SchemaRow = ({ name, uid, schema, resolver, revocable /*timestamp*/ }: SchemaData) => (
   <TableRow key={uid}>
     <TableCell>
       <HexLink content={uid} />
     </TableCell>
+    <TableCell>{name}</TableCell>
     <TableCell className="w-120">
       <ul className="flex flex-wrap gap-3">
         {schema?.map(({ fieldName, fieldType }, index) => (
@@ -47,7 +48,6 @@ export const SchemaRow = ({ uid, schema, resolver, revocable, timestamp }: Schem
     <TableCell>
       <HexLink content={resolver} />
     </TableCell>
-    {/* <TableCell>{0}</TableCell> */}
-    <TableCell>{getRelativeTime(timestamp ?? 0)}</TableCell>
+    {/* <TableCell>{getRelativeTime(timestamp ?? 0)}</TableCell> */}
   </TableRow>
 );
