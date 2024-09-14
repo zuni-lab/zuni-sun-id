@@ -53,7 +53,7 @@ export class TronContract<TAbi extends Abi> {
   }): Promise<AbiParametersToPrimitiveTypes<abiFunction['outputs'], 'outputs'>> {
     try {
       const raw = await this.#contract[config.method](...config.args).call();
-      return raw as AbiParametersToPrimitiveTypes<abiFunction['outputs'], 'outputs'>;
+      return [raw] as AbiParametersToPrimitiveTypes<abiFunction['outputs'], 'outputs'>;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
