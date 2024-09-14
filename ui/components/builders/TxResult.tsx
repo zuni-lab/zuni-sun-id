@@ -1,6 +1,6 @@
 'use client';
 
-import { SchemaKeys } from '@/app/schema/config';
+import { QueryKeys } from '@/constants/configs';
 import { useTxResult } from '@/states/useTxResult';
 import { EventQuery } from '@/tron/events';
 import { cx } from '@/utils/tools';
@@ -40,7 +40,7 @@ export const TxResult: IComponent = () => {
   useEffect(() => {
     if (events?.length) {
       queryClient.invalidateQueries({
-        queryKey: [SchemaKeys.Event, SchemaKeys.Schema],
+        queryKey: [QueryKeys.Event, QueryKeys.Schema],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

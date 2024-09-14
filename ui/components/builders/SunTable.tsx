@@ -111,7 +111,6 @@ export const SunTable = <T,>({
             / {pagination.totalItems}
           </span>
           <PaginationButton
-            // size={36}
             page={pagination.currentPage ?? 1}
             totalPage={maxPage ?? 1}
             onChangePage={pagination.onPageChange}

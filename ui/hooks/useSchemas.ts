@@ -1,5 +1,5 @@
-import { SchemaKeys } from '@/app/schema/config';
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
+import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/events';
 import { ProjectENV } from '@env';
@@ -19,7 +19,7 @@ const getchemaContract = async () => {
 };
 const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   const { data: events, isLoading: isEventLoading } = useQuery({
-    queryKey: [SchemaKeys.Event],
+    queryKey: [QueryKeys.Event],
     queryFn: async () => {
       return await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS,
@@ -34,7 +34,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   });
 
   const { data: items, isLoading: isFetching } = useQuery({
-    queryKey: [SchemaKeys.Schema, page],
+    queryKey: [QueryKeys.Schema, page],
     queryFn: async () => {
       if (!events) {
         return [];
@@ -82,7 +82,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
 
 export const useCountSchemas = () => {
   return useQuery({
-    queryKey: [SchemaKeys.TotalSchema],
+    queryKey: [QueryKeys.TotalSchema],
     queryFn: async () => {
       const contract = await getchemaContract();
 

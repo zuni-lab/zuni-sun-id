@@ -16,3 +16,7 @@ interface IPageComponent<T = {}> extends IComponent<T> {
 type ISvgComponent<T = {}> = IComponent<ISvgComponentProps & T>;
 
 type TAny = ReturnType<JSON.values>;
+
+type TNextPage<T = unknown> = import('next').NextPage<{
+  params: T;
+}>;
