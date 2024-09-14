@@ -36,6 +36,11 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bytes32',
           },
           {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
+          },
+          {
             internalType: 'contract ISchemaResolver',
             name: 'resolver',
             type: 'address',
@@ -94,6 +99,11 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bytes32',
           },
           {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
+          },
+          {
             internalType: 'contract ISchemaResolver',
             name: 'resolver',
             type: 'address',
@@ -136,6 +146,79 @@ export const SCHEMA_REGISTRY_ABI = [
   },
   {
     inputs: [
+      {
+        internalType: 'uint256',
+        name: 'from',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'to',
+        type: 'uint256',
+      },
+    ],
+    name: 'getSchemasInRange',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
+          },
+          {
+            internalType: 'contract ISchemaResolver',
+            name: 'resolver',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            components: [
+              {
+                internalType: 'string',
+                name: 'fieldType',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldName',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldDescription',
+                type: 'string',
+              },
+            ],
+            internalType: 'struct SchemaField[]',
+            name: 'schema',
+            type: 'tuple[]',
+          },
+        ],
+        internalType: 'struct SchemaRecord[]',
+        name: '',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
       {
         components: [
           {
@@ -382,6 +465,82 @@ export const SUN_ID_ABI = [
       },
     ],
     name: 'getCredentials',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'schema',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint64',
+            name: 'time',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'expirationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'revocationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'refUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'issuer',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'data',
+            type: 'bytes[]',
+          },
+        ],
+        internalType: 'struct Credential[]',
+        name: '',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'from',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'to',
+        type: 'uint256',
+      },
+    ],
+    name: 'getCredentialsInRange',
     outputs: [
       {
         components: [
