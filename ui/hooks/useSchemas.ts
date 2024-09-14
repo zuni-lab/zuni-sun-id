@@ -1,7 +1,6 @@
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
-// import { EventQuery } from '@/tron/events';
 import { ProjectENV } from '@env';
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -21,21 +20,6 @@ const getchemaContract = async () => {
 const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   const { data: totalSchemas } = useCountSchemas();
 
-  // const { data: events, isLoading: isEventLoading } = useQuery({
-  //   queryKey: [QueryKeys.Event],
-  //   queryFn: async () => {
-  //     return await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
-  //       ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS,
-  //       {
-  //         page: 2, // Assuming currentPage is 1 for simplicity
-  //         size: limit,
-  //       }
-  //     );
-  //   },
-  //   refetchOnMount: true,
-  //   refetchInterval: 3000,
-  // });
-
   const {
     data: items,
     isLoading: isFetching,
@@ -43,17 +27,12 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   } = useQuery({
     queryKey: [QueryKeys.Schema, page],
     queryFn: async () => {
-      if (!totalSchemas) {
-        return [];
-      }
-
       const contract = await getchemaContract();
 
-      let from = totalSchemas - page * limit - 1;
-      let to = from + limit;
+      const to = totalSchemas - (page - 1) * limit;
+      let from = to - limit;
       if (from < 0) {
         from = 0;
-        to = totalSchemas;
       }
 
       const [result] = await contract.call({
@@ -77,9 +56,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         };
       });
     },
-    // refetchInterval: 2000,
-    // refetchOnMount: true,
-    // enabled: !!events && events.length > 0,
+    enabled: !!totalSchemas,
   });
 
   useEffect(() => {
@@ -90,6 +67,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
 
   return {
     items,
+    total: totalSchemas,
     isFetching: isFetching,
   };
 };
@@ -105,10 +83,11 @@ export const useCountSchemas = () => {
       });
       return result;
     },
-    refetchInterval: 10_000,
+    refetchInterval: 5000,
     refetchOnMount: true,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return { data: parseInt((data as any)?._hex, 16), refetch };
 };
 
