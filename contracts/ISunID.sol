@@ -85,6 +85,11 @@ interface ISunID {
     /// @return The credential data members.
     function getCredential(bytes32 uid) external view returns (Credential memory);
 
+    /// @notice Returns existing credentials by UIDs.
+    /// @param uid The UIDs of the credentials to retrieve.
+    /// @return List of credentials.
+    function getCredentials(bytes32[] memory uid) external view returns (Credential[] memory);
+
     /// @notice Checks whether an credential exists.
     /// @param uid The UID of the credential to retrieve.
     /// @return Whether an credential exists.
@@ -94,4 +99,7 @@ interface ISunID {
     /// @param data The data to query.
     /// @return The timestamp the data was timestamped with.
     function getRevokeOffchain(address revoker, bytes32 data) external view returns (uint64);
+
+    /// @notice Returns total number of credentials.
+    function totalCredentials() external view returns (uint256);
 }

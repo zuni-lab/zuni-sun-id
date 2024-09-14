@@ -2,26 +2,66 @@ export const SCHEMA_REGISTRY_ABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'bytes32', name: 'uid', type: 'bytes32' },
-      { indexed: false, internalType: 'address', name: 'registerer', type: 'address' },
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'registerer',
+        type: 'address',
+      },
     ],
     name: 'Registered',
     type: 'event',
   },
   {
-    inputs: [{ internalType: 'bytes32', name: 'uid', type: 'bytes32' }],
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'uid',
+        type: 'bytes32',
+      },
+    ],
     name: 'getSchema',
     outputs: [
       {
         components: [
-          { internalType: 'bytes32', name: 'uid', type: 'bytes32' },
-          { internalType: 'address', name: 'resolver', type: 'address' },
-          { internalType: 'bool', name: 'revocable', type: 'bool' },
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'contract ISchemaResolver',
+            name: 'resolver',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
           {
             components: [
-              { internalType: 'string', name: 'fieldType', type: 'string' },
-              { internalType: 'string', name: 'fieldName', type: 'string' },
-              { internalType: 'string', name: 'fieldDescription', type: 'string' },
+              {
+                internalType: 'string',
+                name: 'fieldType',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldName',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldDescription',
+                type: 'string',
+              },
             ],
             internalType: 'struct SchemaField[]',
             name: 'schema',
@@ -37,19 +77,49 @@ export const SCHEMA_REGISTRY_ABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'bytes32[]', name: 'uids', type: 'bytes32[]' }],
+    inputs: [
+      {
+        internalType: 'bytes32[]',
+        name: 'uids',
+        type: 'bytes32[]',
+      },
+    ],
     name: 'getSchemas',
     outputs: [
       {
         components: [
-          { internalType: 'bytes32', name: 'uid', type: 'bytes32' },
-          { internalType: 'address', name: 'resolver', type: 'address' },
-          { internalType: 'bool', name: 'revocable', type: 'bool' },
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'contract ISchemaResolver',
+            name: 'resolver',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
           {
             components: [
-              { internalType: 'string', name: 'fieldType', type: 'string' },
-              { internalType: 'string', name: 'fieldName', type: 'string' },
-              { internalType: 'string', name: 'fieldDescription', type: 'string' },
+              {
+                internalType: 'string',
+                name: 'fieldType',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldName',
+                type: 'string',
+              },
+              {
+                internalType: 'string',
+                name: 'fieldDescription',
+                type: 'string',
+              },
             ],
             internalType: 'struct SchemaField[]',
             name: 'schema',
@@ -68,36 +138,64 @@ export const SCHEMA_REGISTRY_ABI = [
     inputs: [
       {
         components: [
-          { internalType: 'string', name: 'fieldType', type: 'string' },
-          { internalType: 'string', name: 'fieldName', type: 'string' },
-          { internalType: 'string', name: 'fieldDescription', type: 'string' },
+          {
+            internalType: 'string',
+            name: 'fieldType',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'fieldName',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'fieldDescription',
+            type: 'string',
+          },
         ],
         internalType: 'struct SchemaField[]',
         name: 'schema',
         type: 'tuple[]',
       },
-      { internalType: 'address', name: 'resolver', type: 'address' },
-      { internalType: 'bool', name: 'revocable', type: 'bool' },
+      {
+        internalType: 'contract ISchemaResolver',
+        name: 'resolver',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'revocable',
+        type: 'bool',
+      },
     ],
     name: 'register',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalSchemas',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ] as const;
 
 export const SUN_ID_ABI = [
-  {
-    inputs: [
-      {
-        internalType: 'contract ISchemaRegistry',
-        name: 'registry',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
   {
     anonymous: false,
     inputs: [
@@ -278,6 +376,77 @@ export const SUN_ID_ABI = [
   {
     inputs: [
       {
+        internalType: 'bytes32[]',
+        name: 'uid',
+        type: 'bytes32[]',
+      },
+    ],
+    name: 'getCredentials',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'uid',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'schema',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint64',
+            name: 'time',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'expirationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'uint64',
+            name: 'revocationTime',
+            type: 'uint64',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'refUID',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'issuer',
+            type: 'address',
+          },
+          {
+            internalType: 'bool',
+            name: 'revocable',
+            type: 'bool',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'data',
+            type: 'bytes[]',
+          },
+        ],
+        internalType: 'struct Credential[]',
+        name: '',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'revoker',
         type: 'address',
@@ -411,7 +580,7 @@ export const SUN_ID_ABI = [
     inputs: [
       {
         internalType: 'bytes32',
-        name: 'data',
+        name: 'uid',
         type: 'bytes32',
       },
     ],
@@ -424,6 +593,19 @@ export const SUN_ID_ABI = [
       },
     ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalCredentials',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ] as const;

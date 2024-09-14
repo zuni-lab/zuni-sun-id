@@ -11,6 +11,9 @@ contract SchemaRegistry is ISchemaRegistry {
     mapping(bytes32 uid => SchemaRecord schemaRecord) private _registry;
 
     /// @inheritdoc ISchemaRegistry
+    uint256 public totalSchemas;
+
+    /// @inheritdoc ISchemaRegistry
     function register(SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
         external
         returns (bytes32)
@@ -27,6 +30,8 @@ contract SchemaRegistry is ISchemaRegistry {
         for (uint256 i = 0; i < schema.length; i++) {
             _registry[uid].schema.push(schema[i]);
         }
+
+        totalSchemas += 1;
 
         emit Registered(uid, msg.sender);
 
