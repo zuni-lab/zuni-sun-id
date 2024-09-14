@@ -55,8 +55,13 @@ input:focus {
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background  text-foreground;
+  }
+
+  hr {
+    @apply border-t border-gray-500 my-8;
   }
 }
 
@@ -115,8 +120,4 @@ h2.subtitle {
   font-size: 7.5rem;
   align-items: center;
   font-weight: 600;
-}
-
-hr {
-  @apply border-t border-gray-500 my-8;
 }

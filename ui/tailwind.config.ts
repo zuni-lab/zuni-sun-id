@@ -25,6 +25,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        conthrax: ['var(--conthrax-font)'],
+        mono: ['var(--mono-font)'],
+      },
       colors: {
         main: '#d6171a',
         border: 'hsl(var(--border))',

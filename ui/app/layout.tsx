@@ -1,9 +1,10 @@
 import './global.scss';
 
 import { Metadata } from 'next';
-import { Roboto_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Roboto_Mono, Nunito } from 'next/font/google';
 import 'react-toastify/dist/ReactToastify.css';
 
 import ProgressBarClient from '@/components/ProgressBar';
@@ -17,12 +18,19 @@ export async function generateStaticParams() {
   return [{ lang: 'en-US' }, { lang: 'vi-VN' }];
 }
 
-const robotoMono = Roboto_Mono({ subsets: ['latin'] });
+const nunito = Nunito({ subsets: ['latin'] });
+
+const robotoMono = Roboto_Mono({ subsets: ['latin'], variable: '--mono-font' });
+
+export const conthrax = localFont({
+  src: '../public/font/conthrax.otf',
+  variable: '--conthrax-font',
+});
 
 export const metadata: Metadata = {
-  description: 'Your DAPP description',
+  description: 'Bridging Real-Life Data and Blockchain on Tron 🌞',
   icons: '/favicon.ico',
-  title: 'ZUNI - DAPP',
+  title: 'SunID',
 };
 
 export default function RootLayout({
@@ -34,7 +42,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang={params.lang}>
-      <body className={`${robotoMono.className}`}>
+      <body className={`${nunito.className} ${conthrax.variable} ${robotoMono.variable}`}>
         <Suspense>
           <ProgressBarClient />
           <ToastContainer position="bottom-right" newestOnTop />

@@ -5,6 +5,7 @@ import TronWeb from 'tronweb';
 
 import { TronWebWithExt } from '@/types/tronWeb';
 import { createContext, memo, useContext } from 'react';
+import { ProjectENV } from '@env';
 
 const MOCK_PRIVATE_KEY = '0000000000000000000000000000000000000000000000000000000000000001';
 
@@ -15,7 +16,7 @@ const TronWebContext = createContext<TronWebWithExt | null>(null);
 const TronWebProvider: IComponent = ({ children }) => {
   if (globalTronWeb === null) {
     globalTronWeb = new TronWeb({
-      fullHost: 'https://api.shasta.trongrid.io',
+      fullHost: ProjectENV.NEXT_PUBLIC_TRON_PROVIDER,
       privateKey: MOCK_PRIVATE_KEY,
     });
 

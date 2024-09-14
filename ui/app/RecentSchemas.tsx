@@ -12,7 +12,7 @@ import { TableHeaders } from './schema/config';
 export const RecentSchemas: IComponent = () => {
   const { items, isFetching } = useSchemas({
     page: 1,
-    limit: ITEMS_PER_PAGE.SCHEMA,
+    limit: ITEMS_PER_PAGE.HOME,
   });
 
   return (
@@ -22,7 +22,7 @@ export const RecentSchemas: IComponent = () => {
       items={items ?? []}
       isLoading={isFetching}
       renderRow={SchemaRow}
-      maxItems={ITEMS_PER_PAGE.SCHEMA}
+      maxItems={ITEMS_PER_PAGE.HOME}
       renderRightTop={
         <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
           Create schema

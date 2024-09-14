@@ -59,7 +59,7 @@ export const SunTable = <T,>({
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium my-2 mb-4">{title}</h1>
+        <h1 className="font-medium my-2 mb-4 font-conthrax">{title}</h1>
         {renderRightTop}
       </div>
       <Table className="w-full">

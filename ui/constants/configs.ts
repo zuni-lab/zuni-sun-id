@@ -4,5 +4,5 @@ export type TAPP_NAME = 'SunID';
 
 export const ITEMS_PER_PAGE = {
   SCHEMA: 20,
-  HOME: 5,
+  HOME: 10,
 };
