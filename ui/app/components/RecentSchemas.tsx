@@ -7,7 +7,7 @@ import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import useSchemas from '@/hooks/useSchemas';
 import Link from 'next/link';
-import { SchemaTableHeaders } from '../schema/config';
+import { SchemaTableHeaders } from '../../constants/table';
 
 export const RecentSchemas: IComponent = () => {
   const { items, isFetching } = useSchemas({

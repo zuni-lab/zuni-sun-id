@@ -22,7 +22,7 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <Link className={buttonVariants()} href={`${AppRouter.Credential}/create`}>
+        <Link className={buttonVariants()} href={`${AppRouter.Credential}/issue`}>
           Issue Credential
         </Link>
       </section>

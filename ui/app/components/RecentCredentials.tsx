@@ -6,7 +6,7 @@ import { buttonVariants } from '@/components/shadcn/Button';
 import { MOCK_CLAIMS } from '@/constants/mock';
 import { AppRouter } from '@/constants/router';
 import Link from 'next/link';
-import { CredentialTableHeaders } from '../schema/config';
+import { CredentialTableHeaders } from '../../constants/table';
 
 export const RecentCredentials: IComponent = () => {
   return (
