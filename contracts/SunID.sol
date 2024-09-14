@@ -18,6 +18,9 @@ contract SunID is ISunID {
     // The global mapping between data and their revocation timestamps.
     mapping(address revoker => mapping(bytes32 data => uint64 timestamp) timestamps) private _revocationsOffchain;
 
+    /// @inheritdoc ISunID
+    uint256 public totalCredentials;
+
     /// @dev Creates a new SunID instance.
     /// @param registry The address of the global schema registry.
     constructor(ISchemaRegistry registry) {
@@ -87,6 +90,8 @@ contract SunID is ISunID {
             _refund(msg.value);
         }
 
+        totalCredentials += 1;
+
         emit Issued(request.recipient, issuer, uid, schemaUID);
 
         return uid;
@@ -142,6 +147,15 @@ contract SunID is ISunID {
     /// @inheritdoc ISunID
     function getCredential(bytes32 uid) external view returns (Credential memory) {
         return _db[uid];
+    }
+
+    /// @inheritdoc ISunID
+    function getCredentials(bytes32[] memory uids) external view returns (Credential[] memory) {
+        Credential[] memory credentials = new Credential[](uids.length);
+        for (uint256 i = 0; i < uids.length; i++) {
+            credentials[i] = _db[uids[i]];
+        }
+        return credentials;
     }
 
     /// @inheritdoc ISunID

@@ -42,6 +42,9 @@ interface ISchemaRegistry {
 
     /// @notice Returns multiple schemas by their UIDs
     /// @param uids The UIDs of the schemas to retrieve.
-    /// @return List of schema data members.
+    /// @return List of schema.
     function getSchemas(bytes32[] memory uids) external view returns (SchemaRecord[] memory);
+
+    /// @notice Returns total number of schemas.
+    function totalSchemas() external view returns (uint256);
 }
