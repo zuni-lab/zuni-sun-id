@@ -1,8 +1,11 @@
 type TClaim = {
-  uuid: THexString;
-  schemaId: number;
-  from: THexString;
-  to: THexString;
+  uid: THexString;
+  schema: {
+    id: number;
+    name: string;
+  };
+  issuer: THexString;
+  recipient: THexString;
   type: string; // TODO: define claim type
   time: number;
 };

@@ -60,3 +60,7 @@ const FLOAT_REGEX = /^[+-]?([0-9]*[.])?[0-9]+$/;
 export const isValidFloat = (val: string) => {
   return FLOAT_REGEX.test(val);
 };
+
+export const hexToNumber = (hex: bigint | undefined) => {
+  return hex ? parseInt((hex as any)._hex, 16) : 0;
+};
