@@ -37,11 +37,8 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
           name: r.name,
           resolver: r.resolver,
           revocable: r.revocable,
-          definition: definition.map((field) => ({
-            fieldType: field.fieldType,
-            fieldName: field.fieldName,
-          })),
-        } as SchemaData;;
+          definition,
+        } as SchemaData;
       });
     },
     enabled: !!totalSchemas,
@@ -89,16 +86,17 @@ export const useDetailSchema = (schemaId: THexString) => {
         args: [schemaId],
       });
 
+      const definition = result.schema.split(',').map((field) => {
+        const [fieldType, fieldName] = field.split(' ');
+        return { fieldType, fieldName };
+      });
+
       return {
         uid: result.uid,
         name: result.name,
         resolver: result.resolver,
         revocable: result.revocable,
-        definition: result.schema.map((field) => ({
-          fieldType: field.fieldType,
-          fieldName: field.fieldName,
-          fieldDescription: field.fieldDescription,
-        })),
+        definition,
         // timestamp: timestamps[index] / 1000,
         timestamp: 10000000,
       } as SchemaData;
