@@ -12,14 +12,22 @@ contract SunID is ISunID {
     // The global schema registry.
     ISchemaRegistry private immutable _schemaRegistry;
 
+    struct EnumerableCredential {
+        Credential credential;
+        uint256 index;
+    }
+
     // The global mapping between credentials and their UIDs.
-    mapping(bytes32 uid => Credential credential) private _db;
+    mapping(bytes32 uid => EnumerableCredential credential) private _db;
 
     // The global mapping between data and their revocation timestamps.
     mapping(address revoker => mapping(bytes32 data => uint64 timestamp) timestamps) private _revocationsOffchain;
 
-    /// @inheritdoc ISunID
-    uint256 public totalCredentials;
+    // The global list of all credential UIDs.
+    bytes32[] private _credentialUIDs;
+
+    bytes32 internal constant EMPTY_UID = 0;
+    uint64 internal constant NO_EXPIRATION_TIME = 0;
 
     /// @dev Creates a new SunID instance.
     /// @param registry The address of the global schema registry.
@@ -39,16 +47,22 @@ contract SunID is ISunID {
 
         // Ensure that we aren't attempting to credential to a non-existing schema.
         SchemaRecord memory schemaRecord = _schemaRegistry.getSchema(schemaUID);
-        require(schemaRecord.uid != 0, "Empty schema");
+        if (schemaRecord.uid == EMPTY_UID) revert SchemaNotFound();
 
         // Ensure that either no expiration time was set or that it was set in the future.
-        require(request.expirationTime != 0 && request.expirationTime <= _time(), "Invalid expiration time");
+        if (request.expirationTime != NO_EXPIRATION_TIME && request.expirationTime <= _time()) {
+            revert InvalidExpirationTime();
+        }
 
         // Ensure that we aren't trying to make a revocable credential for a non-revocable schema.
-        require(!schemaRecord.revocable && request.revocable, "Irrevocable schema");
+        if (!schemaRecord.revocable && request.revocable) {
+            revert Irrevocable();
+        }
 
         // Ensure that the data length matches the schema length.
-        require(schemaRecord.schema.length == request.data.length, "Invalid data length");
+        if (schemaRecord.schema.length != request.data.length) {
+            revert LengthMismatch();
+        }
 
         Credential memory credential = Credential({
             uid: 0,
@@ -68,7 +82,7 @@ contract SunID is ISunID {
         uint32 bump = 0;
         while (true) {
             uid = _getUID(credential, bump);
-            if (_db[uid].uid == 0) {
+            if (_db[uid].credential.uid == 0) {
                 break;
             }
 
@@ -78,19 +92,22 @@ contract SunID is ISunID {
         }
         credential.uid = uid;
 
-        _db[uid] = credential;
+        _db[uid].credential = credential;
+        _db[uid].index = _credentialUIDs.length;
+        _credentialUIDs.push(uid);
 
-        // Ensure that we aren't trying to credential to a non-existing referenced UID.
-        require(request.refUID == 0 || isCredentialValid(request.refUID), "Invalid ref UID");
+        if (request.refUID != EMPTY_UID && !isCredentialValid(request.refUID)) {
+            revert InvalidRefCredential();
+        }
 
-        if (address(schemaRecord.resolver) != address(0)) {
-            bool success = ISchemaResolver(schemaRecord.resolver).issue{value: msg.value}(credential);
-            require(success, "Resolver issue failed");
+        if (
+            address(schemaRecord.resolver) != address(0)
+                && !ISchemaResolver(schemaRecord.resolver).issue{value: msg.value}(credential)
+        ) {
+            revert ResolverFailed();
         } else {
             _refund(msg.value);
         }
-
-        totalCredentials += 1;
 
         emit Issued(request.recipient, issuer, uid, schemaUID);
 
@@ -104,30 +121,33 @@ contract SunID is ISunID {
 
         // Ensure that a non-existing schema ID wasn't passed by accident.
         SchemaRecord memory schemaRecord = _schemaRegistry.getSchema(schemaUID);
-        require(schemaRecord.uid != 0, "Empty schema");
+        if (schemaRecord.uid == EMPTY_UID) revert SchemaNotFound();
 
-        Credential storage credential = _db[request.credentialUID];
+        Credential memory credential = _db[request.credentialUID].credential;
 
         // Ensure that we aren't attempting to revoke a non-existing credential.
-        require(credential.uid != 0, "Empty credential");
+        if (credential.uid == EMPTY_UID) revert CredentialNotFound();
 
         // Ensure that a wrong schema ID wasn't passed by accident.
-        require(credential.schema == schemaUID, "Schema mismatch");
+        if (credential.schema != schemaUID) revert SchemaMismatch();
 
         // Allow only original issuers to revoke their credentials.
-        require(credential.issuer == revoker, "Unauthorized revoker");
+        if (credential.issuer != revoker) revert UnauthorizedRevocation();
 
         // Please note that also checking of the schema itself is revocable is unnecessary, since it's not possible to
         // make revocable credentials to an irrevocable schema.
-        require(!credential.revocable, "Irrevocable credential");
+        if (!credential.revocable) revert Irrevocable();
 
         // Ensure that we aren't trying to revoke the same credential twice.
-        require(credential.revocationTime == 0, "Already revoked");
-        credential.revocationTime = _time();
+        if (credential.revocationTime != 0) revert AlreadyRevoked();
 
-        if (address(schemaRecord.resolver) != address(0)) {
-            bool success = ISchemaResolver(schemaRecord.resolver).revoke{value: msg.value}(credential);
-            require(success, "Resolver issue failed");
+        _db[request.credentialUID].credential.revocationTime = _time();
+
+        if (
+            address(schemaRecord.resolver) != address(0)
+                && !ISchemaResolver(schemaRecord.resolver).revoke{value: msg.value}(credential)
+        ) {
+            revert ResolverFailed();
         } else {
             _refund(msg.value);
         }
@@ -146,26 +166,40 @@ contract SunID is ISunID {
 
     /// @inheritdoc ISunID
     function getCredential(bytes32 uid) external view returns (Credential memory) {
-        return _db[uid];
+        return _db[uid].credential;
     }
 
     /// @inheritdoc ISunID
     function getCredentials(bytes32[] memory uids) external view returns (Credential[] memory) {
         Credential[] memory credentials = new Credential[](uids.length);
         for (uint256 i = 0; i < uids.length; i++) {
-            credentials[i] = _db[uids[i]];
+            credentials[i] = _db[uids[i]].credential;
+        }
+        return credentials;
+    }
+
+    /// @inheritdoc ISunID
+    function getCredentialsInRange(uint256 from, uint256 to) external view returns (Credential[] memory) {
+        Credential[] memory credentials = new Credential[](to - from);
+        for (uint256 i = from; i < to; i++) {
+            credentials[i - from] = _db[_credentialUIDs[i]].credential;
         }
         return credentials;
     }
 
     /// @inheritdoc ISunID
     function isCredentialValid(bytes32 uid) public view returns (bool) {
-        return _db[uid].uid != 0;
+        return _db[uid].credential.uid != 0;
     }
 
     /// @inheritdoc ISunID
     function getRevokeOffchain(address revoker, bytes32 data) external view returns (uint64) {
         return _revocationsOffchain[revoker][data];
+    }
+
+    /// @inheritdoc ISunID
+    function totalCredentials() external view returns (uint256) {
+        return _credentialUIDs.length;
     }
 
     /// @dev Calculates a UID for a given credential.
@@ -193,12 +227,11 @@ contract SunID is ISunID {
     function _refund(uint256 remainingValue) private {
         if (remainingValue > 0) {
             (bool success,) = msg.sender.call{value: remainingValue}("");
-            require(success, "Refund failed");
+            require(success);
         }
     }
 
-    /// @dev Returns the current's block timestamp. This method is overridden during tests and used to simulate the
-    ///     current block time.
+    /// @dev Returns the current's block timestamp.
     function _time() private view returns (uint64) {
         return uint64(block.timestamp);
     }
@@ -210,7 +243,9 @@ contract SunID is ISunID {
     function _revokeOffchain(address revoker, bytes32 data, uint64 time) private {
         mapping(bytes32 data => uint64 timestamp) storage revocations = _revocationsOffchain[revoker];
 
-        require(revocations[data] == 0, "Already revoked offchain");
+        if (revocations[data] != 0) {
+            revert AlreadyRevokedOffchain();
+        }
         revocations[data] = time;
 
         emit RevokedOffchain(revoker, data, time);

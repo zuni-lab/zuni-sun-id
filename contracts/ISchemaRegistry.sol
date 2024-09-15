@@ -12,6 +12,7 @@ struct SchemaField {
 
 /// @notice A struct representing a record for a submitted schema.
 struct SchemaRecord {
+    uint256 id; // The index of the schema.
     bytes32 uid; // The unique identifier of the schema.
     string name; // The name of the schema.
     ISchemaResolver resolver; // Optional schema resolver.
@@ -46,6 +47,12 @@ interface ISchemaRegistry {
     /// @param uids The UIDs of the schemas to retrieve.
     /// @return List of schema.
     function getSchemas(bytes32[] memory uids) external view returns (SchemaRecord[] memory);
+
+    /// @notice Returns multiple schemas by their indexes
+    /// @param from The index to start from.
+    /// @param to The index to end at.
+    /// @return List of schemas in the specified range.
+    function getSchemasInRange(uint256 from, uint256 to) external view returns (SchemaRecord[] memory);
 
     /// @notice Returns total number of schemas.
     function totalSchemas() external view returns (uint256);

@@ -37,6 +37,39 @@ struct RevocationRequest {
 /// @title ISunID
 /// @notice SunID - Ethereum credential Service interface.
 interface ISunID {
+    /// @notice Throws if the credential has already been revoked on-chain.
+    error AlreadyRevoked();
+
+    /// @notice Throws if the credential has already been revoked off-chain.
+    error AlreadyRevokedOffchain();
+
+    /// @notice Throws if the credential does not exist.
+    error CredentialNotFound();
+
+    /// @notice Throws if expiration time of the credential is invalid.
+    error InvalidExpirationTime();
+
+    /// @notice Throws if the credential is irrevocable.
+    error Irrevocable();
+
+    /// @notice Throws if the credential reference does not exist.
+    error InvalidRefCredential();
+
+    /// @notice Throws if the credential data length does not match the schema.
+    error LengthMismatch();
+
+    /// @notice Throws if failed to call the schema resolver.
+    error ResolverFailed();
+
+    /// @notice Throws if the schema requested does not match the schema of the credential.
+    error SchemaMismatch();
+
+    /// @notice Throws if the schema does not exist.
+    error SchemaNotFound();
+
+    /// @notice Throws if revoker is not issuer of the credential.
+    error UnauthorizedRevocation();
+
     /// @notice Emitted when an credential has been made.
     /// @param recipient The recipient of the credential.
     /// @param issuer The issuing account.
@@ -89,6 +122,12 @@ interface ISunID {
     /// @param uid The UIDs of the credentials to retrieve.
     /// @return List of credentials.
     function getCredentials(bytes32[] memory uid) external view returns (Credential[] memory);
+
+    /// @notice Returns existing credentials by indexes.
+    /// @param from The index to start from.
+    /// @param to The index to end at.
+    /// @return List of credentials in the specified range.
+    function getCredentialsInRange(uint256 from, uint256 to) external view returns (Credential[] memory);
 
     /// @notice Checks whether an credential exists.
     /// @param uid The UID of the credential to retrieve.

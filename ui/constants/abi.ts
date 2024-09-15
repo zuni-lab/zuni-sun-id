@@ -31,6 +31,11 @@ export const SCHEMA_REGISTRY_ABI = [
       {
         components: [
           {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+          },
+          {
             internalType: 'bytes32',
             name: 'uid',
             type: 'bytes32',
@@ -93,6 +98,11 @@ export const SCHEMA_REGISTRY_ABI = [
     outputs: [
       {
         components: [
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+          },
           {
             internalType: 'bytes32',
             name: 'uid',
@@ -161,6 +171,11 @@ export const SCHEMA_REGISTRY_ABI = [
     outputs: [
       {
         components: [
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+          },
           {
             internalType: 'bytes32',
             name: 'uid',
@@ -279,6 +294,61 @@ export const SCHEMA_REGISTRY_ABI = [
 ] as const;
 
 export const SUN_ID_ABI = [
+  {
+    inputs: [],
+    name: 'AlreadyRevoked',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'AlreadyRevokedOffchain',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'CredentialNotFound',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidExpirationTime',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'InvalidRefCredential',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'Irrevocable',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'LengthMismatch',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'ResolverFailed',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SchemaMismatch',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'SchemaNotFound',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'UnauthorizedRevocation',
+    type: 'error',
+  },
   {
     anonymous: false,
     inputs: [
