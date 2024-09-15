@@ -22,7 +22,7 @@ export const useTxInfo = (txHash: string | undefined, maxRetries: number) => {
         }
       ).then((res) => res.json());
     },
-    refetchInterval: 10_000,
+    refetchInterval: 5000,
     enabled: !!txHash && count < maxRetries,
   });
 

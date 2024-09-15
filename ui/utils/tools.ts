@@ -62,5 +62,6 @@ export const isValidFloat = (val: string) => {
 };
 
 export const hexToNumber = (hex: bigint | undefined) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return hex ? parseInt((hex as any)._hex, 16) : 0;
 };

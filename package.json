@@ -16,6 +16,5 @@
   "workspaces": [
     "ui",
     "packages/*"
-  ],
-  "dependencies": { "@radix-ui/react-dialog": "^1.1.1", "abitype": "^1.0.6", "zustand": "^4.5.5" }
+  ]
 }

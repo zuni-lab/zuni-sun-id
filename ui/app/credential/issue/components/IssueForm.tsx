@@ -11,22 +11,25 @@ import {
 } from '@/shadcn/Form';
 import { Input } from '@/shadcn/Input';
 
+import { AccountConnect } from '@/components/account/AccountConnect';
 import { HexLink } from '@/components/builders/HexLink';
+import { Button } from '@/components/shadcn/Button';
+import { Switch } from '@/components/shadcn/Switch';
 import { globalTronWeb, useTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
+import { useTxResult } from '@/states/useTxResult';
+import { getCredentialContract } from '@/tron/contract';
 import { getValidationSchema } from '@/utils/schema';
 import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
+import { Loader } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AccountConnect } from '@/components/account/AccountConnect';
-import { Button } from '@/components/shadcn/Button';
-import { Loader } from 'lucide-react';
 
 type TCredentialInput<T extends string = TAPP_NAME> =
   | `${T}_Recipient`
@@ -70,7 +73,7 @@ const baseDefaultValues = {
   [CredentialFieldKeys.Recipient]: '',
   [CredentialFieldKeys.Expiration]: '',
   [CredentialFieldKeys.RefUID]: '',
-  [CredentialFieldKeys.Revocable]: true,
+  [CredentialFieldKeys.Revocable]: false,
 };
 
 const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
@@ -79,7 +82,7 @@ const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
   definitions.forEach((d) => {
     result = {
       ...result,
-      [d.fieldName]: d.fieldType === 'bool' ? false : '',
+      [d.fieldName]: d.fieldType === 'bool' ? true : '',
     };
   });
 
@@ -92,7 +95,7 @@ export const IssueCredentialForm: IComponent<{
   const { connected } = useWallet();
   const tronweb = useTronWeb();
 
-  // const { open: openTxResult } = useTxResult();
+  const { open: openTxResult } = useTxResult();
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -112,7 +115,7 @@ export const IssueCredentialForm: IComponent<{
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
     if (connected && window.tronWeb) {
-      // const contract = await getCredentialContract();
+      const contract = await getCredentialContract();
 
       const dataTypes: string[] = [];
       const dataValues: unknown[] = [];
@@ -122,17 +125,47 @@ export const IssueCredentialForm: IComponent<{
         dataValues.push(values[field.fieldName]);
       });
       const rawData = tronweb.utils.abi.encodeParams(dataTypes, dataValues);
-      console.log(rawData);
 
-      //   ToastTemplate.Schema.Submit(tx);
-      //   setSubmitting(false);
-      //   openTxResult(tx);
-      //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // } catch (error: any) {
-      //   console.error(error);
-      //   ToastTemplate.Schema.SubmitError();
-      //   setSubmitting(false);
-      // }
+      const expiration = values[CredentialFieldKeys.Expiration]
+        ? new Date(values[CredentialFieldKeys.Expiration] as string).getTime() / 1000
+        : 2 ** 32 - 1;
+
+      const recipient =
+        (values[CredentialFieldKeys.Recipient] as string).length > 0
+          ? values[CredentialFieldKeys.Recipient]
+          : '0x' + ''.padEnd(40, '0');
+
+      const refUID = values[CredentialFieldKeys.RefUID]
+        ? values[CredentialFieldKeys.RefUID]
+        : '0x' + ''.padEnd(64, '0');
+
+      const args = [
+        data.uid,
+        recipient,
+        expiration,
+        values[CredentialFieldKeys.Revocable],
+        refUID,
+        rawData,
+      ];
+
+      console.log('args', args);
+
+      try {
+        const tx = await contract.send({
+          method: 'issue',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          args: [args] as any,
+        });
+
+        ToastTemplate.Schema.Submit(tx);
+        setSubmitting(false);
+        openTxResult(tx);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        console.error(error);
+        ToastTemplate.Schema.SubmitError();
+        setSubmitting(false);
+      }
       return;
     }
 
@@ -154,7 +187,7 @@ export const IssueCredentialForm: IComponent<{
       name: TCredentialInput;
       placeholder: string;
       label?: string | React.ReactNode;
-      type?: 'text';
+      type?: 'text' | 'datetime-local';
       className?: string;
       containerClassName?: string;
       required?: boolean;
@@ -162,6 +195,7 @@ export const IssueCredentialForm: IComponent<{
     }) => {
       return (
         <FormField
+          key={name}
           control={control}
           name={name}
           render={({ field }) => (
@@ -220,124 +254,96 @@ export const IssueCredentialForm: IComponent<{
           required: false,
         })}
 
-        {data.definition.map((field) => {
-          if (field.fieldType === 'bool') {
-            return <>booool</>;
+        {data.definition.map((d) => {
+          if (d.fieldType === 'bool') {
+            return (
+              <FormField
+                key={d.fieldName}
+                control={control}
+                name={d.fieldType}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>
+                      <span className="pr-1">
+                        <span className="uppercase font-bold">{d.fieldName}</span> |{' '}
+                        <span className="lowercase text-muted-foreground">{d.fieldType}</span>
+                      </span>
+                    </FormLabel>
+                    <div className="flex items-center justify-between bg-gray-800/80 border-2 py-4 px-6 rounded-full w-1/4 border-gray-500">
+                      <span>No</span>
+                      <FormControl>
+                        <Switch
+                          checked={field.value as boolean}
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-blue-500"
+                        />
+                      </FormControl>
+                      <span>Yes</span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            );
           }
           return renderInputField({
-            name: field.fieldName as TCredentialInput,
+            name: d.fieldName as TCredentialInput,
             label: (
-              <p className="uppercase">
-                <span>{field.fieldName}</span>
-              </p>
+              <span className="pr-1">
+                <span className="uppercase font-bold">{d.fieldName}</span> |{' '}
+                <span className="lowercase text-muted-foreground">{d.fieldType}</span>
+              </span>
             ),
             placeholder: "Enter field's value",
-            required: true,
+            required: false,
           });
         })}
 
-        {/* {renderInputField({
-          name: SchemaFieldKeys.Description as TSchemaInput<TAPP_NAME>,
-          label: 'Description',
-          placeholder: 'The description of the vault',
-          required: false,
-        })} */}
+        <div className="px-6 pb-8 pt-6 bg-muted rounded-lg space-y-4 my-4">
+          <h2 className="text-xl text-white font-semibold text-center">Advanced options</h2>
+          {renderInputField({
+            name: CredentialFieldKeys.Expiration as TCredentialInput,
+            label: 'Expiration',
+            type: 'datetime-local',
+            placeholder: 'Set the expiration date for the credential',
+            required: false,
+          })}
 
-        {/* <div className="space-y-3">
-          <FormLabel required>Schema declaration: </FormLabel>
-          <div className="space-y-3">
-            {fields.map((item, index) => {
-              return (
-                <div
-                  key={item.key}
-                  className="flex justify-between p-4 bg-muted-foreground gap-4 rounded-lg">
-                  <FormField
-                    control={control}
-                    name={SchemaDeclareTypeKey(index)}
-                    render={({ field }) => (
-                      <FormItem className="w-1/5">
-                        <Select onValueChange={field.onChange} defaultValue={field.value as string}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.values(DataTypes).map((v, index) => (
-                              <SelectItem
-                                key={index}
-                                value={v}
-                                className="border-b border-gray-500">
-                                {v}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {renderInputField({
-                    name: SchemaDeclareTokenKey(index) as TSchemaInput<TAPP_NAME>,
-                    placeholder: 'Enter field name',
-                    containerClassName: 'grow space-y-0',
-                  })}
-                  {renderInputField({
-                    name: SchemaDeclareDescKey(index) as TSchemaInput<TAPP_NAME>,
-                    placeholder: 'Enter field description',
-                    containerClassName: 'grow space-y-0',
-                  })}
-                  <Button
-                    disabled={fields.length === 1}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleRemoveField(index)}>
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
+          {renderInputField({
+            name: CredentialFieldKeys.RefUID as TCredentialInput,
+            label: 'Ref UID',
+            placeholder: 'The UID of the reference credential, etc: 0x...',
+            required: false,
+          })}
+
+          <FormField
+            control={control}
+            name={CredentialFieldKeys.Revocable}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="uppercase">Revocable</FormLabel>
+                <FormMessage>
+                  {/* {field.value ? 'The credential is revocable' : 'The credential is not revocable'} */}
+                  {!data.revocable
+                    ? 'The credential is not revocable because the schema configuration does not allow it.'
+                    : field.value
+                      ? 'The credential is revocable.'
+                      : 'The credential is not revocable.'}
+                </FormMessage>
+                <div className="flex items-center justify-between bg-black px-6 py-4 rounded-lg w-1/3 text-xl font-semibold">
+                  <span>No</span>
+                  <FormControl>
+                    <Switch
+                      checked={field.value as boolean}
+                      onCheckedChange={field.onChange}
+                      disabled={!data.revocable}
+                    />
+                  </FormControl>
+                  <span>Yes</span>
                 </div>
-              );
-            })}
-            <Button
-              type="button"
-              variant="secondary"
-              size={'sm'}
-              onClick={handleAddField}
-              className="mt-2 px-4 py-5">
-              <PlusIcon className="w-4 h-4 mr-1" />
-              Add field
-            </Button>
-          </div>
-          <FormMessage>
-            {form.formState.errors?.[SchemaFieldKeys.DeclareStmts]?.root?.message
-              ? form.formState.errors?.[SchemaFieldKeys.DeclareStmts]?.root?.message
-              : form.formState.errors?.[SchemaFieldKeys.DeclareStmts]?.message || ''}
-          </FormMessage>
+              </FormItem>
+            )}
+          />
         </div>
-        {renderInputField({
-          name: SchemaFieldKeys.ResolverAddress as TSchemaInput<TAPP_NAME>,
-          label: 'Resolver address',
-          placeholder: 'The address of the resolver, eg: 0x...',
-          description:
-            'An optional smart contract address that will be executed before the schema is created',
-          required: false,
-        })}
-
-        <FormField
-          control={control}
-          name={SchemaFieldKeys.Revocable as TSchemaInput<TAPP_NAME>}
-          render={({ field }) => (
-            <FormItem className="flex items-center rounded-lg border p-4 w-fit bg-black gap-8">
-              <FormLabel>Revocable</FormLabel>
-              <div className="flex items-center gap-4 !mt-0">
-                <span>No</span>
-                <FormControl>
-                  <Switch checked={field.value as boolean} onCheckedChange={field.onChange} />
-                </FormControl>
-                <span>Yes</span>
-              </div>
-            </FormItem>
-          )}
-        /> */}
 
         <div className="flex items-center justify-center !mt-4">
           {!connected && <AccountConnect />}

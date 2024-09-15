@@ -112,7 +112,6 @@ export const CreateSchemaForm: IComponent = () => {
       [SchemaFieldKeys.DeclareStmts]: Array.from({ length: 2 }).map(() => ({
         token: '',
         type: '',
-        // desc: '',
       })),
     },
   });
