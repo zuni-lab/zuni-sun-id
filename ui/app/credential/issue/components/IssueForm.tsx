@@ -236,7 +236,7 @@ export const IssueCredentialForm: IComponent<{
                 <span>{field.fieldName}</span>
               </p>
             ),
-            placeholder: field.fieldDescription,
+            placeholder: "Enter field's value",
             required: true,
           });
         })}

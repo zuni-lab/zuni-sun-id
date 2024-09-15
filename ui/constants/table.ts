@@ -9,7 +9,7 @@ export const SchemaTableHeaders = [
 
 export const CredentialTableHeaders = [
   {
-    label: 'UUID',
+    label: 'UID',
     className: 'w-40',
   },
   {
@@ -17,11 +17,11 @@ export const CredentialTableHeaders = [
     className: '',
   },
   {
-    label: 'From',
+    label: 'Issuer',
     className: 'w-40',
   },
   {
-    label: 'To',
+    label: 'Recipient',
     className: 'w-40',
   },
   {
