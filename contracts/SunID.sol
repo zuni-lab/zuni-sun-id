@@ -59,11 +59,6 @@ contract SunID is ISunID {
             revert Irrevocable();
         }
 
-        // Ensure that the data length matches the schema length.
-        if (schemaRecord.schema.length != request.data.length) {
-            revert LengthMismatch();
-        }
-
         Credential memory credential = Credential({
             uid: 0,
             schema: schemaUID,
@@ -216,7 +211,7 @@ contract SunID is ISunID {
                 credential.expirationTime,
                 credential.revocable,
                 credential.refUID,
-                abi.encode(credential.data),
+                credential.data,
                 bump
             )
         );

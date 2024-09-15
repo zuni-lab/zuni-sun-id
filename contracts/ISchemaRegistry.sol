@@ -4,12 +4,6 @@ pragma solidity ^0.8.0;
 
 import {ISchemaResolver} from "./ISchemaResolver.sol";
 
-struct SchemaField {
-    string fieldType;
-    string fieldName;
-    string fieldDescription;
-}
-
 /// @notice A struct representing a record for a submitted schema.
 struct SchemaRecord {
     uint256 id; // The index of the schema.
@@ -17,7 +11,7 @@ struct SchemaRecord {
     string name; // The name of the schema.
     ISchemaResolver resolver; // Optional schema resolver.
     bool revocable; // Whether the schema allows revocations explicitly.
-    SchemaField[] schema; // Custom specification of the schema (e.g., an ABI).
+    string schema; // Custom specification of the schema (e.g., an ABI).
 }
 
 /// @title ISchemaRegistry
@@ -34,7 +28,7 @@ interface ISchemaRegistry {
     /// @param resolver An optional schema resolver.
     /// @param revocable Whether the schema allows revocations explicitly.
     /// @return The UID of the new schema.
-    function register(string memory name, SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
+    function register(string memory name, string calldata schema, ISchemaResolver resolver, bool revocable)
         external
         returns (bytes32);
 

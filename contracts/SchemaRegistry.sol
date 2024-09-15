@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ISchemaRegistry, SchemaRecord, SchemaField} from "./ISchemaRegistry.sol";
+import {ISchemaRegistry, SchemaRecord} from "./ISchemaRegistry.sol";
 import {ISchemaResolver} from "./ISchemaResolver.sol";
 
 /// @title SchemaRegistry
@@ -14,7 +14,7 @@ contract SchemaRegistry is ISchemaRegistry {
     bytes32[] private _schemaUIDs;
 
     /// @inheritdoc ISchemaRegistry
-    function register(string memory name, SchemaField[] memory schema, ISchemaResolver resolver, bool revocable)
+    function register(string memory name, string memory schema, ISchemaResolver resolver, bool revocable)
         external
         returns (bytes32)
     {
@@ -24,16 +24,8 @@ contract SchemaRegistry is ISchemaRegistry {
 
         bytes32 uid = _getUID(schemaRecord);
 
-        SchemaRecord storage record = _registry[uid];
-        record.id = id;
-        record.uid = uid;
-        record.name = name;
-        record.resolver = resolver;
-        record.revocable = revocable;
-        for (uint256 i = 0; i < schema.length; i++) {
-            record.schema.push(schema[i]);
-        }
-
+        schemaRecord.uid = uid;
+        _registry[uid] = schemaRecord;
         _schemaUIDs.push(uid);
 
         emit Registered(uid, msg.sender);
@@ -73,7 +65,8 @@ contract SchemaRegistry is ISchemaRegistry {
     /// @param schemaRecord The input schema.
     /// @return schema UID.
     function _getUID(SchemaRecord memory schemaRecord) private pure returns (bytes32) {
-        return keccak256(abi.encode(schemaRecord.schema, schemaRecord.resolver, schemaRecord.revocable));
+        return
+            keccak256(abi.encode(schemaRecord.name, schemaRecord.schema, schemaRecord.resolver, schemaRecord.revocable));
     }
 
     /// @dev Returns the current's block timestamp.

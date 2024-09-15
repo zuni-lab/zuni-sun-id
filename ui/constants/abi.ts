@@ -56,26 +56,9 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bool',
           },
           {
-            components: [
-              {
-                internalType: 'string',
-                name: 'fieldType',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldName',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldDescription',
-                type: 'string',
-              },
-            ],
-            internalType: 'struct SchemaField[]',
+            internalType: 'string',
             name: 'schema',
-            type: 'tuple[]',
+            type: 'string',
           },
         ],
         internalType: 'struct SchemaRecord',
@@ -124,26 +107,9 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bool',
           },
           {
-            components: [
-              {
-                internalType: 'string',
-                name: 'fieldType',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldName',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldDescription',
-                type: 'string',
-              },
-            ],
-            internalType: 'struct SchemaField[]',
+            internalType: 'string',
             name: 'schema',
-            type: 'tuple[]',
+            type: 'string',
           },
         ],
         internalType: 'struct SchemaRecord[]',
@@ -197,26 +163,9 @@ export const SCHEMA_REGISTRY_ABI = [
             type: 'bool',
           },
           {
-            components: [
-              {
-                internalType: 'string',
-                name: 'fieldType',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldName',
-                type: 'string',
-              },
-              {
-                internalType: 'string',
-                name: 'fieldDescription',
-                type: 'string',
-              },
-            ],
-            internalType: 'struct SchemaField[]',
+            internalType: 'string',
             name: 'schema',
-            type: 'tuple[]',
+            type: 'string',
           },
         ],
         internalType: 'struct SchemaRecord[]',
@@ -235,26 +184,9 @@ export const SCHEMA_REGISTRY_ABI = [
         type: 'string',
       },
       {
-        components: [
-          {
-            internalType: 'string',
-            name: 'fieldType',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'fieldName',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'fieldDescription',
-            type: 'string',
-          },
-        ],
-        internalType: 'struct SchemaField[]',
+        internalType: 'string',
         name: 'schema',
-        type: 'tuple[]',
+        type: 'string',
       },
       {
         internalType: 'contract ISchemaResolver',
@@ -322,11 +254,6 @@ export const SUN_ID_ABI = [
   {
     inputs: [],
     name: 'Irrevocable',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'LengthMismatch',
     type: 'error',
   },
   {
@@ -513,9 +440,9 @@ export const SUN_ID_ABI = [
             type: 'bool',
           },
           {
-            internalType: 'bytes[]',
+            internalType: 'bytes',
             name: 'data',
-            type: 'bytes[]',
+            type: 'bytes',
           },
         ],
         internalType: 'struct Credential',
@@ -584,9 +511,9 @@ export const SUN_ID_ABI = [
             type: 'bool',
           },
           {
-            internalType: 'bytes[]',
+            internalType: 'bytes',
             name: 'data',
-            type: 'bytes[]',
+            type: 'bytes',
           },
         ],
         internalType: 'struct Credential[]',
@@ -660,9 +587,9 @@ export const SUN_ID_ABI = [
             type: 'bool',
           },
           {
-            internalType: 'bytes[]',
+            internalType: 'bytes',
             name: 'data',
-            type: 'bytes[]',
+            type: 'bytes',
           },
         ],
         internalType: 'struct Credential[]',
@@ -759,9 +686,9 @@ export const SUN_ID_ABI = [
             type: 'bytes32',
           },
           {
-            internalType: 'bytes[]',
+            internalType: 'bytes',
             name: 'data',
-            type: 'bytes[]',
+            type: 'bytes',
           },
         ],
         internalType: 'struct CredentialRequest',

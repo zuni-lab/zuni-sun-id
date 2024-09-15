@@ -54,7 +54,7 @@ const SchemaDeclareTokenKey = (index: number) => `${SchemaFieldKeys.DeclareStmts
 
 const SchemaDeclareTypeKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.type`;
 
-const SchemaDeclareDescKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.desc`;
+// const SchemaDeclareDescKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.desc`;
 
 const baseFormSchema = z.object({
   [SchemaFieldKeys.Name]: z.string().optional(),
@@ -91,7 +91,7 @@ const baseFormSchema = z.object({
           .refine((val) => val.trim().length > 0, {
             message: 'Please enter the field name',
           }),
-        desc: z.string().optional(),
+        // desc: z.string().optional(),
       })
     )
     .nonempty({ message: 'At least one schema declaration is required' }),
@@ -112,7 +112,7 @@ export const CreateSchemaForm: IComponent = () => {
       [SchemaFieldKeys.DeclareStmts]: Array.from({ length: 2 }).map(() => ({
         token: '',
         type: '',
-        desc: '',
+        // desc: '',
       })),
     },
   });
@@ -140,13 +140,15 @@ export const CreateSchemaForm: IComponent = () => {
     if (connected && window.tronWeb) {
       const contract = await getchemaContract();
 
-      const schemaFields = (
+      const schema = (
         values[SchemaFieldKeys.DeclareStmts] as {
           token: string;
           type: string;
-          desc: string;
+          // desc: string;
         }[]
-      ).map((item) => [item.type, item.token, item.desc]);
+      )
+        .map((item) => `${item.type} ${item.token}`)
+        .join(',');
 
       try {
         const tx = await contract.send({
@@ -154,7 +156,7 @@ export const CreateSchemaForm: IComponent = () => {
           args: [
             values[SchemaFieldKeys.Name] as string,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            schemaFields as [string, string, string][] as any,
+            schema as string,
             (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
               ('0x0000000000000000000000000000000000000000' as THexString),
             values[SchemaFieldKeys.Revocable] as boolean,
@@ -280,11 +282,11 @@ export const CreateSchemaForm: IComponent = () => {
                     placeholder: 'Enter field name',
                     containerClassName: 'grow space-y-0',
                   })}
-                  {renderInputField({
+                  {/* renderInputField({
                     name: SchemaDeclareDescKey(index) as TSchemaInput<TAPP_NAME>,
                     placeholder: 'Enter field description',
                     containerClassName: 'grow space-y-0',
-                  })}
+                  }) */}
                   <Button
                     disabled={fields.length === 1}
                     type="button"

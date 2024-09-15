@@ -27,19 +27,21 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
       });
 
       return result.toReversed().map((r) => {
+        const definition = r.schema.split(',').map((field) => {
+          const [fieldType, fieldName] = field.split(' ');
+          return { fieldType, fieldName };
+        });
+
         return {
           uid: r.uid,
           name: r.name,
           resolver: r.resolver,
           revocable: r.revocable,
-          definition: r.schema.map((field) => ({
+          definition: definition.map((field) => ({
             fieldType: field.fieldType,
             fieldName: field.fieldName,
-            fieldDescription: field.fieldDescription,
           })),
-          // timestamp: timestamps[index] / 1000,
-          timestamp: 10000000,
-        } as SchemaData;
+        } as SchemaData;;
       });
     },
     enabled: !!totalSchemas,
