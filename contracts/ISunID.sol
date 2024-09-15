@@ -15,7 +15,7 @@ struct Credential {
     address recipient; // The recipient of the credential.
     address issuer; // The issuer/sender of the credential.
     bool revocable; // Whether the credential is revocable.
-    bytes[] data; // Custom credential data.
+    bytes data; // Custom credential data.
 }
 
 /// @notice A struct representing the full arguments of the credential request.
@@ -25,7 +25,7 @@ struct CredentialRequest {
     uint64 expirationTime; // The time when the credential expires (Unix timestamp).
     bool revocable; // Whether the credential is revocable.
     bytes32 refUID; // The UID of the related credential.
-    bytes[] data; // Custom credential data.
+    bytes data; // Custom credential data.
 }
 
 /// @notice A struct representing the full arguments of the revocation request.
@@ -54,9 +54,6 @@ interface ISunID {
 
     /// @notice Throws if the credential reference does not exist.
     error InvalidRefCredential();
-
-    /// @notice Throws if the credential data length does not match the schema.
-    error LengthMismatch();
 
     /// @notice Throws if failed to call the schema resolver.
     error ResolverFailed();
