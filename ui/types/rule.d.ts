@@ -31,10 +31,3 @@ type TAddress = 'address';
 type TBool = 'bool';
 
 type TString = 'string';
-
-type TDeclareStmt = {
-  type: TDataType;
-  token: string;
-};
-
-type TDeclareStmts = TDeclareStmt[];

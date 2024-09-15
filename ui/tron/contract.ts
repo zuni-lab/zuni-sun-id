@@ -1,4 +1,6 @@
+import { SCHEMA_REGISTRY_ABI, SUN_ID_ABI } from '@/constants/abi';
 import { TronWebWithExt } from '@/types/tronWeb';
+import { ProjectENV } from '@env';
 import {
   Abi,
   AbiFunction,
@@ -61,3 +63,29 @@ export class TronContract<TAbi extends Abi> {
     }
   }
 }
+
+let schemaContract: TronContract<typeof SCHEMA_REGISTRY_ABI> | null = null;
+
+export const getchemaContract = async () => {
+  if (!schemaContract) {
+    schemaContract = await TronContract.new(
+      SCHEMA_REGISTRY_ABI,
+      ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
+    );
+  }
+
+  return schemaContract;
+};
+
+let credentialContract: TronContract<typeof SUN_ID_ABI> | null = null;
+
+export const getCredentialContract = async () => {
+  if (!credentialContract) {
+    credentialContract = await TronContract.new(
+      SUN_ID_ABI,
+      ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+    );
+  }
+
+  return credentialContract;
+};

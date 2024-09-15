@@ -8,7 +8,10 @@ export const ITEMS_PER_PAGE = {
 };
 
 export const QueryKeys = {
-  Event: 'schemaEvent',
-  Schema: 'listSchema',
-  TotalSchema: 'totalSchema',
+  Schema: {
+    Event: 'schema-event',
+    List: 'schema-list',
+    Detail: 'schema-detail',
+    Total: 'schema-total',
+  },
 };

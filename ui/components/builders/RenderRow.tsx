@@ -4,6 +4,7 @@ import { getRelativeTime } from '@/utils/tools';
 import { TableCell, TableRow } from '../shadcn/Table';
 import { HexLink } from './HexLink';
 import { Chip } from './Chip';
+import { AppRouter } from '@/constants/router';
 
 export const ClaimRow = ({ uuid, schemaId, from, to, type, time }: TClaim) => (
   <TableRow key={uuid}>
@@ -24,15 +25,21 @@ export const ClaimRow = ({ uuid, schemaId, from, to, type, time }: TClaim) => (
   </TableRow>
 );
 
-export const SchemaRow = ({ name, uid, schema, resolver, revocable /*timestamp*/ }: SchemaData) => (
+export const SchemaRow = ({
+  name,
+  uid,
+  definition,
+  resolver,
+  revocable /*timestamp*/,
+}: SchemaData) => (
   <TableRow key={uid}>
     <TableCell>
-      <HexLink content={uid} />
+      <HexLink content={uid} href={`${AppRouter.Schema}/${uid}`} />
     </TableCell>
     <TableCell>{name}</TableCell>
     <TableCell className="w-120">
       <ul className="flex flex-wrap gap-3">
-        {schema?.map(({ fieldName, fieldType }, index) => (
+        {definition?.map(({ fieldName, fieldType }, index) => (
           <li
             key={index}
             className="py-1 px-4 border-radius bg-black w-fit rounded-md flex flex-col border">
