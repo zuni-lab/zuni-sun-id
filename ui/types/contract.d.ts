@@ -8,10 +8,6 @@ type SchemaData = {
   name: string;
   resolver: string;
   revocable: boolean;
-  schema: {
-    fieldType: string;
-    fieldName: string;
-    fieldDescription: string;
-  }[];
+  definition: TSchemaDefinitions;
   timestamp: number;
 };

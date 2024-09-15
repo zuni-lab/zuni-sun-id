@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/shadcn/Button';
 import {
   Form,
   FormControl,
@@ -12,164 +11,133 @@ import {
 } from '@/shadcn/Form';
 import { Input } from '@/shadcn/Input';
 
-import { AccountConnect } from '@/components/account/AccountConnect';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/shadcn/Select';
-import { Switch } from '@/components/shadcn/Switch';
+import { HexLink } from '@/components/builders/HexLink';
 import { globalTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
+import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
-import { useTxResult } from '@/states/useTxResult';
-import { getchemaContract } from '@/tron/contract';
-import { DataTypes } from '@/utils/rules';
-import { isValidAddress } from '@/utils/tools';
+import { getValidationSchema } from '@/utils/schema';
+import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
-import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type TSchemaInput<T extends string> =
-  | `${T}_Name`
-  | `${T}_Description`
-  | `${T}_ResolverAddress`
+type TCredentialInput<T extends string = TAPP_NAME> =
+  | `${T}_Recipient`
+  | `${T}_Expiration`
+  | `${T}_RefUID`
   | `${T}_Revocable`;
 
-const SchemaFieldKeys = {
-  Name: `${APP_NAME}_Name`,
-  Description: `${APP_NAME}_Description`,
-  ResolverAddress: `${APP_NAME}_ResolverAddress`,
+const CredentialFieldKeys = {
+  Recipient: `${APP_NAME}_Recipient`,
+  Expiration: `${APP_NAME}_Expiration`,
+  RefUID: `${APP_NAME}_RefUID`,
   Revocable: `${APP_NAME}_Revocable`,
-  DeclareStmts: `${APP_NAME}_DeclareStmts`,
 };
 
-const SchemaDeclareTokenKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.token`;
-
-const SchemaDeclareTypeKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.type`;
-
-const SchemaDeclareDescKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.desc`;
-
-const baseFormSchema = z.object({
-  [SchemaFieldKeys.Name]: z.string().optional(),
-  // [SchemaFieldKeys.Description]: z.optional(z.string().transform((val) => val.trim())),
-  [SchemaFieldKeys.ResolverAddress]: z
+const baseCredentialSchema = z.object({
+  [CredentialFieldKeys.Recipient]: z
     .string()
-    .default('0x0000000000000000000000000000000000000000')
     .transform((val) => val.trim())
     .refine(
       (val) =>
-        val.trim().length === 0
+        val.length === 0
           ? true
-          : globalTronWeb
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (globalTronWeb as any).isAddress(val.replace('0x', ''))
-            : isValidAddress(val),
-      'Invalid resolver address'
+          : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalTronWeb as any)?.isAddress(val.replace('0x', '')) || isValidAddress(val),
+      {
+        message: 'Invalid recipient address',
+      }
     ),
-  [SchemaFieldKeys.Revocable]: z.boolean(),
-  [SchemaFieldKeys.DeclareStmts]: z
-    .array(
-      z.object({
-        type: z
-          .string({
-            message: 'The field type is required',
-          })
-          .refine((val) => val.trim().length > 0, {
-            message: 'This field is required',
-          }),
-        token: z
-          .string({
-            message: 'This field is required',
-          })
-          .refine((val) => val.trim().length > 0, {
-            message: 'Please enter the field name',
-          }),
-        desc: z.string().optional(),
-      })
-    )
-    .nonempty({ message: 'At least one schema declaration is required' }),
+  [CredentialFieldKeys.Expiration]: z
+    .string()
+    .optional()
+    .transform((val) => val?.trim()),
+  [CredentialFieldKeys.RefUID]: z
+    .string()
+    .transform((val) => val.trim())
+    .refine((val) => (val.length === 0 ? true : isValidBytesWithLength(val, 32))),
+  [CredentialFieldKeys.Revocable]: z.boolean(),
 });
 
-export const CreateSchemaForm: IComponent = () => {
+const baseDefaultValues = {
+  [CredentialFieldKeys.Recipient]: '',
+  [CredentialFieldKeys.Expiration]: '',
+  [CredentialFieldKeys.RefUID]: '',
+  [CredentialFieldKeys.Revocable]: true,
+};
+
+const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
+  let result = { ...baseDefaultValues };
+  definitions;
+
+  definitions.forEach((d) => {
+    result = {
+      ...result,
+      [d.fieldName]: d.fieldType === 'bool' ? false : '',
+    };
+  });
+
+  return result;
+};
+
+export const IssueCredentialForm: IComponent<{
+  data: SchemaData;
+}> = ({ data }) => {
   const { connected } = useWallet();
+  // const { open: openTxResult } = useTxResult();
 
   const [submitting, setSubmitting] = useState(false);
-  const { open: openTxResult } = useTxResult();
+
+  const dynamicSchema = getValidationSchema(data.definition);
+
+  const combinedSchema = baseCredentialSchema.extend(dynamicSchema.shape);
+
+  const defaultValues = generateDynamicDefaultValues(data.definition);
+
   const form = useForm({
-    resolver: zodResolver(baseFormSchema),
-    defaultValues: {
-      [SchemaFieldKeys.Name]: '',
-      // [SchemaFieldKeys.Description]: '',
-      [SchemaFieldKeys.ResolverAddress]: '',
-      [SchemaFieldKeys.Revocable]: true,
-      [SchemaFieldKeys.DeclareStmts]: Array.from({ length: 2 }).map(() => ({
-        token: '',
-        type: '',
-        desc: '',
-      })),
-    },
+    resolver: zodResolver(combinedSchema),
+    defaultValues,
   });
 
   const { control, handleSubmit } = form;
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: SchemaFieldKeys.DeclareStmts as never,
-    keyName: 'key',
-  });
 
-  const handleAddField = useCallback(() => {
-    append({ token: '', type: '' });
-  }, [append]);
-
-  const handleRemoveField = useCallback(
-    (index: number) => {
-      remove(index);
-    },
-    [remove]
-  );
+  console.log({ data });
 
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
     if (connected && window.tronWeb) {
-      const contract = await getchemaContract();
+      // const contract = await getCredentialContract();
 
-      const schemaFields = (
-        values[SchemaFieldKeys.DeclareStmts] as {
-          token: string;
-          type: string;
-          desc: string;
-        }[]
-      ).map((item) => [item.type, item.token, item.desc]);
+      console.log(values);
 
-      try {
-        const tx = await contract.send({
-          method: 'register',
-          args: [
-            values[SchemaFieldKeys.Name] as string,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            schemaFields as [string, string, string][] as any,
-            (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
-              ('0x0000000000000000000000000000000000000000' as THexString),
-            values[SchemaFieldKeys.Revocable] as boolean,
-          ],
-        });
+      console.log(submitting);
 
-        ToastTemplate.Schema.Submit(tx);
-        setSubmitting(false);
-        openTxResult(tx);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(error);
-        ToastTemplate.Schema.SubmitError();
-        setSubmitting(false);
-      }
+      // try {
+      //   const tx = await contract.send({
+      //     method: 'register',
+      //     args: [
+      //       values[SchemaFieldKeys.Name] as string,
+      //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //       schemaFields as [string, string, string][] as any,
+      //       (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
+      //         ('0x0000000000000000000000000000000000000000' as THexString),
+      //       values[SchemaFieldKeys.Revocable] as boolean,
+      //     ],
+      //   });
+
+      //   ToastTemplate.Schema.Submit(tx);
+      //   setSubmitting(false);
+      //   openTxResult(tx);
+      //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // } catch (error: any) {
+      //   console.error(error);
+      //   ToastTemplate.Schema.SubmitError();
+      //   setSubmitting(false);
+      // }
       return;
     }
 
@@ -188,9 +156,9 @@ export const CreateSchemaForm: IComponent = () => {
       type = 'text',
       description,
     }: {
-      name: TSchemaInput<TAPP_NAME>;
+      name: TCredentialInput;
       placeholder: string;
-      label?: string;
+      label?: string | React.ReactNode;
       type?: 'text';
       className?: string;
       containerClassName?: string;
@@ -203,7 +171,11 @@ export const CreateSchemaForm: IComponent = () => {
           name={name}
           render={({ field }) => (
             <FormItem className={containerClassName}>
-              {label && <FormLabel required={required}>{label}</FormLabel>}
+              {label && (
+                <FormLabel required={required} className="uppercase">
+                  {label}
+                </FormLabel>
+              )}
               <FormDescription>{description}</FormDescription>
               <FormControl>
                 <Input
@@ -225,13 +197,48 @@ export const CreateSchemaForm: IComponent = () => {
 
   return (
     <Form {...form}>
-      <h1 className="text-2xl font-semibold my-2 mb-4">Create a schema</h1>
+      <h1 className="text-2xl font-semibold my-2 mb-4">Issue credential</h1>
+      <h2 className="text-lg my-2 text-gray-300 font-medium">Schema</h2>
+      <div className="bg-black border-input px-4 py-3 flex items-center justify-between rounded-lg mb-4">
+        <div className="text-gray-300 font-semibold">
+          <div className="flex items-center gap-2">
+            <span className="w-12">Name:</span>
+            <span className="uppercase font-bold text-xl text-white"> {data.name}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-12">UID:</span>
+            <HexLink
+              content={'#' + data.uid}
+              href={`${AppRouter.Schema}/${data.uid}`}
+              className="text-lg pl-0"
+              isFull
+            />
+          </div>
+        </div>
+      </div>
+
       <form onSubmit={handlePressSubmit} className="space-y-4">
         {renderInputField({
-          name: SchemaFieldKeys.Name as TSchemaInput<TAPP_NAME>,
-          label: 'Name',
-          placeholder: 'The name of the schema',
+          name: CredentialFieldKeys.Recipient as TCredentialInput,
+          label: 'Recipient',
+          placeholder: 'The optional recipient address, etc: TEg.. or 0x...',
           required: false,
+        })}
+
+        {data.definition.map((field) => {
+          if (field.fieldType === 'bool') {
+            return <>booool</>;
+          }
+          return renderInputField({
+            name: field.fieldName as TCredentialInput,
+            label: (
+              <p className="uppercase">
+                <span>{field.fieldName}</span>
+              </p>
+            ),
+            placeholder: field.fieldDescription,
+            required: true,
+          });
         })}
 
         {/* {renderInputField({
@@ -241,8 +248,8 @@ export const CreateSchemaForm: IComponent = () => {
           required: false,
         })} */}
 
-        <div className="space-y-3">
-          <FormLabel required>Schema definition</FormLabel>
+        {/* <div className="space-y-3">
+          <FormLabel required>Schema declaration: </FormLabel>
           <div className="space-y-3">
             {fields.map((item, index) => {
               return (
@@ -335,7 +342,8 @@ export const CreateSchemaForm: IComponent = () => {
               </div>
             </FormItem>
           )}
-        />
+        /> */}
+        {/* 
         <div className="flex items-center justify-center !mt-4">
           {!connected && <AccountConnect />}
           {connected && (
@@ -347,11 +355,11 @@ export const CreateSchemaForm: IComponent = () => {
               {submitting ? (
                 <Loader className="w-4 h-4 text-background animate-spin" />
               ) : (
-                'Create schema'
+                'Issue credential'
               )}
             </Button>
           )}
-        </div>
+        </div> */}
       </form>
     </Form>
   );

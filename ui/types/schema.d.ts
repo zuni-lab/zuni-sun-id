@@ -1,10 +1,7 @@
-type TSchema = {
-  id: number;
-  uuid: THexString;
-  schema: TDeclareStmts;
-  resolverAddresss: THexString;
+type TSchemaDefinition = {
+  fieldType: TDataType;
+  fieldName: string;
+  fieldDescription: string;
 };
 
-type TPresentableSchema = TSchema & {
-  numberOfClaims: number;
-};
+type TSchemaDefinitions = TSchemaDefinition[];
