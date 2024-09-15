@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '../shadcn/Dialog';
 
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 15;
 
 export const TxResult: IComponent = () => {
   const { visible, txHash, close } = useTxResult();
@@ -61,11 +61,9 @@ export const TxResult: IComponent = () => {
                     <p>
                       <strong>Contract:</strong> {txInfo.contract_address}
                     </p>
-
                     <p>
-                      <strong>Timestamp:</strong>{' '}
-                      {new Date(txInfo.blockTimeStamp / 1000).toDateString()} -{' '}
-                      {new Date(txInfo.blockTimeStamp / 1000).toLocaleTimeString()}
+                      <strong>Timestamp:</strong> {new Date(txInfo.blockTimeStamp).toDateString()} -{' '}
+                      {new Date(txInfo.blockTimeStamp).toLocaleTimeString()}
                     </p>
                     <p className="truncate">
                       <strong>Result:</strong>{' '}

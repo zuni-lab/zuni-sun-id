@@ -1,4 +1,4 @@
-import { ProjectENV } from '@env';
+import { TxQuery } from '@/tron/query';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -14,13 +14,7 @@ export const useTxInfo = (txHash: string | undefined, maxRetries: number) => {
     queryKey: ['events', txHash],
     queryFn: async () => {
       setCount((c) => c + 1);
-      return await fetch(
-        `${ProjectENV.NEXT_PUBLIC_TRON_PROVIDER}/walletsolidity/gettransactioninfobyid`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ value: txHash }),
-        }
-      ).then((res) => res.json());
+      return await TxQuery.getTransactionInfo(txHash!);
     },
     refetchInterval: 5000,
     enabled: !!txHash && count < maxRetries,

@@ -39,4 +39,25 @@ export type TronWebWithExt = TronWeb & {
       decodeParams(types: string[], data: string): unknown[];
     };
   };
+  trx: {
+    getTransactionInfo(transactionID: string): Promise<{
+      id: string;
+      fee: number;
+      blockNumber: number;
+      blockTimeStamp: number;
+      contract_address: string;
+      contractResult: string[];
+      log: {
+        address: string;
+        topics: string[];
+      }[];
+      receipt: {
+        origin_energy_usage: number;
+        energy_usage_total: number;
+        net_fee: number;
+        result: 'SUCCESS' | 'FAILED' | 'REVERT';
+      };
+      result: 'SUCCESS' | 'FAILED';
+    }>;
+  };
 };

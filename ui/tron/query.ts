@@ -27,3 +27,9 @@ export class EventQuery {
     );
   }
 }
+
+export class TxQuery {
+  static async getTransactionInfo(transactionID: string) {
+    return await (window.tronWeb as TronWebWithExt).trx.getTransactionInfo(transactionID);
+  }
+}
