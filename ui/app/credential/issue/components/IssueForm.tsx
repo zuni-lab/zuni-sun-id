@@ -12,7 +12,7 @@ import {
 import { Input } from '@/shadcn/Input';
 
 import { HexLink } from '@/components/builders/HexLink';
-import { globalTronWeb } from '@/components/TronProvider';
+import { globalTronWeb, useTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
@@ -24,6 +24,9 @@ import { cx } from 'class-variance-authority';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { AccountConnect } from '@/components/account/AccountConnect';
+import { Button } from '@/components/shadcn/Button';
+import { Loader } from 'lucide-react';
 
 type TCredentialInput<T extends string = TAPP_NAME> =
   | `${T}_Recipient`
@@ -72,7 +75,6 @@ const baseDefaultValues = {
 
 const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
   let result = { ...baseDefaultValues };
-  definitions;
 
   definitions.forEach((d) => {
     result = {
@@ -88,6 +90,8 @@ export const IssueCredentialForm: IComponent<{
   data: SchemaData;
 }> = ({ data }) => {
   const { connected } = useWallet();
+  const tronweb = useTronWeb();
+
   // const { open: openTxResult } = useTxResult();
 
   const [submitting, setSubmitting] = useState(false);
@@ -105,29 +109,20 @@ export const IssueCredentialForm: IComponent<{
 
   const { control, handleSubmit } = form;
 
-  console.log({ data });
-
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
     if (connected && window.tronWeb) {
       // const contract = await getCredentialContract();
 
-      console.log(values);
+      const dataTypes: string[] = [];
+      const dataValues: unknown[] = [];
 
-      console.log(submitting);
-
-      // try {
-      //   const tx = await contract.send({
-      //     method: 'register',
-      //     args: [
-      //       values[SchemaFieldKeys.Name] as string,
-      //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //       schemaFields as [string, string, string][] as any,
-      //       (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
-      //         ('0x0000000000000000000000000000000000000000' as THexString),
-      //       values[SchemaFieldKeys.Revocable] as boolean,
-      //     ],
-      //   });
+      data.definition.map((field) => {
+        dataTypes.push(field.fieldType);
+        dataValues.push(values[field.fieldName]);
+      });
+      const rawData = tronweb.utils.abi.encodeParams(dataTypes, dataValues);
+      console.log(rawData);
 
       //   ToastTemplate.Schema.Submit(tx);
       //   setSubmitting(false);
@@ -343,7 +338,7 @@ export const IssueCredentialForm: IComponent<{
             </FormItem>
           )}
         /> */}
-        {/* 
+
         <div className="flex items-center justify-center !mt-4">
           {!connected && <AccountConnect />}
           {connected && (
@@ -359,7 +354,7 @@ export const IssueCredentialForm: IComponent<{
               )}
             </Button>
           )}
-        </div> */}
+        </div>
       </form>
     </Form>
   );

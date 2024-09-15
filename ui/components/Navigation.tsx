@@ -23,7 +23,7 @@ export const Navigation: IComponent = () => {
           onSearchChange={(val) => {
             console.log({ val });
           }}
-          placeholder="Search by claim, schema, address, etc."
+          placeholder="Search by credential, schema, address, etc."
         />
       </div>
       <div className="w-1/3 flex justify-end items-center pr-4">

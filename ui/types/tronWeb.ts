@@ -10,6 +10,8 @@ export type EventResult<T = unknown> = {
 };
 
 export type TronWebWithExt = TronWeb & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  contract: (abi: any, address: string) => Promise<any>;
   event: {
     getEventsByContractAddress<T = unknown>(
       contractAddress: string,
@@ -31,6 +33,10 @@ export type TronWebWithExt = TronWeb & {
     ): Promise<EventResult<T>[]>;
     getEventsByTransactionID<T = unknown>(transactionID: string): Promise<EventResult<T>[]>;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  contract: (abi: any, address: string) => Promise<any>;
+  utils: {
+    abi: {
+      encodeParams(types: string[], values: unknown[]): string;
+      decodeParams(types: string[], data: string): unknown[];
+    };
+  };
 };

@@ -1,6 +1,7 @@
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { getchemaContract, TronContract } from '@/tron/contract';
+import { hexToNumber } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -86,8 +87,7 @@ export const useCountSchemas = () => {
     refetchOnMount: true,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { data: parseInt((data as any)?._hex, 16), refetch };
+  return { data: hexToNumber(data), refetch };
 };
 
 export const useDetailSchema = (schemaId: THexString) => {

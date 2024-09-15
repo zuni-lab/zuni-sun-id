@@ -17,9 +17,6 @@ export const CredentialList: IComponent = () => {
     limit: ITEMS_PER_PAGE.CREDENTIAL,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const totalItems = parseInt((totalCredentials as any)?._hex, 16) ?? (items?.length || 0);
-
   return (
     <SunTable
       title="List of credentials"
@@ -30,7 +27,7 @@ export const CredentialList: IComponent = () => {
       maxItems={ITEMS_PER_PAGE.CREDENTIAL}
       pagination={{
         currentPage: currentPage,
-        totalItems: totalItems,
+        totalItems: totalCredentials,
         onPageChange: (page) => setCurrentPage(page),
       }}
     />
