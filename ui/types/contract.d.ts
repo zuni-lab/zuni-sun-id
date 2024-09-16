@@ -4,6 +4,7 @@ type RegisterSchemaEvent = {
 };
 
 type SchemaData = {
+  id: number;
   uid: string;
   name: string;
   resolver: string;

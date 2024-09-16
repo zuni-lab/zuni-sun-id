@@ -103,7 +103,7 @@ export const useDetailSchema = (schemaId: THexString) => {
 
       const definition = result.schema.split(',').map((field) => {
         const [fieldType, fieldName] = field.split(' ');
-        return { fieldType, fieldName };
+        return { fieldType, fieldName } as TSchemaDefinition;
       });
 
       const schemaEvents = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
