@@ -17,6 +17,9 @@ struct SchemaRecord {
 /// @title ISchemaRegistry
 /// @notice The interface of global credential schemas for the SunID.
 interface ISchemaRegistry {
+    /// @notice Throws if the schema has already been registered.
+    error AlreadyRegistered();
+
     /// @notice Emitted when a new schema has been registered
     /// @param uid The schema UID.
     /// @param registerer The address of the account used to register the schema.

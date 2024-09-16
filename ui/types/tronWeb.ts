@@ -10,6 +10,10 @@ export type EventResult<T = unknown> = {
 };
 
 export type TronWebWithExt = TronWeb & {
+  address: {
+    fromHex(hex: string): string;
+    toHex(address: string): string;
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contract: (abi: any, address: string) => Promise<any>;
   event: {

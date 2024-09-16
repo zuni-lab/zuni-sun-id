@@ -23,6 +23,7 @@ contract SchemaRegistry is ISchemaRegistry {
             SchemaRecord({id: id, uid: 0, name: name, schema: schema, resolver: resolver, revocable: revocable});
 
         bytes32 uid = _getUID(schemaRecord);
+        if (_registry[uid].uid != 0) revert AlreadyRegistered();
 
         schemaRecord.uid = uid;
         _registry[uid] = schemaRecord;

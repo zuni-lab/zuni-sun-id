@@ -65,3 +65,10 @@ export const hexToNumber = (hex: bigint | undefined) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return hex ? parseInt((hex as any)._hex, 16) : 0;
 };
+
+export const isZeroAddress = (address: string) => {
+  return (
+    address === '410000000000000000000000000000000000000000' ||
+    address === 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
+  );
+};

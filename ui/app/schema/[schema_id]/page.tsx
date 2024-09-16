@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { DetailSchema } from './content';
 
 export const metadata: Metadata = {
-  title: 'Create Credential With Schema | SunID',
-  description: 'Create a new credential with a schema',
+  title: 'All Schemas | SunID',
+  description: 'All Schemas of SunID',
 };
 
 const Page: TNextPage<{ schema_id: string }> = async ({ params: { schema_id } }) => {

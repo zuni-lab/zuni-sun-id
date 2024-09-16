@@ -1,6 +1,7 @@
 import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { getchemaContract, TronContract } from '@/tron/contract';
+import { EventQuery } from '@/tron/query';
 import { hexToNumber } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
@@ -105,15 +106,22 @@ export const useDetailSchema = (schemaId: THexString) => {
         return { fieldType, fieldName };
       });
 
+      const schemaEvents = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
+        ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
+      );
+      const schemaEvent = schemaEvents.find((e) => e.result.uid === schemaId.slice(2));
+
       return {
+        id: Number(result.id),
+        tx: schemaEvent?.transaction,
+        creator: schemaEvent?.result.registerer,
         uid: result.uid,
         name: result.name,
         resolver: result.resolver,
         revocable: result.revocable,
         definition,
-        // timestamp: timestamps[index] / 1000,
-        timestamp: 10000000,
-      } as SchemaData;
+        timestamp: schemaEvent?.timestamp || 0,
+      };
     },
   });
 };
