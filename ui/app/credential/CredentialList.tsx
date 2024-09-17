@@ -1,6 +1,6 @@
 'use client';
 
-import { ClaimRow } from '@/components/builders/RenderRow';
+import { CredentialRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import useCredentials, { useCountCredentials } from '@/hooks/useCredentials';
@@ -23,7 +23,7 @@ export const CredentialList: IComponent = () => {
       columns={CredentialTableHeaders}
       items={items ?? []}
       isLoading={isFetching}
-      renderRow={ClaimRow}
+      renderRow={CredentialRow}
       maxItems={ITEMS_PER_PAGE.CREDENTIAL}
       pagination={{
         currentPage: currentPage,

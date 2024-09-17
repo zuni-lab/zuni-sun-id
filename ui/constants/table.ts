@@ -33,3 +33,22 @@ export const CredentialTableHeaders = [
     className: 'w-40',
   },
 ];
+
+export const CredentialSchemaTableHeaders = [
+  {
+    label: 'UID',
+    className: 'w-40',
+  },
+  {
+    label: 'Issuer',
+    className: 'w-40',
+  },
+  {
+    label: 'Recipient',
+    className: 'w-40',
+  },
+  {
+    label: 'Time',
+    className: 'w-40',
+  },
+];

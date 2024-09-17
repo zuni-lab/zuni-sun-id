@@ -1,12 +1,18 @@
 'use client';
 
 import { Chip } from '@/components/builders/Chip';
+import { CredentialSchemaRow } from '@/components/builders/RenderRow';
+import { SunTable } from '@/components/builders/SunTable';
 import { buttonVariants } from '@/components/shadcn/Button';
 import { useTronWeb } from '@/components/TronProvider';
+import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
+import { CredentialSchemaTableHeaders } from '@/constants/table';
+import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredentials';
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const RuleItem: IComponent<{
   type: string;
@@ -23,38 +29,78 @@ const RuleItem: IComponent<{
 };
 
 export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isOnchain, setIsOnchain] = useState(true);
+
   const tronweb = useTronWeb();
   const { data } = useDetailSchema(schemaId as THexString);
+
+  const { data: totalCredentials } = useCountCredentials();
+
+  const { items, isFetching } = useCredentialsBySchema({
+    page: currentPage,
+    schema: schemaId,
+    // limit: ITEMS_PER_PAGE.CREDENTIAL,
+  });
 
   return (
     <div>
       {data ? (
-        <section className="flex flex-col gap-4 mt-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Chip text={`#${data.id}`} />
-              <div className="font-bold ps-4">{data.uid}</div>
-            </div>
+        <div>
+          <section className="flex flex-col gap-4 mt-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Chip text={`#${data.id}`} />
+                <div className="font-bold ps-4">{data.uid}</div>
+              </div>
 
-            <Link className={buttonVariants()} href={`${AppRouter.Credential}/issue/${data.uid}`}>
-              Issue Credential
-            </Link>
-          </div>
-          <div className="font-bold">Schema Name: {data.name}</div>
-          <div className="flex flex-col gap-4">
-            {data.definition.map(({ fieldName, fieldType }, index) => (
-              <RuleItem key={index} type={fieldType} name={fieldName} />
-            ))}
-          </div>
-          <div>Revocable Credentials: {data.revocable ? 'Yes' : 'No'}</div>
-          <div>Schema Resolver: {isZeroAddress(data.resolver) ? 'None' : data.resolver}</div>
-          <div>Transaction ID: 0x{data.tx}</div>
-          <div>Created by: {data.creator && tronweb.address.fromHex(data.creator)}</div>
-          <div>
-            Created at: {new Date(data.timestamp).toUTCString()} (
-            {getRelativeTime(data.timestamp / 1000)})
-          </div>
-        </section>
+              <Link className={buttonVariants()} href={`${AppRouter.Credential}/issue/${data.uid}`}>
+                Issue Credential
+              </Link>
+            </div>
+            <div className="font-bold">Schema Name: {data.name}</div>
+            <div className="flex flex-col gap-4">
+              {data.definition.map(({ fieldName, fieldType }, index) => (
+                <RuleItem key={index} type={fieldType} name={fieldName} />
+              ))}
+            </div>
+            <div>Revocable Credentials: {data.revocable ? 'Yes' : 'No'}</div>
+            <div>Schema Resolver: {isZeroAddress(data.resolver) ? 'None' : data.resolver}</div>
+            <div>Transaction ID: 0x{data.tx}</div>
+            <div>Created by: {data.creator && tronweb.address.fromHex(data.creator)}</div>
+            <div>
+              Created at: {new Date(data.timestamp).toUTCString()} (
+              {getRelativeTime(data.timestamp / 1000)})
+            </div>
+          </section>
+          <SunTable
+            title="List of credentials"
+            columns={CredentialSchemaTableHeaders}
+            items={items ?? []}
+            isLoading={isFetching}
+            renderRow={CredentialSchemaRow}
+            maxItems={ITEMS_PER_PAGE.CREDENTIAL}
+            pagination={{
+              currentPage: currentPage,
+              totalItems: totalCredentials,
+              onPageChange: (page) => setCurrentPage(page),
+            }}
+            renderRightTop={
+              <div className="flex px-2 py-1 rounded-sm">
+                <button
+                  className={`px-4 py-2 ${isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  onClick={() => setIsOnchain(true)}>
+                  Onchain
+                </button>
+                <button
+                  className={`px-4 py-2 ${!isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  onClick={() => setIsOnchain(false)}>
+                  Offchain
+                </button>
+              </div>
+            }
+          />
+        </div>
       ) : (
         <div>Not Found</div>
       )}

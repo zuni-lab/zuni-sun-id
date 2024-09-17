@@ -3,6 +3,13 @@ type RegisterSchemaEvent = {
   registerer: string;
 };
 
+type IssueCredentialEvent = {
+  recipient: string;
+  issuer: string;
+  uid: string;
+  schemaUID: string;
+};
+
 type SchemaData = {
   id: number;
   uid: string;

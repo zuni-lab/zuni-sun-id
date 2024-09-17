@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { hexToNumber } from '@/utils/tools';
 import { getSchemaContract } from './useSchemas';
+import { EventQuery } from '@/tron/query';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
@@ -20,7 +21,7 @@ export const getSunIdContract = async () => {
   return sunIdContract;
 };
 
-const useCredentials = ({ page, limit }: { page: number; limit: number }) => {
+export const useCredentials = ({ page, limit }: { page: number; limit: number }) => {
   const { data: totalCredentials } = useCountCredentials();
 
   const {
@@ -66,6 +67,54 @@ const useCredentials = ({ page, limit }: { page: number; limit: number }) => {
           recipient: c.recipient,
           time: hexToNumber(c.time),
           type: 'onchain',
+        };
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (totalCredentials) {
+      refetchSchemas();
+    }
+  }, [totalCredentials, refetchSchemas]);
+
+  return {
+    items,
+    isFetching: isFetching,
+  };
+};
+
+export const useCredentialsBySchema = ({
+  page,
+  // limit,
+  schema,
+}: {
+  page: number;
+  // limit: number;
+  schema: string;
+}) => {
+  const { data: totalCredentials } = useCountCredentials();
+
+  const {
+    data: items,
+    isLoading: isFetching,
+    refetch: refetchSchemas,
+  } = useQuery({
+    queryKey: [QueryKeys.Schema.Credentials, page],
+    queryFn: async () => {
+      const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+        ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+      );
+      const issuedCredentialEvents = schemaEvents.filter(
+        (e) => e.result.schemaUID === schema.slice(2)
+      );
+
+      return issuedCredentialEvents.map((e) => {
+        return {
+          uid: e.result.uid,
+          issuer: e.result.issuer,
+          recipient: e.result.recipient,
+          time: e.timestamp / 1000,
         };
       });
     },

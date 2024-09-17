@@ -14,6 +14,7 @@ export const QueryKeys = {
     List: 'schema-list',
     Detail: 'schema-detail',
     Total: 'schema-total',
+    Credentials: 'schema-credentials',
   },
   Credential: {
     Total: 'credential-total',

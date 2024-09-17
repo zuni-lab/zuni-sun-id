@@ -6,7 +6,7 @@ import { HexLink } from './HexLink';
 import { Chip } from './Chip';
 import { AppRouter } from '@/constants/router';
 
-export const ClaimRow = ({ uid, schema, issuer, recipient, type, time }: TClaim) => (
+export const CredentialRow = ({ uid, schema, issuer, recipient, type, time }: TClaim) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
       <HexLink content={uid} />
@@ -22,6 +22,31 @@ export const ClaimRow = ({ uid, schema, issuer, recipient, type, time }: TClaim)
       <HexLink content={recipient} />
     </TableCell>
     <TableCell>{type}</TableCell>
+    <TableCell>{getRelativeTime(time)}</TableCell>
+  </TableRow>
+);
+
+export const CredentialSchemaRow = ({
+  uid,
+  issuer,
+  recipient,
+  time,
+}: {
+  uid: string;
+  issuer: string;
+  recipient: string;
+  time: number;
+}) => (
+  <TableRow key={uid}>
+    <TableCell className="w-40">
+      <HexLink content={uid} />
+    </TableCell>
+    <TableCell className="w-80">
+      <HexLink content={issuer} />
+    </TableCell>
+    <TableCell className="w-80">
+      <HexLink content={recipient} />
+    </TableCell>
     <TableCell>{getRelativeTime(time)}</TableCell>
   </TableRow>
 );

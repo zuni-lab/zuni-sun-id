@@ -1,6 +1,6 @@
 'use client';
 
-import { ClaimRow } from '@/components/builders/RenderRow';
+import { CredentialRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { buttonVariants } from '@/components/shadcn/Button';
 import { AppRouter } from '@/constants/router';
@@ -13,7 +13,7 @@ export const RecentCredentials: IComponent = () => {
       title="Recent Credentials"
       columns={CredentialTableHeaders}
       items={[]}
-      renderRow={ClaimRow}
+      renderRow={CredentialRow}
       footerButton={
         <Link
           className={buttonVariants({
