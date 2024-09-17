@@ -14,7 +14,6 @@ type ServerEnv struct {
 	CORS_WHITE_LIST []string
 
 	APP_NAME         string `validate:"min=1"`
-	API_HOST         string `validate:"min=1"`
 	MONGODB_URI      string `validate:"uri"`
 	MONGODB_DATABASE string `validate:"min=1"`
 	JWT_SECRET       string `validate:"min=10"`
@@ -79,7 +78,6 @@ func loadEnv() {
 		CORS_WHITE_LIST: corsWhiteList,
 
 		APP_NAME:         os.Getenv("APP_NAME"),
-		API_HOST:         os.Getenv("API_HOST"),
 		MONGODB_URI:      os.Getenv("MONGODB_URI"),
 		MONGODB_DATABASE: os.Getenv("MONGODB_DATABASE"),
 		JWT_SECRET:       os.Getenv("JWT_SECRET"),

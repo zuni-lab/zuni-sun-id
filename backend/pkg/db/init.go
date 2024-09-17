@@ -14,7 +14,7 @@ var (
 	client *mongo.Client
 	DB     *mongo.Database
 
-	User *mongo.Collection
+	Credential *mongo.Collection
 )
 
 func Init() {
@@ -34,7 +34,10 @@ func Init() {
 
 	DB = client.Database(config.Env.MONGODB_DATABASE)
 
-	User = DB.Collection("users")
+	Credential = DB.Collection("credentials")
+
+	initIndexes()
+
 	log.Info().Msg("Connected to MongoDB!")
 }
 
@@ -43,4 +46,17 @@ func Close() {
 		panic(err)
 	}
 	log.Info().Msg("Connection to MongoDB closed.")
+}
+
+func initIndexes() {
+	_, err := Credential.Indexes().CreateMany(context.TODO(), []mongo.IndexModel{
+		{
+			Keys:    bson.D{{Key: "uid", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	})
+
+	if err != nil {
+		log.Logger.Fatal().Err(err).Msg("Failed to create indexes")
+	}
 }

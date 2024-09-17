@@ -12,7 +12,8 @@ down:
 run:
 	go run cmd/api/main.go
 watch:
-	air -c .air.toml
+	@./kill-port.sh 12345
+	@air -c .air.toml
 compose:
 	docker compose -f compose.yml up -d --remove-orphans
 start:

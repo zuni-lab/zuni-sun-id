@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -33,6 +34,24 @@ func NewValidator() *CustomValidator {
 	cv := &CustomValidator{
 		validator: validator.New(),
 	}
+
+	cv.AddRules(ValidationRule{
+		Tag: "bytes32",
+		Fn: func(fl validator.FieldLevel) bool {
+			return isValidBytesWithLength(fl.Field().String(), 32)
+		},
+	}, ValidationRule{
+		Tag: "address",
+		Fn: func(fl validator.FieldLevel) bool {
+			return isValidBytesWithLength(fl.Field().String(), 20)
+		},
+	}, ValidationRule{
+		Tag: "bytes",
+		Fn: func(fl validator.FieldLevel) bool {
+			return strings.HasPrefix(fl.Field().String(), "0x")
+		},
+	})
+
 	return cv
 }
 
@@ -131,6 +150,8 @@ func translateError(validateErr validator.FieldError) string {
 			}
 		}
 		msg = fmt.Sprintf("%s must be one of %s", field, paramMsg)
+	case "bytes32":
+		msg = fmt.Sprintf("%s must be a 32 bytes hex string", field)
 	default:
 		msg = fmt.Sprintf("%s is invalid", field)
 	}
@@ -182,4 +203,9 @@ func BindAndValidate(c echo.Context, i interface{}) error {
 		return err
 	}
 	return nil
+}
+
+var isValidBytesWithLength = func(val string, length int) bool {
+	regexp := regexp.MustCompile(`^0x([0-9a-fA-F]{` + fmt.Sprintf("%d", length*2) + `})$`)
+	return regexp.MatchString(val)
 }
