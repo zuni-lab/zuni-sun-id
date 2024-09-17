@@ -103,5 +103,5 @@ func getCredentialUID(input *IssueCredentialRequest, now int64) (string, error) 
 	uid = append(uid, data...)
 
 	hash := sha3.Sum256(uid)
-	return hex.EncodeToString(hash[:]), nil
+	return "0x" + hex.EncodeToString(hash[:]), nil
 }

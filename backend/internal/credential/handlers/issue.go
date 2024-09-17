@@ -7,7 +7,6 @@ import (
 )
 
 func IssueCredential(c echo.Context) error {
-
 	var body service.IssueCredentialRequest
 	if err := utils.BindAndValidate(c, &body); err != nil {
 		return err
