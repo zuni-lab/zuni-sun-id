@@ -8,4 +8,5 @@ import (
 func Route(g *echo.Group, path string) {
 	credetialGr := g.Group(path)
 	credetialGr.POST("", handlers.IssueCredential)
+	credetialGr.POST("/search", handlers.SearchCredential)
 }
