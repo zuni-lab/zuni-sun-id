@@ -2,7 +2,7 @@ import { SCHEMA_REGISTRY_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { getchemaContract, TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/query';
-import { hexToNumber } from '@/utils/tools';
+import { EMPTY_UID, hexToNumber } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -100,6 +100,10 @@ export const useDetailSchema = (schemaId: THexString) => {
         method: 'getSchema',
         args: [schemaId],
       });
+
+      if (result.uid === EMPTY_UID) {
+        return null;
+      }
 
       const definition = result.schema.split(',').map((field) => {
         const [fieldType, fieldName] = field.split(' ');
