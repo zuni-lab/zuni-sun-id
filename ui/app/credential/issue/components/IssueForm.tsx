@@ -12,9 +12,10 @@ import {
 import { Input } from '@/shadcn/Input';
 
 import { AccountConnect } from '@/components/account/AccountConnect';
+import { Chip } from '@/components/builders/Chip';
 import { HexLink } from '@/components/builders/HexLink';
+import { TabSwitch } from '@/components/builders/TabSwitch';
 import { Button } from '@/components/shadcn/Button';
-import { Switch } from '@/components/shadcn/Switch';
 import { globalTronWeb, useTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
@@ -82,7 +83,7 @@ const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
   definitions.forEach((d) => {
     result = {
       ...result,
-      [d.fieldName]: d.fieldType === 'bool' ? true : '',
+      [d.fieldName]: d.fieldType === 'bool' ? false : '',
     };
   });
 
@@ -147,8 +148,6 @@ export const IssueCredentialForm: IComponent<{
         refUID,
         rawData,
       ];
-
-      console.log('args', args);
 
       try {
         const tx = await contract.send({
@@ -227,22 +226,16 @@ export const IssueCredentialForm: IComponent<{
   return (
     <Form {...form}>
       <h1 className="text-2xl font-semibold my-2 mb-4">Issue credential</h1>
-      <h2 className="text-lg my-2 text-gray-300 font-medium">Schema</h2>
-      <div className="bg-black border-input px-4 py-3 flex items-center justify-between rounded-lg mb-4">
-        <div className="text-gray-300 font-semibold">
-          <div className="flex items-center gap-2">
-            <span className="w-12">Name:</span>
-            <span className="uppercase font-bold text-xl "> {data.name}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-12">UID:</span>
-            <HexLink
-              content={'#' + data.uid}
-              href={`${AppRouter.Schema}/${data.uid}`}
-              className="text-lg pl-0"
-              isFull
-            />
-          </div>
+      <FormLabel className="!my-8">SCHEMA</FormLabel>
+      <div className="border-input px-4 flex items-center justify-between rounded-lg mb-4">
+        <div className="flex items-center gap-2">
+          <Chip className="font-bold text-xl" text={data.name.toUpperCase()} />
+          <HexLink
+            content={'#' + data.uid}
+            href={`${AppRouter.Schema}/${data.uid}`}
+            className="text-base pl-0"
+            isFull
+          />
         </div>
       </div>
 
@@ -260,28 +253,26 @@ export const IssueCredentialForm: IComponent<{
               <FormField
                 key={d.fieldName}
                 control={control}
-                name={d.fieldType}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>
-                      <span className="pr-1">
-                        <span className="uppercase font-bold">{d.fieldName}</span> |{' '}
-                        <span className="lowercase text-muted-foreground">{d.fieldType}</span>
-                      </span>
-                    </FormLabel>
-                    <div className="flex items-center justify-between bg-gray-800/80 border-2 py-4 px-6 rounded-full w-1/4 border-gray-500">
-                      <span>No</span>
-                      <FormControl>
-                        <Switch
-                          checked={field.value as boolean}
-                          onCheckedChange={field.onChange}
-                          className="data-[state=checked]:bg-blue-500"
-                        />
-                      </FormControl>
-                      <span>Yes</span>
-                    </div>
-                  </FormItem>
-                )}
+                name={d.fieldName}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel required>
+                        <span className="pr-1">
+                          <span className="uppercase">{d.fieldName}</span> |{' '}
+                          <span className="lowercase text-muted-foreground">{d.fieldType}</span>
+                        </span>
+                      </FormLabel>
+                      <TabSwitch
+                        tabs={['No', 'Yes']}
+                        selectedTab={field.value ? 'Yes' : 'No'}
+                        onChange={(value) => {
+                          return field.onChange(value === 'Yes');
+                        }}
+                      />
+                    </FormItem>
+                  );
+                }}
               />
             );
           }
@@ -289,7 +280,7 @@ export const IssueCredentialForm: IComponent<{
             name: d.fieldName as TCredentialInput,
             label: (
               <span className="pr-1">
-                <span className="uppercase font-bold">{d.fieldName}</span> |{' '}
+                <span className="uppercase">{d.fieldName}</span> |{' '}
                 <span className="lowercase text-muted-foreground">{d.fieldType}</span>
               </span>
             ),
@@ -298,8 +289,8 @@ export const IssueCredentialForm: IComponent<{
           });
         })}
 
-        <div className="px-6 pb-8 pt-6 bg-muted rounded-lg space-y-4 my-4">
-          <h2 className="text-xl  font-semibold text-center">Advanced options</h2>
+        <div className="px-6 pb-8 pt-6 bg-gray-200 rounded-lg space-y-4 !my-6">
+          <h2 className="text-xl font-semibold text-center">Advanced options</h2>
           {renderInputField({
             name: CredentialFieldKeys.Expiration as TCredentialInput,
             label: 'Expiration',
@@ -329,17 +320,14 @@ export const IssueCredentialForm: IComponent<{
                       ? 'The credential is revocable.'
                       : 'The credential is not revocable.'}
                 </FormMessage>
-                <div className="flex items-center justify-between bg-black px-6 py-4 rounded-lg w-1/3 text-xl font-semibold">
-                  <span>No</span>
-                  <FormControl>
-                    <Switch
-                      checked={field.value as boolean}
-                      onCheckedChange={field.onChange}
-                      disabled={!data.revocable}
-                    />
-                  </FormControl>
-                  <span>Yes</span>
-                </div>
+                <TabSwitch
+                  tabs={['No', 'Yes']}
+                  selectedTab={field.value ? 'Yes' : 'No'}
+                  onChange={(value) => {
+                    return field.onChange(value === 'Yes');
+                  }}
+                  disabled={!data.revocable}
+                />
               </FormItem>
             )}
           />

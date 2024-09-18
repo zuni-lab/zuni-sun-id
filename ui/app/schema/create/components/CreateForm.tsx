@@ -13,6 +13,7 @@ import {
 import { Input } from '@/shadcn/Input';
 
 import { AccountConnect } from '@/components/account/AccountConnect';
+import { TabSwitch } from '@/components/builders/TabSwitch';
 import {
   Select,
   SelectContent,
@@ -20,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/Select';
-import { Switch } from '@/components/shadcn/Switch';
 import { globalTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { ToastTemplate } from '@/constants/toast';
@@ -88,8 +88,8 @@ const baseFormSchema = z.object({
           .string({
             message: 'This field is required',
           })
-          .refine((val) => val.trim().length > 0, {
-            message: 'Please enter the field name',
+          .refine((val) => val.trim().length > 0 && !val.includes(' '), {
+            message: 'Please enter the field name without spaces',
           }),
         // desc: z.string().optional(),
       })
@@ -249,7 +249,7 @@ export const CreateSchemaForm: IComponent = () => {
               return (
                 <div
                   key={item.key}
-                  className="flex justify-between p-4 bg-muted-foreground gap-4 rounded-lg">
+                  className="flex justify-between p-4 bg-gray-50 gap-4 rounded-lg">
                   <FormField
                     control={control}
                     name={SchemaDeclareTypeKey(index)}
@@ -289,9 +289,9 @@ export const CreateSchemaForm: IComponent = () => {
                   <Button
                     disabled={fields.length === 1}
                     type="button"
-                    variant="ghost"
+                    className="bg-white hover:text-white group"
                     onClick={() => handleRemoveField(index)}>
-                    <TrashIcon className="w-4 h-4" />
+                    <TrashIcon className="w-4 h-4 text-accent-foreground group-hover:text-white" />
                   </Button>
                 </div>
               );
@@ -325,24 +325,24 @@ export const CreateSchemaForm: IComponent = () => {
           control={control}
           name={SchemaFieldKeys.Revocable as TSchemaInput<TAPP_NAME>}
           render={({ field }) => (
-            <FormItem className="flex items-center rounded-lg border p-4 w-fit bg-black gap-8">
+            <FormItem>
               <FormLabel>Revocable</FormLabel>
-              <div className="flex items-center gap-4 !mt-0">
-                <span>No</span>
-                <FormControl>
-                  <Switch checked={field.value as boolean} onCheckedChange={field.onChange} />
-                </FormControl>
-                <span>Yes</span>
-              </div>
+              <TabSwitch
+                tabs={['No', 'Yes']}
+                selectedTab={field.value ? 'Yes' : 'No'}
+                onChange={(value) => {
+                  return field.onChange(value === 'Yes');
+                }}
+              />
             </FormItem>
           )}
         />
-        <div className="flex items-center justify-center !mt-4">
+        <div className="flex items-center justify-center !mt-12">
           {!connected && <AccountConnect />}
           {connected && (
             <Button
               type={'submit'}
-              className="px-4 bg-orange-600 hover:bg-orange-500"
+              className="px-4 bg-orange-500 hover:bg-orange-600 rounded-lg"
               size={'lg'}
               disabled={submitting}>
               {submitting ? (
