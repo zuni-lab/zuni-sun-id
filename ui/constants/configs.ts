@@ -18,5 +18,7 @@ export const QueryKeys = {
   },
   Credential: {
     Total: 'credential-total',
+    List: 'credential-list',
+    Detail: 'credential-detail',
   },
 };

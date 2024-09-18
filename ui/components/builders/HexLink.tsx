@@ -7,7 +7,7 @@ export const HexLink: IComponent<{
   href?: string;
   className?: string;
 }> = ({ content, isFull = false, href, className }) => {
-  const formattedContent = content?.replace('41', '0x');
+  const formattedContent = content?.startsWith('41') ? content.replace('41', '0x') : content;
   return (
     <Button
       variant="link"

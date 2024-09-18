@@ -69,6 +69,9 @@ export const hexToNumber = (hex: bigint | undefined) => {
 export const isZeroAddress = (address: string) => {
   return (
     address === '410000000000000000000000000000000000000000' ||
+    address === '0x0000000000000000000000000000000000000000' ||
     address === 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
   );
 };
+
+export const EMPTY_UID = '0x0000000000000000000000000000000000000000000000000000000000000000';

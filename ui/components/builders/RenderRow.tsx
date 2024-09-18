@@ -9,7 +9,7 @@ import { AppRouter } from '@/constants/router';
 export const CredentialRow = ({ uid, schema, issuer, recipient, type, time }: TClaim) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
-      <HexLink content={uid} />
+      <HexLink content={uid} href={`${AppRouter.Credential}/${uid}`} />
     </TableCell>
     <TableCell>
       <Chip text={`#${schema.id}`} />
@@ -39,7 +39,7 @@ export const CredentialSchemaRow = ({
 }) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
-      <HexLink content={uid} />
+      <HexLink content={uid} href={`${AppRouter.Credential}/${uid}`} />
     </TableCell>
     <TableCell className="w-80">
       <HexLink content={issuer} />

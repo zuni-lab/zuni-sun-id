@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { hexToNumber } from '@/utils/tools';
 import { getSchemaContract } from './useSchemas';
 import { EventQuery } from '@/tron/query';
+import { useTronWeb } from '@/components/TronProvider';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
@@ -29,7 +30,7 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
     isLoading: isFetching,
     refetch: refetchSchemas,
   } = useQuery({
-    queryKey: [QueryKeys.Schema, page],
+    queryKey: [QueryKeys.Credential.List, page],
     queryFn: async () => {
       if (!totalCredentials) {
         return [];
@@ -54,7 +55,6 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
         method: 'getSchemas',
         args: [schemaUIDs],
       });
-      console.log('data', credentials, schemas);
 
       return credentials.toReversed().map((c, idx) => {
         return {
@@ -84,6 +84,62 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
   };
 };
 
+export const useCredentialDetail = (credentialId: THexString, onchain = true) => {
+  const tronweb = useTronWeb();
+
+  return useQuery({
+    queryKey: [QueryKeys.Credential.Detail, credentialId],
+    queryFn: async () => {
+      if (!onchain) {
+        throw new Error('Offchain credential not implemented');
+      }
+
+      const schemaContract = await getSchemaContract();
+      const sunId = await getSunIdContract();
+
+      const [credential] = await sunId.call({
+        method: 'getCredential',
+        args: [credentialId],
+      });
+
+      const [schema] = await schemaContract.call({
+        method: 'getSchema',
+        args: [credential.schema],
+      });
+
+      const definition = schema.schema.split(',').map((field) => {
+        const [fieldType, fieldName] = field.split(' ');
+        return { fieldType, fieldName } as TSchemaDefinition;
+      });
+
+      const dataTypes = definition.map((field) => field.fieldType);
+      const dataValues = tronweb.utils.abi.decodeParams(dataTypes, credential.data);
+      const data = dataValues.map((v, i) => {
+        return {
+          name: definition[i].fieldName,
+          value: (v as any).toString(),
+        };
+      });
+
+      return {
+        uid: credential.uid,
+        schema: {
+          id: Number(schema.id),
+          uid: schema.uid,
+          name: schema.name,
+        },
+        data,
+        issuer: credential.issuer,
+        recipient: credential.recipient,
+        timestamp: Number(credential.time) * 1000,
+        expirationTime: Number(credential.expirationTime) * 1000,
+        revocationTime: Number(credential.revocationTime) * 1000,
+        refUID: credential.refUID,
+      };
+    },
+  });
+};
+
 export const useCredentialsBySchema = ({
   page,
   // limit,
@@ -111,7 +167,7 @@ export const useCredentialsBySchema = ({
 
       return issuedCredentialEvents.map((e) => {
         return {
-          uid: e.result.uid,
+          uid: '0x' + e.result.uid,
           issuer: e.result.issuer,
           recipient: e.result.recipient,
           time: e.timestamp / 1000,
