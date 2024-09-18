@@ -9,7 +9,7 @@ export const Chip: IComponent<{
   return (
     <div className={className}>
       <Button
-        className={cx(` text-white py-1 px-3 w-fit h-fit rounded-lg`, {
+        className={cx(`  py-1 px-3 w-fit h-fit rounded-lg`, {
           'bg-red-500 hover:bg-red-600': color === 'red',
           'bg-green-500 hover:bg-green-600': color === 'green',
           'bg-blue-500 hover:bg-blue-600': color === 'blue',

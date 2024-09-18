@@ -117,6 +117,7 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
       const data = dataValues.map((v, i) => {
         return {
           name: definition[i].fieldName,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           value: (v as any).toString(),
         };
       });

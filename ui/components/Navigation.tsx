@@ -16,7 +16,7 @@ export const Navigation: IComponent = () => {
   return (
     <div className="flex items-center py-6 px-16 gap-12 border-b border-accent shadow-accent shadow-sm">
       <Link href="/">
-        <LogoSvg className="text-white" />
+        <LogoSvg />
       </Link>
       <div className="grow">
         <Search

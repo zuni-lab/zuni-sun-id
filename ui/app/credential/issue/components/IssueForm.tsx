@@ -232,7 +232,7 @@ export const IssueCredentialForm: IComponent<{
         <div className="text-gray-300 font-semibold">
           <div className="flex items-center gap-2">
             <span className="w-12">Name:</span>
-            <span className="uppercase font-bold text-xl text-white"> {data.name}</span>
+            <span className="uppercase font-bold text-xl "> {data.name}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-12">UID:</span>
@@ -299,7 +299,7 @@ export const IssueCredentialForm: IComponent<{
         })}
 
         <div className="px-6 pb-8 pt-6 bg-muted rounded-lg space-y-4 my-4">
-          <h2 className="text-xl text-white font-semibold text-center">Advanced options</h2>
+          <h2 className="text-xl  font-semibold text-center">Advanced options</h2>
           {renderInputField({
             name: CredentialFieldKeys.Expiration as TCredentialInput,
             label: 'Expiration',

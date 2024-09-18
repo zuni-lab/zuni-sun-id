@@ -19,10 +19,10 @@ const RuleItem: IComponent<{
   name: string;
 }> = ({ type, name }) => {
   return (
-    <div className="flex gap-2 rounded-md overflow-hidden text-white">
+    <div className="flex gap-2 rounded-md overflow-hidden ">
       <div className="w-2/5 bg-gray-700 flex items-center px-4 font-medium uppercase">{type}</div>
       <div className="w-3/5 bg-primary p-2">
-        <div className="text-white font-bold">{name}</div>
+        <div className=" font-bold">{name}</div>
       </div>
     </div>
   );
@@ -88,12 +88,12 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
             renderRightTop={
               <div className="flex px-2 py-1 rounded-sm">
                 <button
-                  className={`px-4 py-2 ${isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  className={`px-4 py-2 ${isOnchain ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
                   onClick={() => setIsOnchain(true)}>
                   Onchain
                 </button>
                 <button
-                  className={`px-4 py-2 ${!isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  className={`px-4 py-2 ${!isOnchain ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
                   onClick={() => setIsOnchain(false)}>
                   Offchain
                 </button>

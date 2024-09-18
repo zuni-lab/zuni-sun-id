@@ -68,9 +68,9 @@ export const SchemaRow = ({
         {definition?.map(({ fieldName, fieldType }, index) => (
           <li
             key={index}
-            className="py-1 px-4 border-radius bg-black w-fit rounded-md flex flex-col border">
-            <span className="uppercase text-[10px] text-gray-400 font-medium">{fieldType}</span>
-            <span className="font-semibold">{fieldName}</span>
+            className="py-1 px-4 border-radius bg-red-500 w-fit rounded-md flex flex-col border">
+            <span className="uppercase text-[10px] text-gray-200 font-medium">{fieldType}</span>
+            <span className="font-semibold text-primary-foreground">{fieldName}</span>
           </li>
         ))}
       </ul>

@@ -23,7 +23,9 @@ export function AccountInfoPanel() {
         aria-label="Disconnect"
         className="pb-4 inline-flex items-center justify-between self-stretch"
         onClick={async () => await disconnect()}>
-        <span className="font-inter w-32 text-left text-base font-medium text-white">Log out</span>
+        <span className="font-inter w-32 text-left text-base font-medium hover:bg-opacity-80 hover:opacity-80">
+          Log out
+        </span>
         <ExitIcon className="relative h-4 w-4" />
       </button>
     </>

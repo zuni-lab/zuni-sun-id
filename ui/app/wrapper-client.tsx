@@ -14,7 +14,7 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
   }, []);
 
   return (
-    <div className="w-full h-auto relative text-white">
+    <div className="w-full h-auto relative">
       <Navigation />
       {children}
       <Footer />

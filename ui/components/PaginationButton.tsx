@@ -29,7 +29,7 @@ export const PaginationButton: IComponent<{
         disabled={page === 1}
         onClick={() => page > 1 && onChangePage?.(page - 1)}
         style={{ minHeight: size, minWidth: size }}
-        className="flex justify-center items-center text-gray disabled:text-white disabled:bg-gray3 border border-gray3 rounded hover:bg-gray-100">
+        className="flex justify-center items-center text-gray disabled: disabled:bg-gray3 border border-gray3 rounded hover:bg-gray-100">
         <ChevronLeftIcon width={16} height={16} />
       </button>
       {startPage > 0 && (
@@ -83,7 +83,7 @@ export const PaginationButton: IComponent<{
         disabled={page === totalPage}
         onClick={() => page < totalPage && onChangePage?.(page + 1)}
         style={{ minHeight: size, minWidth: size }}
-        className="flex justify-center items-center text-gray disabled:text-white disabled:bg-gray3 border border-gray3 rounded hover:bg-gray-100">
+        className="flex justify-center items-center text-gray disabled: disabled:bg-gray3 border border-gray3 rounded hover:bg-gray-100">
         <ChevronRightIcon height={16} width={16} />
       </button>
     </div>

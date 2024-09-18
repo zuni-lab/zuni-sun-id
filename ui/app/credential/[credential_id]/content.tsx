@@ -11,10 +11,10 @@ const RuleItem: IComponent<{
   name: string;
 }> = ({ type, name }) => {
   return (
-    <div className="flex gap-2 rounded-md overflow-hidden text-white">
+    <div className="flex gap-2 rounded-md overflow-hidden">
       <div className="w-2/5 bg-gray-700 flex items-center px-4 font-medium uppercase">{type}</div>
       <div className="w-3/5 bg-primary p-2">
-        <div className="text-white font-bold">{name}</div>
+        <div className="font-bold">{name}</div>
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export const AccountDropdown: IComponent = () => {
           sideOffset={40}
           className={clsx(
             'h-42 inline-flex w-60 flex-col items-start justify-start',
-            'rounded-lg bg-neutral-900 bg-opacity-90 px-6 pb-2 pt-6 shadow backdrop-blur-2xl'
+            'rounded-lg bg-opacity-90 px-6 pb-2 pt-6 shadow backdrop-blur-2xl'
           )}
           style={DropdownMenuContentStyle}>
           <AccountInfoPanel />
