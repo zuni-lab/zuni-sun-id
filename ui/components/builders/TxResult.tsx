@@ -21,7 +21,7 @@ export const TxResult: IComponent = () => {
   return (
     <Dialog open={visible}>
       <DialogContent
-        className={cx('bg-white text-accent  max-w-4xl min-h-32 max-h-80', {
+        className={cx('bg-white max-w-4xl min-h-32 max-h-80', {
           'w-[400px]': isLoading,
         })}
         onClose={close}>
@@ -36,7 +36,7 @@ export const TxResult: IComponent = () => {
           <DialogDescription>
             {isLoading && (
               <span>
-                <Loader className="w-12 h-12 text-background animate-spin m-auto mt-2" />
+                <Loader className="w-12 h-12 animate-spin m-auto mt-2" />
               </span>
             )}
             {!isLoading && (
