@@ -3,6 +3,8 @@ import classNames from 'classnames';
 
 // timeUtils.ts
 import { formatDistanceToNow } from 'date-fns';
+//@ts-expect-error - no types for tronweb
+import TronWeb from 'tronweb';
 
 /**
  * Mapping hotkey into className package for better usage
@@ -75,3 +77,7 @@ export const isZeroAddress = (address: string) => {
 };
 
 export const EMPTY_UID = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+export const toTronAddress = (hexAddr: string) => TronWeb.address.fromHex(hexAddr) as string;
+export const toHexAddress = (tronAddr: string) =>
+  TronWeb.address.toHex(tronAddr).replace('41', '0x') as `0x${string}`;

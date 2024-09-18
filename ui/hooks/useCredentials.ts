@@ -4,7 +4,7 @@ import { TronContract } from '@/tron/contract';
 import { ProjectENV } from '@env';
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { hexToNumber } from '@/utils/tools';
+import { hexToNumber, toHexAddress, toTronAddress } from '@/utils/tools';
 import { getSchemaContract } from './useSchemas';
 import { EventQuery } from '@/tron/query';
 import { useTronWeb } from '@/components/TronProvider';
@@ -63,8 +63,8 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
             id: hexToNumber(schemas[idx].id),
             name: schemas[idx].name,
           },
-          issuer: c.issuer,
-          recipient: c.recipient,
+          issuer: toTronAddress(c.issuer),
+          recipient: toTronAddress(c.recipient),
           time: hexToNumber(c.time),
           type: 'onchain',
         };
@@ -130,8 +130,8 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
           name: schema.name,
         },
         data,
-        issuer: credential.issuer,
-        recipient: credential.recipient,
+        issuer: toTronAddress(credential.issuer),
+        recipient: toTronAddress(credential.recipient),
         timestamp: Number(credential.time) * 1000,
         expirationTime: Number(credential.expirationTime) * 1000,
         revocationTime: Number(credential.revocationTime) * 1000,
@@ -157,7 +157,7 @@ export const useCredentialsBySchema = ({
     isLoading: isFetching,
     refetch: refetchSchemas,
   } = useQuery({
-    queryKey: [QueryKeys.Schema.Credentials, page],
+    queryKey: [QueryKeys.Schema.Credentials, schema, page],
     queryFn: async () => {
       const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
         ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
@@ -169,8 +169,8 @@ export const useCredentialsBySchema = ({
       return issuedCredentialEvents.map((e) => {
         return {
           uid: '0x' + e.result.uid,
-          issuer: e.result.issuer,
-          recipient: e.result.recipient,
+          issuer: toTronAddress(e.result.issuer),
+          recipient: toTronAddress(e.result.recipient),
           time: e.timestamp / 1000,
         };
       });
@@ -187,6 +187,58 @@ export const useCredentialsBySchema = ({
     items,
     isFetching: isFetching,
   };
+};
+
+export const useCredentialsByAddress = ({
+  page,
+  // limit,
+  address,
+}: {
+  page: number;
+  // limit: number;
+  address: string;
+}) => {
+  return useQuery({
+    queryKey: [QueryKeys.Credential.Address, address, page],
+    queryFn: async () => {
+      const issueCredentailEvents =
+        await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+          ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+        );
+      const hexAddress = address.startsWith('0x') ? address : toHexAddress(address);
+
+      let issued = 0;
+      let received = 0;
+
+      const issuedCredentialEvents = issueCredentailEvents.filter((e) => {
+        if (e.name === 'Issued') {
+          if (e.result.issuer === hexAddress) {
+            issued++;
+            return true;
+          } else if (e.result.recipient === hexAddress) {
+            received++;
+            return true;
+          }
+        }
+        return false;
+      });
+
+      const credentials = issuedCredentialEvents.map((e) => {
+        return {
+          uid: '0x' + e.result.uid,
+          issuer: toTronAddress(e.result.issuer),
+          recipient: toTronAddress(e.result.recipient),
+          time: e.timestamp / 1000,
+        };
+      });
+
+      return {
+        issued,
+        received,
+        credentials,
+      };
+    },
+  });
 };
 
 export const useCountCredentials = () => {

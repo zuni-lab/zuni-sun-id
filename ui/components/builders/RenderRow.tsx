@@ -16,10 +16,10 @@ export const CredentialRow = ({ uid, schema, issuer, recipient, type, time }: TC
       <Chip text={schema.name} />
     </TableCell>
     <TableCell className="w-80">
-      <HexLink content={issuer} />
+      <HexLink content={issuer} href={`${AppRouter.Address}/${issuer}`} />
     </TableCell>
     <TableCell className="w-80">
-      <HexLink content={recipient} />
+      <HexLink content={recipient} href={`${AppRouter.Address}/${recipient}`} />
     </TableCell>
     <TableCell>{type}</TableCell>
     <TableCell>{getRelativeTime(time)}</TableCell>

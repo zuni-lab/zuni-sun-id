@@ -25,9 +25,8 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const searchParams = useSearchParams();
 
   const offchain = searchParams.get('offchain') === 'true';
-
   const { data, isFetching } = useCredentialDetail(credentialId as THexString, !offchain);
-  console.log(data);
+
   return (
     <div>
       {isFetching ? (

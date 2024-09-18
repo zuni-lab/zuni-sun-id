@@ -4,8 +4,8 @@ type TClaim = {
     id: number;
     name: string;
   };
-  issuer: THexString;
-  recipient: THexString;
+  issuer: tron;
+  recipient: tron;
   type: string; // TODO: define claim type
   time: number;
 };
