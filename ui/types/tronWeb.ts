@@ -14,6 +14,7 @@ export type TronWebWithExt = TronWeb & {
     fromHex(hex: string): string;
     toHex(address: string): string;
   };
+  sha3: (value: string) => THexString;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contract: (abi: any, address: string) => Promise<any>;
   event: {
@@ -63,5 +64,6 @@ export type TronWebWithExt = TronWeb & {
       };
       result: 'SUCCESS' | 'FAILED';
     }>;
+    _signTypedData(domain: object, types: object, value: object): Promise<THexString>;
   };
 };

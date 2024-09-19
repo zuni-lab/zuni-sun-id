@@ -33,6 +33,8 @@ import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CredentialApi } from '@/api/credential';
+import { ProjectENV } from '@env';
+import { TronWebWithExt } from '@/types/tronWeb';
 
 type TCredentialInput<T extends string = TAPP_NAME> =
   | `${T}_Recipient`
@@ -100,7 +102,7 @@ const submitTypes: Record<'onchain' | 'offchain', string> = {
 export const IssueCredentialForm: IComponent<{
   data: SchemaData;
 }> = ({ data }) => {
-  const { connected } = useWallet();
+  const { address, connected } = useWallet();
   const tronweb = useTronWeb();
 
   const [submitType, setSubmitType] = useState<'onchain' | 'offchain'>('onchain');
@@ -138,7 +140,7 @@ export const IssueCredentialForm: IComponent<{
 
       const expiration = values[CredentialFieldKeys.Expiration]
         ? new Date(values[CredentialFieldKeys.Expiration] as string).getTime() / 1000
-        : 2 ** 32 - 1;
+        : 0;
 
       const recipient =
         (values[CredentialFieldKeys.Recipient] as string).length > 0
@@ -170,10 +172,39 @@ export const IssueCredentialForm: IComponent<{
 
           openTxResult(tx);
         } else {
+          const domain = {
+            name: 'SunID',
+            version: '1',
+            chainId: '0x2b6653dc',
+            verifyingContract: ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS,
+          };
+          const types = {
+            IssueCredential: [
+              { name: 'schemaUID', type: 'bytes32' },
+              { name: 'recipient', type: 'address' },
+              { name: 'expirationTime', type: 'uint64' },
+              { name: 'revocable', type: 'bool' },
+              { name: 'refUID', type: 'bytes32' },
+              { name: 'data', type: 'bytes' },
+            ],
+          };
+          const value = {
+            schemaUID: data.uid,
+            recipient: recipient,
+            expirationTime: expiration,
+            revocable: values[CredentialFieldKeys.Revocable] as boolean,
+            refUID: refUID,
+            data: rawData,
+          };
+          const signature = await (window.tronWeb as TronWebWithExt).trx._signTypedData(
+            domain,
+            types,
+            value
+          );
+
           await CredentialApi.issue({
-            //TODO: get issuer from wallet and signature from wallet
-            issuer: '0x1234567890123456789012345678901234567890',
-            signature: '0x',
+            issuer: address as string,
+            signature: signature,
             schema_uid: data.uid,
             recipient: recipient as string,
             expiration_time: expiration,
