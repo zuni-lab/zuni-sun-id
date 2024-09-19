@@ -162,7 +162,7 @@ export const CreateSchemaForm: IComponent = () => {
           ],
         });
 
-        ToastTemplate.Schema.Submit(tx);
+        ToastTemplate.Schema.Submit();
         setSubmitting(false);
         openTxResult(tx);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -296,15 +296,13 @@ export const CreateSchemaForm: IComponent = () => {
                 </div>
               );
             })}
-            <Button
+            <button
               type="button"
-              variant="secondary"
-              size={'sm'}
               onClick={handleAddField}
-              className="mt-2 px-4 py-5">
+              className="mt-2 py-2 px-4 text-primary flex items-center gap-2 bg-white hover:bg-red-50/60 duration-150 transition-all rounded-lg">
               <PlusIcon className="w-4 h-4 mr-1" />
               Add field
-            </Button>
+            </button>
           </div>
           <FormMessage>
             {form.formState.errors?.[SchemaFieldKeys.DeclareStmts]?.root?.message
@@ -342,7 +340,7 @@ export const CreateSchemaForm: IComponent = () => {
           {connected && (
             <Button
               type={'submit'}
-              className="px-4 bg-orange-500 hover:bg-orange-600 rounded-lg"
+              className="px-4 bg-gray-800 hover:bg-black rounded-xl"
               size={'lg'}
               disabled={submitting}>
               {submitting ? (

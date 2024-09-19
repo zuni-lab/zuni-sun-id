@@ -11,7 +11,9 @@ import { CredentialSchemaTableHeaders } from '@/constants/table';
 import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredentials';
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
+import { Loader } from 'lucide-react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { useState } from 'react';
 
 const RuleItem: IComponent<{
@@ -33,7 +35,7 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
   const [isOnchain, setIsOnchain] = useState(true);
 
   const tronweb = useTronWeb();
-  const { data } = useDetailSchema(schemaId as THexString);
+  const { data, isLoading } = useDetailSchema(schemaId as THexString);
 
   const { data: totalCredentials } = useCountCredentials();
 
@@ -43,9 +45,17 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
     // limit: ITEMS_PER_PAGE.CREDENTIAL,
   });
 
+  if (isLoading) {
+    return <Loader className="w-12 h-12 animate-spin m-auto mt-12" />;
+  }
+
+  if (!isLoading && !data) {
+    notFound();
+  }
+
   return (
     <div>
-      {data ? (
+      {!isLoading && data && (
         <div>
           <section className="flex flex-col gap-4 mt-10">
             <div className="flex items-center justify-between">
@@ -101,8 +111,6 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
             }
           />
         </div>
-      ) : (
-        <div>Not Found</div>
       )}
     </div>
   );

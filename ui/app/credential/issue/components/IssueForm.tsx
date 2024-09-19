@@ -10,9 +10,9 @@ import {
   FormMessage,
 } from '@/shadcn/Form';
 import { Input } from '@/shadcn/Input';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 import { AccountConnect } from '@/components/account/AccountConnect';
-import { Chip } from '@/components/builders/Chip';
 import { HexLink } from '@/components/builders/HexLink';
 import { TabSwitch } from '@/components/builders/TabSwitch';
 import { Button } from '@/components/shadcn/Button';
@@ -27,10 +27,12 @@ import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
-import { Loader } from 'lucide-react';
+import clsx from 'clsx';
+import { ChevronDownIcon, Loader } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { CredentialApi } from '@/api/credential';
 
 type TCredentialInput<T extends string = TAPP_NAME> =
   | `${T}_Recipient`
@@ -90,11 +92,18 @@ const generateDynamicDefaultValues = (definitions: TSchemaDefinitions) => {
   return result;
 };
 
+const submitTypes: Record<'onchain' | 'offchain', string> = {
+  onchain: 'Onchain Submit',
+  offchain: 'Offchain Submit',
+};
+
 export const IssueCredentialForm: IComponent<{
   data: SchemaData;
 }> = ({ data }) => {
   const { connected } = useWallet();
   const tronweb = useTronWeb();
+
+  const [submitType, setSubmitType] = useState<'onchain' | 'offchain'>('onchain');
 
   const { open: openTxResult } = useTxResult();
 
@@ -140,29 +149,45 @@ export const IssueCredentialForm: IComponent<{
         ? values[CredentialFieldKeys.RefUID]
         : '0x' + ''.padEnd(64, '0');
 
-      const args = [
-        data.uid,
-        recipient,
-        expiration,
-        values[CredentialFieldKeys.Revocable],
-        refUID,
-        rawData,
-      ];
-
       try {
-        const tx = await contract.send({
-          method: 'issue',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          args: [args] as any,
-        });
+        if (submitType === 'onchain') {
+          const args = [
+            data.uid,
+            recipient,
+            expiration,
+            values[CredentialFieldKeys.Revocable],
+            refUID,
+            rawData,
+          ];
 
-        ToastTemplate.Schema.Submit(tx);
-        setSubmitting(false);
-        openTxResult(tx);
+          const tx = await contract.send({
+            method: 'issue',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            args: [args] as any,
+          });
+
+          ToastTemplate.Credential.SubmitOnChain();
+
+          openTxResult(tx);
+        } else {
+          await CredentialApi.issue({
+            //TODO: get issuer from wallet and signature from wallet
+            issuer: '0x1234567890123456789012345678901234567890',
+            signature: '0x',
+            schema_uid: data.uid,
+            recipient: recipient as string,
+            expiration_time: expiration,
+            revocable: values[CredentialFieldKeys.Revocable] as boolean,
+            ref_uid: refUID as string,
+            data: rawData,
+          });
+          ToastTemplate.Credential.SubmitOffChain();
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error(error);
         ToastTemplate.Schema.SubmitError();
+      } finally {
         setSubmitting(false);
       }
       return;
@@ -227,15 +252,21 @@ export const IssueCredentialForm: IComponent<{
     <Form {...form}>
       <h1 className="text-2xl font-semibold my-2 mb-4">Issue credential</h1>
       <FormLabel className="!my-8">SCHEMA</FormLabel>
-      <div className="border-input px-4 flex items-center justify-between rounded-lg mb-4">
-        <div className="flex items-center gap-2">
-          <Chip className="font-bold text-xl" text={data.name.toUpperCase()} />
-          <HexLink
-            content={'#' + data.uid}
-            href={`${AppRouter.Schema}/${data.uid}`}
-            className="text-base pl-0"
-            isFull
-          />
+
+      <div className="bg-red-50/60 rounded-xl p-4">
+        <div className="flex items-center gap-4">
+          <span className="h-14 aspect-square bg-primary text-white flex items-center justify-center rounded-lg text-lg">
+            #{data.id}
+          </span>
+          <div className="flex flex-col justify-center">
+            <h3 className="uppercase text-gray-600 font-bold text-lg">{data.name}</h3>
+            <HexLink
+              content={'#' + data.uid}
+              href={`${AppRouter.Schema}/${data.uid}`}
+              className="text-base pl-0 text-gray-500"
+              isFull
+            />
+          </div>
         </div>
       </div>
 
@@ -290,7 +321,7 @@ export const IssueCredentialForm: IComponent<{
         })}
 
         <div className="px-6 pb-8 pt-6 bg-gray-200 rounded-lg space-y-4 !my-6">
-          <h2 className="text-xl font-semibold text-center">Advanced options</h2>
+          <h2 className="text-xl font-semibold text-center text-gray-700">Advanced options</h2>
           {renderInputField({
             name: CredentialFieldKeys.Expiration as TCredentialInput,
             label: 'Expiration',
@@ -312,7 +343,7 @@ export const IssueCredentialForm: IComponent<{
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="uppercase">Revocable</FormLabel>
-                <FormMessage>
+                <FormMessage className="text-gray-500">
                   {/* {field.value ? 'The credential is revocable' : 'The credential is not revocable'} */}
                   {!data.revocable
                     ? 'The credential is not revocable because the schema configuration does not allow it.'
@@ -333,23 +364,75 @@ export const IssueCredentialForm: IComponent<{
           />
         </div>
 
-        <div className="flex items-center justify-center !mt-4">
+        <div className="flex items-center justify-center !mt-12">
           {!connected && <AccountConnect />}
           {connected && (
-            <Button
-              type={'submit'}
-              className="px-4 bg-orange-600 hover:bg-orange-500"
-              size={'lg'}
-              disabled={submitting}>
-              {submitting ? (
-                <Loader className="w-4 h-4 text-background animate-spin" />
-              ) : (
-                'Issue credential'
-              )}
-            </Button>
+            <div
+              className={cx('flex items-center rounded-xl overflow-hidden w-52', {
+                'cursor-pointer': connected,
+                'cursor-not-allowed': !connected,
+                'bg-green-600': submitType === 'onchain',
+                'bg-orange-500': submitType === 'offchain',
+                'bg-gray-500': submitting,
+              })}>
+              <Button
+                type={'submit'}
+                className={cx('px-4 rounded-r-none grow', {
+                  'bg-green-600 hover:bg-green-500': submitType === 'onchain',
+                  'bg-orange-500 hover:bg-orange-400': submitType === 'offchain',
+                  'bg-gray-500': submitting,
+                })}
+                size={'lg'}
+                disabled={submitting}>
+                {submitting ? (
+                  <Loader className="w-4 h-4 text-background animate-spin" />
+                ) : (
+                  submitTypes[submitType]
+                )}
+              </Button>
+              <DropdownButton onSelect={(val) => setSubmitType(val)} />
+            </div>
           )}
         </div>
       </form>
     </Form>
+  );
+};
+
+const DropdownButton: IComponent<{
+  onSelect: (val: 'onchain' | 'offchain') => void;
+}> = ({ onSelect }) => {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        asChild
+        className="w-1/4 cursor-pointer border-l border-white hover:opacity-80">
+        <div className="h-full py-3">
+          <ChevronDownIcon
+            className="w-6 h-6 mx-auto text-white font-bold"
+            aria-hidden="true"
+            strokeWidth={2}
+          />
+        </div>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className={clsx(
+            'h-42 inline-flex w-60 flex-col items-start justify-start gap-2',
+            'rounded-lg bg-opacity-90 px-4 py-4 shadow backdrop-blur-2xl text-lg bg-white'
+          )}>
+          {Object.entries(submitTypes).map(([key, value]) => (
+            <DropdownMenu.Item
+              key={key}
+              onSelect={() => onSelect(key as 'onchain' | 'offchain')}
+              className="cursor-pointer py-2 px-4 hover:bg-gray-400 hover:text-white w-full rounded-lg outline-none duration-150 transition-all">
+              {value}
+            </DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 };
