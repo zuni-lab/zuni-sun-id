@@ -23,11 +23,6 @@ export const RecentSchemas: IComponent = () => {
       isLoading={isFetching}
       renderRow={SchemaRow}
       maxItems={ITEMS_PER_PAGE.HOME}
-      renderRightTop={
-        <Link className={buttonVariants()} href={`${AppRouter.Schema}/create`}>
-          Create Schema
-        </Link>
-      }
       footerButton={
         <Link
           className={buttonVariants({

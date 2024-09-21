@@ -1,9 +1,10 @@
 export const SchemaTableHeaders = [
-  { label: 'UUID', className: 'w-40' },
+  { label: 'ID', className: 'w-8' },
+  { label: 'UUID', className: 'w-32' },
   { label: 'Name', className: 'w-40' },
   { label: 'Schema', className: '' },
-  { label: 'Revocalble', className: 'w-40' },
-  { label: 'Resolver', className: 'w-40' },
+  { label: 'Revocalble', className: 'w-8' },
+  { label: 'Resolver', className: 'w-32' },
   // { label: 'Time', className: 'w-40' },
 ];
 

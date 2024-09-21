@@ -24,6 +24,7 @@ export const CredentialList: IComponent = () => {
       items={items ?? []}
       isLoading={isFetching}
       renderRow={CredentialRow}
+      button="credential"
       maxItems={ITEMS_PER_PAGE.CREDENTIAL}
       pagination={{
         currentPage: currentPage,

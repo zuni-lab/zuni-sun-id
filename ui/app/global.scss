@@ -40,7 +40,8 @@ input:focus {
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --accent: 210 40% 96.1%;
+    // --accent: 210 40% 96.1%;
+    --accent: 0 0% 98%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 100% 50%;
@@ -59,6 +60,7 @@ input:focus {
     --muted-foreground: 215.4 16.3% 56.9%;
 
     --accent: 216 34% 17%;
+    // --accent: 0 0% 98%;
     --accent-foreground: 210 40% 98%;
 
     --popover: 224 71% 4%;
@@ -131,6 +133,10 @@ input:focus {
 section,
 .section {
   @apply max-w-7xl min-h-[12vh] mx-auto p-8 bg-accent shadow-sm shadow-accent rounded-lg;
+}
+
+main {
+  @apply py-20 min-h-[80vh];
 }
 
 h1.title {

@@ -5,7 +5,9 @@ import { injectStyle } from 'react-toastify/dist/inject-style';
 import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 
 import { Footer } from '@/components/Footer';
+import { Heading } from '@/components/Heading';
 import { Navigation } from '@/components/Navigation';
+import { useCurrentHeading } from '@/constants/router';
 import { ProjectENV } from '@env';
 import { Authentication } from './Authentication';
 
@@ -13,6 +15,8 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
   useEffect(() => {
     injectStyle();
   }, []);
+
+  const heading = useCurrentHeading();
 
   return (
     <div className="w-full h-auto relative">
@@ -22,6 +26,7 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
         </div>
       )}
       <Navigation />
+      {heading && <Heading {...heading} />}
       {children}
       <Footer />
       <Suspense>

@@ -4,6 +4,7 @@ import { Chip } from '@/components/builders/Chip';
 import { useTronWeb } from '@/components/TronProvider';
 import { useCredentialDetail } from '@/hooks/useCredentials';
 import { EMPTY_UID, getRelativeTime } from '@/utils/tools';
+import { Loader } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
 const RuleItem: IComponent<{
@@ -28,9 +29,9 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const { data, isFetching } = useCredentialDetail(credentialId as THexString, !offchain);
 
   return (
-    <div>
+    <main>
       {isFetching ? (
-        <div>Loading</div>
+        <Loader className="w-12 h-12 animate-spin m-auto mt-12" />
       ) : data ? (
         <div>
           <section className="flex flex-col gap-4 mt-10">
@@ -76,6 +77,6 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       ) : (
         <div>Not Found</div>
       )}
-    </div>
+    </main>
   );
 };

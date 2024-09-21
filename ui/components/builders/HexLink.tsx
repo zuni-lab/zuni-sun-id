@@ -11,9 +11,9 @@ export const HexLink: IComponent<{
   return (
     <Button
       variant="link"
-      className={cx('text-accent-foreground font-mono', className)}
+      className={cx('text-accent-foreground font-mono text-base', className)}
       onClick={href ? () => window.open(href, '_blank') : undefined}>
-      {!isFull && `${formattedContent?.slice(0, 20)}...${formattedContent?.slice(-4)}`}
+      {!isFull && `${formattedContent?.slice(0, 16)}...${formattedContent?.slice(-4)}`}
       {isFull && formattedContent}
     </Button>
   );

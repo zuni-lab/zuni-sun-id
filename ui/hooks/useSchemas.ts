@@ -49,6 +49,7 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         });
 
         return {
+          id: Number(r.id),
           uid: r.uid,
           name: r.name,
           resolver: r.resolver,

@@ -1,7 +1,6 @@
-import { buttonVariants } from '@/components/shadcn/Button';
-import { AppRouter, RouterMeta } from '@/constants/router';
+import { MOCK_STATS } from '@/constants/mock';
+import { RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { RecentCredentials } from './components/RecentCredentials';
 import { RecentSchemas } from './components/RecentSchemas';
 
@@ -9,22 +8,17 @@ export const metadata: Metadata = RouterMeta.Home;
 
 export default function Page() {
   return (
-    <main className="py-12 space-y-4">
-      <section className="flex items-center gap-12">
-        <div>
-          <h1>Stats</h1>
-        </div>
-        <div className="grow flex items-center justify-around gap-4 divide-x divide-white">
-          {/* {MOCK_STATS.map((stat, i) => (
-            <div className="px-4" key={i}>
-              {stat}
+    <main className="py-12 space-y-20">
+      <div className="flex items-center gap-12">
+        <section className="grow flex items-center justify-around gap-4 divide-x divide-white py-12 max-w-7xl !bg-white shadow-none">
+          {MOCK_STATS.map((stat, i) => (
+            <div className="px-4 text-center" key={i}>
+              <h3 className="text-xl font-semibold">{stat.value}</h3>
+              <p className="text-lg text-muted-foreground">{stat.label}</p>
             </div>
-          ))} */}
-        </div>
-        <Link className={buttonVariants()} href={`${AppRouter.Credential}/issue`}>
-          Issue Credential
-        </Link>
-      </section>
+          ))}
+        </section>
+      </div>
       <RecentCredentials />
       <RecentSchemas />
     </main>

@@ -12,12 +12,15 @@ import {
 import React, { useEffect, useRef } from 'react';
 import { PaginationButton } from '../PaginationButton';
 import { Skeleton } from '../shadcn/Skeleton';
+import { SunIDButton } from './SunIDButton';
+import { AppRouter } from '@/constants/router';
 
 interface SunTableProps<T> {
   title: string;
   columns: { label: string; className?: string }[];
   items: T[];
   renderRow: (row: T, index?: number) => JSX.Element;
+  button?: 'schema' | 'credential';
   renderRightTop?: JSX.Element;
   isLoading?: boolean;
   footerButton?: React.ReactNode;
@@ -36,6 +39,7 @@ export const SunTable = <T,>({
   items,
   renderRow,
   renderRightTop,
+  button = 'schema',
   isLoading,
   footerButton,
   maxItems = 10,
@@ -59,8 +63,14 @@ export const SunTable = <T,>({
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h1 className="font-medium my-2 mb-4 font-conthrax">{title}</h1>
-        {renderRightTop}
+        <h1 className="my-2 mb-4 text-xl font-semibold">{title}</h1>
+        {renderRightTop ? (
+          renderRightTop
+        ) : button === 'schema' ? (
+          <SunIDButton href={`${AppRouter.Schema}/create`} name="Create Schema" />
+        ) : button === 'credential' ? (
+          <SunIDButton href={`${AppRouter.Credential}/issue`} name="Create Credential" />
+        ) : null}
       </div>
       <Table className="w-full">
         <TableHeader>

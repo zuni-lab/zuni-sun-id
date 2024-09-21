@@ -21,6 +21,7 @@ export const RecentCredentials: IComponent = () => {
       columns={CredentialTableHeaders}
       items={items ?? []}
       isLoading={isFetching}
+      button="credential"
       renderRow={CredentialRow}
       footerButton={
         <Link

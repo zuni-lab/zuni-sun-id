@@ -2,8 +2,8 @@
 
 import { Chip } from '@/components/builders/Chip';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
+import { SunIDButton } from '@/components/builders/SunIDButton';
 import { SunTable } from '@/components/builders/SunTable';
-import { buttonVariants } from '@/components/shadcn/Button';
 import { useTronWeb } from '@/components/TronProvider';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
@@ -12,7 +12,6 @@ import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredenti
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
 import { Loader } from 'lucide-react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
 
@@ -46,7 +45,11 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
   });
 
   if (isLoading) {
-    return <Loader className="w-12 h-12 animate-spin m-auto mt-12" />;
+    return (
+      <main>
+        <Loader className="w-12 h-12 animate-spin m-auto mt-12" />;
+      </main>
+    );
   }
 
   if (!isLoading && !data) {
@@ -54,7 +57,7 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
   }
 
   return (
-    <div>
+    <main>
       {!isLoading && data && (
         <div>
           <section className="flex flex-col gap-4 mt-10">
@@ -63,10 +66,10 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
                 <Chip text={`#${data.id}`} />
                 <div className="font-bold ps-4">{data.uid}</div>
               </div>
-
-              <Link className={buttonVariants()} href={`${AppRouter.Credential}/issue/${data.uid}`}>
-                Issue Credential
-              </Link>
+              <SunIDButton
+                href={`${AppRouter.Credential}/issue/${data.uid}`}
+                name="Issue Credential"
+              />
             </div>
             <div className="font-bold">Schema Name: {data.name}</div>
             <div className="flex flex-col gap-4">
@@ -112,6 +115,6 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
           />
         </div>
       )}
-    </div>
+    </main>
   );
 };
