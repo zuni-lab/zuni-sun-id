@@ -10,6 +10,7 @@ const DropdownMenuContentStyle = {
 
 export const AccountDropdown: IComponent = () => {
   const { address } = useWallet();
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild className="w-3 h-3">

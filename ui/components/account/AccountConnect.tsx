@@ -6,8 +6,10 @@ import { Button } from '../shadcn/Button';
 import { AccountDropdown } from './AccountDropdown';
 
 export const AccountConnect: IComponent = () => {
-  const { connected } = useWallet();
+  const tronWeb = useWallet();
   const { setVisible } = useWalletModal();
+
+  const { connected } = tronWeb;
 
   return (
     <div>

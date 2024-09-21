@@ -19,6 +19,7 @@ export const getSchemaContract = async () => {
 
   return schemaContract;
 };
+
 const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
   const { data: totalSchemas } = useCountSchemas();
 
@@ -41,7 +42,6 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         method: 'getSchemasInRange',
         args: [BigInt(from), BigInt(to)],
       });
-
       return result.toReversed().map((r) => {
         const definition = r.schema.split(',').map((field) => {
           const [fieldType, fieldName] = field.split(' ');
@@ -84,6 +84,7 @@ export const useCountSchemas = () => {
       });
       return result;
     },
+    throwOnError: true,
     refetchInterval: 5000,
     refetchOnMount: true,
   });

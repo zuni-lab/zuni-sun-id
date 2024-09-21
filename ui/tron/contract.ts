@@ -41,8 +41,9 @@ export class TronContract<TAbi extends Abi> {
       return await this.#contract[config.method](...config.args).send();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error(error);
-      throw new Error(error.message);
+      throw new Error(error.message, {
+        cause: error,
+      });
     }
   }
 
@@ -58,8 +59,9 @@ export class TronContract<TAbi extends Abi> {
       return [raw] as AbiParametersToPrimitiveTypes<abiFunction['outputs'], 'outputs'>;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error(error);
-      throw new Error(error.message);
+      throw new Error(error.message, {
+        cause: error,
+      });
     }
   }
 }

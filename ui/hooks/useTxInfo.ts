@@ -18,6 +18,7 @@ export const useTxInfo = (txHash: string | undefined, maxRetries: number) => {
     },
     refetchInterval: 5000,
     enabled: !!txHash && count < maxRetries,
+    throwOnError: false,
   });
 
   const isLoading = isFetching || (count < maxRetries && !txInfo?.id);

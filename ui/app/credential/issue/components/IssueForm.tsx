@@ -12,6 +12,7 @@ import {
 import { Input } from '@/shadcn/Input';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
+import { CredentialApi } from '@/api/credential';
 import { AccountConnect } from '@/components/account/AccountConnect';
 import { HexLink } from '@/components/builders/HexLink';
 import { TabSwitch } from '@/components/builders/TabSwitch';
@@ -22,6 +23,7 @@ import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
 import { useTxResult } from '@/states/useTxResult';
 import { getCredentialContract } from '@/tron/contract';
+import { signCredentialOffChain } from '@/tron/helper';
 import { getValidationSchema } from '@/utils/schema';
 import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,9 +34,6 @@ import { ChevronDownIcon, Loader } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CredentialApi } from '@/api/credential';
-import { ProjectENV } from '@env';
-import { TronWebWithExt } from '@/types/tronWeb';
 
 type TCredentialInput<T extends string = TAPP_NAME> =
   | `${T}_Recipient`
@@ -172,35 +171,14 @@ export const IssueCredentialForm: IComponent<{
 
           openTxResult(tx);
         } else {
-          const domain = {
-            name: 'SunID',
-            version: '1',
-            chainId: '0x2b6653dc',
-            verifyingContract: ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS,
-          };
-          const types = {
-            IssueCredential: [
-              { name: 'schemaUID', type: 'bytes32' },
-              { name: 'recipient', type: 'address' },
-              { name: 'expirationTime', type: 'uint64' },
-              { name: 'revocable', type: 'bool' },
-              { name: 'refUID', type: 'bytes32' },
-              { name: 'data', type: 'bytes' },
-            ],
-          };
-          const value = {
+          const signature = await signCredentialOffChain({
             schemaUID: data.uid,
             recipient: recipient,
             expirationTime: expiration,
             revocable: values[CredentialFieldKeys.Revocable] as boolean,
             refUID: refUID,
             data: rawData,
-          };
-          const signature = await (window.tronWeb as TronWebWithExt).trx._signTypedData(
-            domain,
-            types,
-            value
-          );
+          });
 
           await CredentialApi.issue({
             issuer: address as string,
@@ -212,6 +190,7 @@ export const IssueCredentialForm: IComponent<{
             ref_uid: refUID as string,
             data: rawData,
           });
+
           ToastTemplate.Credential.SubmitOffChain();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

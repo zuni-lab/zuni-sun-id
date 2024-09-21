@@ -70,6 +70,7 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
         };
       });
     },
+    throwOnError: true,
   });
 
   useEffect(() => {
