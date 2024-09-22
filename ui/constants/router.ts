@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 export const AppRouter = {
   Home: '/',
   Schema: '/schema',
+  Address: '/address',
   Credential: '/credential',
   Docs: '/docs',
 };
@@ -22,6 +23,7 @@ export const RouterMeta: Record<RouterKey, { title: string; description?: string
     description: 'View all SunID Credential',
     icon: null,
   },
+  Address: { title: 'Address', description: 'Address', icon: null },
   Docs: { title: 'Docs', description: 'Docs', icon: null },
 };
 
@@ -58,6 +60,13 @@ const RouterHeadings: Record<RouterKey, { title: string; descs?: string[] }> = {
     descs: [
       'Browse, issue, and verify credentials stored on the SunID platform.',
       'Easily manage credential data with trust and security powered by Tron and BTFS.',
+    ],
+  },
+  Address: {
+    title: 'Manage Addresses',
+    descs: [
+      'View and manage your associated addresses on SunID.',
+      'Link and organize your addresses for credential issuance and verification.',
     ],
   },
   Docs: {

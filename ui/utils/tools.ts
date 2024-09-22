@@ -81,3 +81,7 @@ export const EMPTY_UID = '0x0000000000000000000000000000000000000000000000000000
 export const toTronAddress = (hexAddr: string) => TronWeb.address.fromHex(hexAddr) as string;
 export const toHexAddress = (tronAddr: string) =>
   TronWeb.address.toHex(tronAddr).replace('41', '0x') as `0x${string}`;
+
+export const isTronAddress = (address: string) => {
+  return TronWeb.isAddress(address);
+};

@@ -19,3 +19,10 @@ type SchemaData = {
   definition: TSchemaDefinitions;
   timestamp: number;
 };
+
+type QueryCombinedDataType = 'onchain-credential' | 'offchain-credential' | 'schema' | 'address';
+
+type QueryCombinedDataResult = {
+  result: string;
+  type: QueryCombinedDataType;
+};
