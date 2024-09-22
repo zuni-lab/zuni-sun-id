@@ -23,7 +23,7 @@ import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
 import { useTxResult } from '@/states/useTxResult';
 import { getCredentialContract } from '@/tron/contract';
-import { signCredentialOffChain } from '@/tron/helper';
+import { signCredentialOffChain, TronWeb } from '@/tron/helper';
 import { getValidationSchema } from '@/utils/schema';
 import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -125,7 +125,7 @@ export const IssueCredentialForm: IComponent<{
 
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
-    if (connected && window.tronWeb) {
+    if (connected && window.tronWeb && address) {
       const contract = await getCredentialContract();
 
       const dataTypes: string[] = [];
@@ -181,7 +181,7 @@ export const IssueCredentialForm: IComponent<{
           });
 
           await CredentialApi.issue({
-            issuer: address as string,
+            issuer: `0x${TronWeb().address.toHex(address).replace('41', '')}`,
             signature: signature,
             schema_uid: data.uid,
             recipient: recipient as string,

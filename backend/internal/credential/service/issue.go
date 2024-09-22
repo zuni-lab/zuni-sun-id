@@ -18,7 +18,7 @@ type IssueCredentialRequest struct {
 	Signature      string `json:"signature" validate:"bytes"`
 	SchemaUID      string `json:"schema_uid" validate:"bytes32"`
 	Recipient      string `json:"recipient" validate:"address"`
-	ExpirationTime uint64 `json:"expiration_time" validate:"min=1"`
+	ExpirationTime uint64 `json:"expiration_time" validate:"min=0"`
 	Revocable      bool   `json:"revocable"`
 	RefUID         string `json:"ref_uid" validate:"bytes32"`
 	Data           string `json:"data" validate:"bytes"`

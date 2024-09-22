@@ -3,19 +3,19 @@ import { SearchIcon, Slash } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
+import { useQuery } from '@tanstack/react-query';
+import { CredentialApi } from '@/api/credential';
 
 export const Search: IComponent<{
-  onSearchChange: (value: string) => void;
   placeholder?: string;
-}> = ({ onSearchChange, placeholder = 'Search...' }) => {
+}> = ({ placeholder = 'Search...' }) => {
   const [query, setQuery] = useState<string>('');
-  const debounce = useActionDebounce(500, true);
+  const debounce = useActionDebounce(1000, true);
 
   const onSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value);
       debounce(() => {
-        onSearchChange(e.target.value);
+        setQuery(e.target.value);
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -24,8 +24,34 @@ export const Search: IComponent<{
 
   const clearSearch = useCallback(() => {
     setQuery('');
-    onSearchChange('');
-  }, [onSearchChange, setQuery]);
+  }, [setQuery]);
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['search', query],
+    queryFn: async () => {
+      const response = await CredentialApi.search({ uid: query });
+      if (!response) {
+        return;
+      }
+      const parsedData: TCredential = {
+        uid: response.uid,
+        issuer: response.issuer,
+        signature: response.signature,
+        schemaUID: response.schema_uid,
+        recipient: response.recipient,
+        expiration: response.expiration_time,
+        revocable: response.revocable,
+        refUID: response.ref_uid,
+        data: response.data,
+        createdAt: response.created_at,
+      };
+
+      console.log({ parsedData });
+    },
+    enabled: !!query,
+  });
+
+  console.log(data, isFetching);
 
   return (
     <div className="w-full flex items-center float-end bg-accent px-2 rounded-2xl">
@@ -36,7 +62,7 @@ export const Search: IComponent<{
         placeholder={placeholder}
         className="focus:!border-none bg-transparent placeholder:text-gray-500"
         onChange={onSearch}
-        value={query}
+        // value={query}
       />
       <Button
         size={'lg'}

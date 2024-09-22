@@ -19,12 +19,7 @@ export const Navigation: IComponent = () => {
         <LogoSvg />
       </Link>
       <div className="grow">
-        <Search
-          onSearchChange={(val) => {
-            console.log({ val });
-          }}
-          placeholder="Search by credential, schema, address, etc."
-        />
+        <Search placeholder="Search by credential, schema, address, etc." />
       </div>
       <div className="w-1/3 flex justify-end items-center pr-4">
         <NavigationMenu>

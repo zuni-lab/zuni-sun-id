@@ -8,6 +8,11 @@ export const checkProvider = (key: string, document: Window) => {
   }
 };
 
+export const TronWeb = (): TronWebWithExt => {
+  checkProvider('tronWeb', window);
+  return window.tronWeb as TronWebWithExt;
+};
+
 const signTronData = (contract: string, types: object, values: object) => {
   checkProvider('tronWeb', window);
   return (window.tronWeb as TronWebWithExt).trx._signTypedData(
