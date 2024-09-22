@@ -1,19 +1,19 @@
 'use client';
 
+import { AppRouter } from '@/constants/router';
 import { cx, getRelativeTime } from '@/utils/tools';
 import { TableCell, TableRow } from '../shadcn/Table';
-import { HexLink } from './HexLink';
 import { Chip } from './Chip';
-import { AppRouter } from '@/constants/router';
+import { HexLink } from './HexLink';
 
-export const CredentialRow = ({ uid, schema, issuer, recipient, type, time }: TClaim) => (
+export const CredentialRow = ({ uid, schema, issuer, recipient, type, timestamp }: TCredential) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
       <HexLink content={uid} href={`${AppRouter.Credential}/${uid}`} />
     </TableCell>
-    <TableCell className="flex items-center justify-center gap-2 border p-2 my-2 rounded-lg">
-      <Chip text={`#${schema.id}`} />
-      <span className="text-base font-semibold">{schema.name}</span>
+    <TableCell className="flex items-center gap-2 border p-2 my-2 rounded-lg">
+      <Chip text={`#${schema?.id}`} />
+      <span className="text-base font-semibold">{schema?.name}</span>
     </TableCell>
     <TableCell className="w-80">
       <HexLink content={issuer} href={`${AppRouter.Address}/${issuer}`} />
@@ -22,7 +22,7 @@ export const CredentialRow = ({ uid, schema, issuer, recipient, type, time }: TC
       <HexLink content={recipient} href={`${AppRouter.Address}/${recipient}`} />
     </TableCell>
     <TableCell>{type}</TableCell>
-    <TableCell>{getRelativeTime(time)}</TableCell>
+    <TableCell>{getRelativeTime(timestamp)}</TableCell>
   </TableRow>
 );
 

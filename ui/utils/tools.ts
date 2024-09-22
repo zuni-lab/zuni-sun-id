@@ -85,3 +85,12 @@ export const toHexAddress = (tronAddr: string) =>
 export const isTronAddress = (address: string) => {
   return TronWeb.isAddress(address);
 };
+
+// Formats the balance to 2 decimal places and adds commas for large numbers
+export const formatBalance = (balance: number | undefined, decimals = 6): string => {
+  if (balance === undefined) return '--'; // Handle undefined balance
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
+  }).format(balance / Math.pow(10, decimals));
+};

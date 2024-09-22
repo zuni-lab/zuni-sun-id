@@ -14,14 +14,14 @@ import { Search } from './Search';
 
 export const Navigation: IComponent = () => {
   return (
-    <div className="flex items-center py-6 px-16 gap-12 border-b border-accent shadow-accent shadow-sm">
+    <div className="flex items-center py-6 px-12 gap-12 border-b border-accent shadow-accent shadow-sm">
       <Link href="/">
         <LogoSvg />
       </Link>
-      <div className="grow">
+      <div className="w-[600px]">
         <Search placeholder="Search by credential, schema, address, etc." />
       </div>
-      <div className="w-1/3 flex justify-end items-center pr-4">
+      <div className="flex justify-end items-center grow gap-4">
         <NavigationMenu>
           <NavigationMenuList>
             {Object.entries(AppRouter)
@@ -35,13 +35,9 @@ export const Navigation: IComponent = () => {
                   </Link>
                 </NavigationMenuItem>
               ))}
-            <NavigationMenuItem className="pl-8 flex justify-end">
-              <div className="w-max">
-                <AccountConnect />
-              </div>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <AccountConnect />
       </div>
     </div>
   );

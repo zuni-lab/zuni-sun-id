@@ -2,13 +2,13 @@ import { EventResult, TronWebWithExt } from '@/types/tronWeb';
 
 export class EventQuery {
   static async getEventsByTransactionID<T = unknown>(
+    provider: TronWebWithExt,
     transactionID: string
   ): Promise<EventResult<T>[]> {
-    return await (window.tronWeb as TronWebWithExt).event.getEventsByTransactionID<T>(
-      transactionID
-    );
+    return await provider.event.getEventsByTransactionID<T>(transactionID);
   }
   static async getEventsByContractAddress<T = unknown>(
+    provider: TronWebWithExt,
     contractAddress: string,
     options?: {
       fromTimestamp?: number;
@@ -21,15 +21,13 @@ export class EventQuery {
       filters?: object;
     }
   ): Promise<EventResult<T>[]> {
-    return await (window.tronWeb as TronWebWithExt).event.getEventsByContractAddress<T>(
-      contractAddress,
-      options
-    );
+    return await provider.event.getEventsByContractAddress<T>(contractAddress, options);
   }
 }
 
 export class TxQuery {
-  static async getTransactionInfo(transactionID: string) {
-    return await (window.tronWeb as TronWebWithExt).trx.getTransactionInfo(transactionID);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static async getTransactionInfo(provider: TronWebWithExt, transactionID: string): Promise<any> {
+    return await provider.trx.getTransactionInfo(transactionID);
   }
 }

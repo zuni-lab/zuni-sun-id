@@ -16,3 +16,5 @@ export const MOCK_STATS = [
     value: 85, // Example value
   },
 ];
+
+export const MOCK_PRIVATE_KEY = '0000000000000000000000000000000000000000000000000000000000000001';

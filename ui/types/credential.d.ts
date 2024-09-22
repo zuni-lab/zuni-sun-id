@@ -1,12 +1,26 @@
 type TCredential = {
   uid: string;
   issuer: string;
-  signature: string;
-  schemaUID: string;
+
   recipient: string;
-  expiration: number;
   revocable: boolean;
   refUID: string;
-  data: string;
-  createdAt: number;
+
+  data?: {
+    name: string;
+    value: string;
+  }[];
+
+  signature?: string;
+
+  schema?: {
+    id?: number;
+    uid: string;
+    name?: string;
+  };
+  timestamp: number;
+  expirationTime?: number;
+  revocationTime?: number;
+
+  type: 'onchain' | 'offchain';
 };

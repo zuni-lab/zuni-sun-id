@@ -2,7 +2,6 @@
 
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { Loader } from 'lucide-react';
-import { notFound } from 'next/navigation';
 import { IssueCredentialForm } from '../components/IssueForm';
 
 export const IssuePage: IComponent<{
@@ -16,10 +15,6 @@ export const IssuePage: IComponent<{
         <Loader className="animate-spin" size="40" />
       </div>
     );
-
-  if (!isFetching && (isError || !data)) {
-    notFound();
-  }
 
   return (
     <section className="mt-4 max-w-4xl">

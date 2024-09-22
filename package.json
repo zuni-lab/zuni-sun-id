@@ -1,6 +1,6 @@
 {
-  "name": "zuni-dapp-template",
-  "version": "0.0.0",
+  "name": "zuni-sun-id",
+  "version": "0.0.1",
   "repository": "git@github.com:zuni-lab/zuni-dapp-template.git",
   "devDependencies": {
     "husky": "^9.0.11"

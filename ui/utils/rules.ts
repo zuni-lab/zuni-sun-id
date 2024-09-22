@@ -1,4 +1,4 @@
-import { globalTronWeb } from '@/components/TronProvider';
+import { defaultTronWeb } from '@/components/TronProvider';
 import { z } from 'zod';
 import { isValidAddress } from './tools';
 import { getMaxValue, getMinValue, NumericTypes } from './numberic';
@@ -81,7 +81,7 @@ export const genRuleSchema = () => {
     .transform((val) => val.trim())
     .refine(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (val) => (val === '' ? true : (globalTronWeb as any).isAddress(val)) || isValidAddress(val),
+      (val) => (val === '' ? true : (defaultTronWeb as any).isAddress(val)) || isValidAddress(val),
       {
         message: 'Must be a valid address',
       }

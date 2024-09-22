@@ -7,6 +7,7 @@ export const ToastTemplate = {
     NotFound: createToast('Wallet not found', { type: 'error' }),
     Disconnected: createToast('Wallet disconnected', { type: 'error' }),
     Unknown: createToast('Unknown error', { type: 'error' }),
+    Message: (msg: string) => createToast(msg, { type: 'warning' })(),
   },
   Schema: {
     Submit: createToast('Schema submitted successfully', { type: 'success' }),

@@ -13,21 +13,19 @@ import { Input } from '@/shadcn/Input';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 import { CredentialApi } from '@/api/credential';
-import { AccountConnect } from '@/components/account/AccountConnect';
+import { ConnectButton } from '@/components/account/AccountConnect';
 import { HexLink } from '@/components/builders/HexLink';
 import { TabSwitch } from '@/components/builders/TabSwitch';
 import { Button } from '@/components/shadcn/Button';
-import { globalTronWeb, useTronWeb } from '@/components/TronProvider';
+import { defaultTronWeb, useTron, useTronWeb } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
+import { useCredentialContract, useSignCredentialOffChain } from '@/hooks/useContract';
 import { useTxResult } from '@/states/useTxResult';
-import { getCredentialContract } from '@/tron/contract';
-import { signCredentialOffChain, TronWeb } from '@/tron/helper';
 import { getValidationSchema } from '@/utils/schema';
 import { isValidAddress, isValidBytesWithLength } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
 import clsx from 'clsx';
 import { ChevronDownIcon, Loader } from 'lucide-react';
@@ -57,7 +55,7 @@ const baseCredentialSchema = z.object({
         val.length === 0
           ? true
           : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (globalTronWeb as any)?.isAddress(val.replace('0x', '')) || isValidAddress(val),
+            (defaultTronWeb as any)?.isAddress(val.replace('0x', '')) || isValidAddress(val),
       {
         message: 'Invalid recipient address',
       }
@@ -101,8 +99,8 @@ const submitTypes: Record<'onchain' | 'offchain', string> = {
 export const IssueCredentialForm: IComponent<{
   data: SchemaData;
 }> = ({ data }) => {
-  const { address, connected } = useWallet();
-  const tronweb = useTronWeb();
+  const tronWeb = useTronWeb();
+  const { connected, address } = useTron();
 
   const [submitType, setSubmitType] = useState<'onchain' | 'offchain'>('onchain');
 
@@ -123,11 +121,13 @@ export const IssueCredentialForm: IComponent<{
 
   const { control, handleSubmit } = form;
 
+  const { data: contract } = useCredentialContract();
+
+  const { mutateAsync: signOffchain } = useSignCredentialOffChain();
+
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
-    if (connected && window.tronWeb && address) {
-      const contract = await getCredentialContract();
-
+    if (connected && tronWeb && address && contract) {
       const dataTypes: string[] = [];
       const dataValues: unknown[] = [];
 
@@ -135,7 +135,7 @@ export const IssueCredentialForm: IComponent<{
         dataTypes.push(field.fieldType);
         dataValues.push(values[field.fieldName]);
       });
-      const rawData = tronweb.utils.abi.encodeParams(dataTypes, dataValues);
+      const rawData = tronWeb.utils.abi.encodeParams(dataTypes, dataValues);
 
       const expiration = values[CredentialFieldKeys.Expiration]
         ? new Date(values[CredentialFieldKeys.Expiration] as string).getTime() / 1000
@@ -171,7 +171,7 @@ export const IssueCredentialForm: IComponent<{
 
           openTxResult(tx);
         } else {
-          const signature = await signCredentialOffChain({
+          const signature = await signOffchain({
             schemaUID: data.uid,
             recipient: recipient,
             expirationTime: expiration,
@@ -181,7 +181,7 @@ export const IssueCredentialForm: IComponent<{
           });
 
           await CredentialApi.issue({
-            issuer: `0x${TronWeb().address.toHex(address).replace('41', '')}`,
+            issuer: `0x${tronWeb.address.toHex(address).replace('41', '')}`,
             signature: signature,
             schema_uid: data.uid,
             recipient: recipient as string,
@@ -375,7 +375,7 @@ export const IssueCredentialForm: IComponent<{
         </div>
 
         <div className="flex items-center justify-center !mt-12">
-          {!connected && <AccountConnect />}
+          {!connected && <ConnectButton />}
           {connected && (
             <div
               className={cx('flex items-center rounded-xl overflow-hidden w-52', {

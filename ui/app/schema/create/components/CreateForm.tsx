@@ -21,20 +21,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/Select';
-import { globalTronWeb } from '@/components/TronProvider';
+import { defaultTronWeb, useTron } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { ToastTemplate } from '@/constants/toast';
 import { useTxResult } from '@/states/useTxResult';
-import { getchemaContract } from '@/tron/contract';
 import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { cx } from 'class-variance-authority';
 import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useSchemaContract } from '@/hooks/useContract';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -54,11 +53,8 @@ const SchemaDeclareTokenKey = (index: number) => `${SchemaFieldKeys.DeclareStmts
 
 const SchemaDeclareTypeKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.type`;
 
-// const SchemaDeclareDescKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.desc`;
-
 const baseFormSchema = z.object({
   [SchemaFieldKeys.Name]: z.string().optional(),
-  // [SchemaFieldKeys.Description]: z.optional(z.string().transform((val) => val.trim())),
   [SchemaFieldKeys.ResolverAddress]: z
     .string()
     .default('0x0000000000000000000000000000000000000000')
@@ -67,9 +63,9 @@ const baseFormSchema = z.object({
       (val) =>
         val.trim().length === 0
           ? true
-          : globalTronWeb
+          : defaultTronWeb
             ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (globalTronWeb as any).isAddress(val.replace('0x', ''))
+              (defaultTronWeb as any).isAddress(val.replace('0x', ''))
             : isValidAddress(val),
       'Invalid resolver address'
     ),
@@ -98,7 +94,7 @@ const baseFormSchema = z.object({
 });
 
 export const CreateSchemaForm: IComponent = () => {
-  const { connected } = useWallet();
+  const { tronWeb, connected } = useTron();
 
   const [submitting, setSubmitting] = useState(false);
   const { open: openTxResult } = useTxResult();
@@ -134,11 +130,11 @@ export const CreateSchemaForm: IComponent = () => {
     [remove]
   );
 
+  const { data: contract } = useSchemaContract();
+
   const handlePressSubmit = handleSubmit(async (values) => {
     setSubmitting(true);
-    if (connected && window.tronWeb) {
-      const contract = await getchemaContract();
-
+    if (connected && tronWeb && contract) {
       const schema = (
         values[SchemaFieldKeys.DeclareStmts] as {
           token: string;

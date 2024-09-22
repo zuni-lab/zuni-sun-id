@@ -37,13 +37,16 @@ export const Search: IComponent<{
         uid: response.uid,
         issuer: response.issuer,
         signature: response.signature,
-        schemaUID: response.schema_uid,
+        schema: {
+          uid: response.schema_uid,
+        },
         recipient: response.recipient,
-        expiration: response.expiration_time,
+        expirationTime: response.expiration_time,
         revocable: response.revocable,
         refUID: response.ref_uid,
-        data: response.data,
-        createdAt: response.created_at,
+        // data: response.data, // fix me
+        timestamp: response.created_at,
+        type: 'offchain',
       };
 
       return parsedData;

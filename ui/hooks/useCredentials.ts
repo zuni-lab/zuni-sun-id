@@ -1,29 +1,39 @@
+import { useTronWeb } from '@/components/TronProvider';
 import { SUN_ID_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
-import { ProjectENV } from '@env';
-import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { hexToNumber, toHexAddress, toTronAddress } from '@/utils/tools';
-import { getSchemaContract } from './useSchemas';
 import { EventQuery } from '@/tron/query';
-import { useTronWeb } from '@/components/TronProvider';
+import { hexToNumber, toHexAddress, toTronAddress } from '@/utils/tools';
+import { ProjectENV } from '@env';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useSchemaContract } from './useContract';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
-export const getSunIdContract = async () => {
-  if (!sunIdContract) {
-    sunIdContract = await TronContract.new(
-      SUN_ID_ABI,
-      ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
-    );
-  }
+export const useSundIdContract = () => {
+  const tronWeb = useTronWeb();
 
-  return sunIdContract;
+  return useQuery({
+    queryKey: ['sunIdContract'],
+    queryFn: async () => {
+      if (!sunIdContract) {
+        sunIdContract = await TronContract.new(
+          tronWeb,
+          SUN_ID_ABI,
+          ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+        );
+      }
+
+      return sunIdContract;
+    },
+  });
 };
 
 export const useCredentials = ({ page, limit }: { page: number; limit: number }) => {
   const { data: totalCredentials } = useCountCredentials();
+  const { data: sunId } = useSundIdContract();
+  const { data: schemaRegistry } = useSchemaContract();
 
   const {
     data: items,
@@ -32,26 +42,19 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
   } = useQuery({
     queryKey: [QueryKeys.Credential.List, page],
     queryFn: async () => {
-      if (!totalCredentials) {
-        return [];
-      }
-
-      const schemaRegistry = await getSchemaContract();
-      const sunId = await getSunIdContract();
-
       let from = totalCredentials - page * limit;
       const to = from + limit;
       if (from < 0) {
         from = 0;
       }
 
-      const [credentials] = await sunId.call({
+      const [credentials] = await sunId!.call({
         method: 'getCredentialsInRange',
         args: [BigInt(from), BigInt(to)],
       });
 
       const schemaUIDs = credentials.map((c) => c.schema);
-      const [schemas] = await schemaRegistry.call({
+      const [schemas] = await schemaRegistry!.call({
         method: 'getSchemas',
         args: [schemaUIDs],
       });
@@ -65,12 +68,12 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
           },
           issuer: toTronAddress(c.issuer),
           recipient: toTronAddress(c.recipient),
-          time: hexToNumber(c.time),
+          timestamp: hexToNumber(c.time),
           type: 'onchain',
-        };
+        } as TCredential;
       });
     },
-    throwOnError: true,
+    enabled: !!totalCredentials && !!sunId && !!schemaRegistry,
   });
 
   useEffect(() => {
@@ -87,6 +90,8 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
 
 export const useCredentialDetail = (credentialId: THexString, onchain = true) => {
   const tronweb = useTronWeb();
+  const { data: schemaContract } = useSchemaContract();
+  const { data: sunId } = useSundIdContract();
 
   return useQuery({
     queryKey: [QueryKeys.Credential.Detail, credentialId],
@@ -95,15 +100,12 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
         throw new Error('Offchain credential not implemented');
       }
 
-      const schemaContract = await getSchemaContract();
-      const sunId = await getSunIdContract();
-
-      const [credential] = await sunId.call({
+      const [credential] = await sunId!.call({
         method: 'getCredential',
         args: [credentialId],
       });
 
-      const [schema] = await schemaContract.call({
+      const [schema] = await schemaContract!.call({
         method: 'getSchema',
         args: [credential.schema],
       });
@@ -114,7 +116,7 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
       });
 
       const dataTypes = definition.map((field) => field.fieldType);
-      const dataValues = tronweb.utils.abi.decodeParams(dataTypes, credential.data);
+      const dataValues = tronweb.utils.abi.decodeParams(dataTypes, credential.data) as string[];
       const data = dataValues.map((v, i) => {
         return {
           name: definition[i].fieldName,
@@ -125,20 +127,23 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
 
       return {
         uid: credential.uid,
+        issuer: toTronAddress(credential.issuer),
+        recipient: toTronAddress(credential.recipient),
+        revocable: credential.revocable,
+        refUID: credential.refUID,
+        data,
         schema: {
           id: Number(schema.id),
           uid: schema.uid,
           name: schema.name,
         },
-        data,
-        issuer: toTronAddress(credential.issuer),
-        recipient: toTronAddress(credential.recipient),
         timestamp: Number(credential.time) * 1000,
         expirationTime: Number(credential.expirationTime) * 1000,
         revocationTime: Number(credential.revocationTime) * 1000,
-        refUID: credential.refUID,
-      };
+        type: 'onchain',
+      } as TCredential;
     },
+    enabled: !!sunId && !!schemaContract,
   });
 };
 
@@ -152,6 +157,7 @@ export const useCredentialsBySchema = ({
   schema: string;
 }) => {
   const { data: totalCredentials } = useCountCredentials();
+  const tronWeb = useTronWeb();
 
   const {
     data: items,
@@ -161,6 +167,7 @@ export const useCredentialsBySchema = ({
     queryKey: [QueryKeys.Schema.Credentials, schema, page],
     queryFn: async () => {
       const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+        tronWeb,
         ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
       );
       const issuedCredentialEvents = schemaEvents.filter(
@@ -199,11 +206,13 @@ export const useCredentialsByAddress = ({
   // limit: number;
   address: string;
 }) => {
+  const tronWeb = useTronWeb();
   return useQuery({
     queryKey: [QueryKeys.Credential.Address, address, page],
     queryFn: async () => {
       const issueCredentailEvents =
         await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+          tronWeb,
           ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
         );
       const hexAddress = address.startsWith('0x') ? address : toHexAddress(address);
@@ -243,11 +252,12 @@ export const useCredentialsByAddress = ({
 };
 
 export const useCountCredentials = () => {
+  const { data: contract } = useSundIdContract();
+
   const { data, refetch } = useQuery({
     queryKey: [QueryKeys.Credential.Total],
     queryFn: async () => {
-      const contract = await getSunIdContract();
-      const [result] = await contract.call({
+      const [result] = await contract!.call({
         method: 'totalCredentials',
         args: [],
       });
@@ -255,6 +265,7 @@ export const useCountCredentials = () => {
     },
     refetchInterval: 10_000,
     refetchOnMount: true,
+    enabled: !!contract,
   });
 
   return { data: hexToNumber(data), refetch };

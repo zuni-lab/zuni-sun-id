@@ -12,7 +12,6 @@ import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredenti
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
 import { Loader } from 'lucide-react';
-import { notFound } from 'next/navigation';
 import { useState } from 'react';
 
 const RuleItem: IComponent<{
@@ -50,10 +49,6 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
         <Loader className="w-12 h-12 animate-spin m-auto mt-12" />;
       </main>
     );
-  }
-
-  if (!isLoading && !data) {
-    notFound();
   }
 
   return (

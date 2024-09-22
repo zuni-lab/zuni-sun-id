@@ -26,50 +26,56 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const searchParams = useSearchParams();
 
   const offchain = searchParams.get('offchain') === 'true';
-  const { data, isFetching } = useCredentialDetail(credentialId as THexString, !offchain);
+  const { data: credential, isFetching } = useCredentialDetail(
+    credentialId as THexString,
+    !offchain
+  );
 
   return (
     <main>
       {isFetching ? (
         <Loader className="w-12 h-12 animate-spin m-auto mt-12" />
-      ) : data ? (
+      ) : credential ? (
         <div>
           <section className="flex flex-col gap-4 mt-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="font-bold ps-4">{data.uid}</div>
+                <div className="font-bold ps-4">{credential.uid}</div>
               </div>
             </div>
             <div>
               <div className="flex">
-                <Chip text={`#${data.schema.id}`} />
+                <Chip text={`#${credential.schema?.id}`} />
                 <div>
-                  <div className="font-bold">{data.schema.name}</div>
-                  <div className="font-bold">{data.uid}</div>
+                  <div className="font-bold">{credential.schema?.name}</div>
+                  <div className="font-bold">{credential.uid}</div>
                 </div>
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              {data.data.map(({ name, value }, index) => (
+              {credential.data?.map(({ name, value }, index) => (
                 <RuleItem key={index} type={name} name={value as string} />
               ))}
             </div>
-            <div>Holder: {data.recipient && tronweb.address.fromHex(data.recipient)}</div>
-            <div>Issuer: {data.issuer && tronweb.address.fromHex(data.issuer)}</div>
             <div>
-              Created at: {new Date(data.timestamp).toUTCString()} (
-              {getRelativeTime(data.timestamp / 1000)})
+              Holder: {credential.recipient && tronweb.address.fromHex(credential.recipient)}
+            </div>
+            <div>Issuer: {credential.issuer && tronweb.address.fromHex(credential.issuer)}</div>
+            <div>
+              Created at: {new Date(credential.timestamp).toUTCString()} (
+              {getRelativeTime(credential.timestamp / 1000)})
             </div>
             <div>
               Expiration at:
-              {data.expirationTime == 0 ? 'Never' : new Date(data.expirationTime).toUTCString()} (
-              {getRelativeTime(data.expirationTime / 1000)})
+              {credential.expirationTime == 0 || !credential.expirationTime
+                ? 'Never'
+                : `${new Date(credential.expirationTime).toUTCString()}${getRelativeTime(credential.expirationTime / 1000)}`}
             </div>
-            {data.refUID !== EMPTY_UID && <div>RefUID: {data.refUID}</div>}
-            {data.revocationTime > 0 && (
+            {credential.refUID !== EMPTY_UID && <div>RefUID: {credential.refUID}</div>}
+            {credential.revocationTime && credential.revocationTime > 0 && (
               <div>
-                Revoked at:{new Date(data.revocationTime).toUTCString()} (
-                {getRelativeTime(data.revocationTime / 1000)})
+                Revoked at:{new Date(credential.revocationTime).toUTCString()} (
+                {getRelativeTime(credential.revocationTime / 1000)})
               </div>
             )}
           </section>
