@@ -1,3 +1,4 @@
+import { CredentialApi } from '@/api/credential';
 import { useTronWeb } from '@/components/TronProvider';
 import { QueryKeys } from '@/constants/configs';
 import { EventQuery } from '@/tron/query';
@@ -22,12 +23,10 @@ export const useCombinedData = ({ query }: { query: string }) => {
         return isTronAddress(query) ? { result: query, type: 'address' } : undefined;
       }
 
-      // TODO:
-
-      //   const offchainCredential = await fetchOffchainCredential(query);
-      //   if (offchainCredential) {
-      //     return { result: offchainCredential.uid, type: 'offchain-credential' };
-      //   }
+      try {
+        const { uid } = await CredentialApi.search({ uid: query });
+        return { result: uid, type: 'offchain-credential' };
+      } catch (error) {}
 
       const schemaEvents = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         tronWeb,
