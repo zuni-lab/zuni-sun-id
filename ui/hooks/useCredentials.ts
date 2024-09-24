@@ -8,6 +8,7 @@ import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSchemaContract } from './useContract';
+import { CredentialApi } from '@/api/credential';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
@@ -96,52 +97,79 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
   return useQuery({
     queryKey: [QueryKeys.Credential.Detail, credentialId],
     queryFn: async () => {
-      if (!onchain) {
-        throw new Error('Offchain credential not implemented');
+      let credential: {
+        uid: THexString;
+        issuer: string;
+        recipient: string;
+        revocable: boolean;
+        refUID: THexString;
+        expirationTime: number;
+        revocationTime: number;
+        time: number;
+        data: THexString;
+        schema: THexString;
+      };
+      if (onchain) {
+        const [credentialOnchain] = await sunId!.call({
+          method: 'getCredential',
+          args: [credentialId],
+        });
+        credential = {
+          ...credentialOnchain,
+          expirationTime: Number(credentialOnchain.expirationTime),
+          revocationTime: Number(credentialOnchain.revocationTime),
+          time: Number(credentialOnchain.time),
+        }
+      } else {
+        const credentialOffchain = await CredentialApi.search({ uid: credentialId });
+        credential = {
+          ...credentialOffchain,
+          refUID: credentialOffchain.ref_uid,
+          expirationTime: credentialOffchain.expiration_time,
+          revocationTime: 0,
+          time: credentialOffchain.created_at,
+          schema: credentialOffchain.schema_uid,
+        }
       }
 
-      const [credential] = await sunId!.call({
-        method: 'getCredential',
-        args: [credentialId],
-      });
+        const [schema] = await schemaContract!.call({
+          method: 'getSchema',
+          args: [credential.schema],
+        });
 
-      const [schema] = await schemaContract!.call({
-        method: 'getSchema',
-        args: [credential.schema],
-      });
+        const definition = schema.schema.split(',').map((field) => {
+          const [fieldType, fieldName] = field.split(' ');
+          return { fieldType, fieldName } as TSchemaDefinition;
+        });
 
-      const definition = schema.schema.split(',').map((field) => {
-        const [fieldType, fieldName] = field.split(' ');
-        return { fieldType, fieldName } as TSchemaDefinition;
-      });
+        const dataTypes = definition.map((field) => field.fieldType);
+        const dataValues = tronweb.utils.abi.decodeParams(dataTypes, credential.data) as string[];
+        const data = dataValues.map((v, i) => {
+          return {
+            name: definition[i].fieldName,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            value: (v as any).toString(),
+          };
+        });
 
-      const dataTypes = definition.map((field) => field.fieldType);
-      const dataValues = tronweb.utils.abi.decodeParams(dataTypes, credential.data) as string[];
-      const data = dataValues.map((v, i) => {
         return {
-          name: definition[i].fieldName,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          value: (v as any).toString(),
-        };
-      });
-
-      return {
-        uid: credential.uid,
-        issuer: toTronAddress(credential.issuer),
-        recipient: toTronAddress(credential.recipient),
-        revocable: credential.revocable,
-        refUID: credential.refUID,
-        data,
-        schema: {
-          id: Number(schema.id),
-          uid: schema.uid,
-          name: schema.name,
-        },
-        timestamp: Number(credential.time) * 1000,
-        expirationTime: Number(credential.expirationTime) * 1000,
-        revocationTime: Number(credential.revocationTime) * 1000,
-        type: 'onchain',
-      } as TCredential;
+          uid: credential.uid,
+          issuer: toTronAddress(credential.issuer),
+          recipient: toTronAddress(credential.recipient),
+          revocable: credential.revocable,
+          refUID: credential.refUID,
+          data,
+          schema: {
+            id: Number(schema.id),
+            uid: schema.uid,
+            name: schema.name,
+          },
+          timestamp: credential.time * 1000,
+          expirationTime: credential.expirationTime * 1000,
+          revocationTime: credential.revocationTime * 1000,
+          type: 'onchain',
+        } as TCredential;
+      
     },
     enabled: !!sunId && !!schemaContract,
   });

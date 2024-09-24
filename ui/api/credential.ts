@@ -3,18 +3,18 @@ import { BaseApi } from './api';
 
 type CredentialPayload = {
   issuer: string;
-  signature: string;
-  schema_uid: string;
+  signature: THexString;
+  schema_uid: THexString;
   recipient: string;
   expiration_time: number;
   revocable: boolean;
-  ref_uid: string;
-  data: string;
+  ref_uid: THexString;
+  data: THexString;
 };
 
 type CredentialReponse = CredentialPayload & {
-  id: string;
-  uid: string;
+  id: THexString;
+  uid: THexString;
   created_at: number;
   updated_at: number;
 };
