@@ -8,7 +8,7 @@ import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSchemaContract } from './useContract';
-import { CredentialApi } from '@/api/credential';
+import { CredentialApi, CredentialResponse } from '@/api/credential';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
@@ -31,7 +31,7 @@ export const useSundIdContract = () => {
   });
 };
 
-export const useCredentials = ({ page, limit }: { page: number; limit: number }) => {
+export const useCredentials = ({ page, limit, onchain=true }: { page: number; limit: number, onchain?: boolean }) => {
   const { data: totalCredentials } = useCountCredentials();
   const { data: sunId } = useSundIdContract();
   const { data: schemaRegistry } = useSchemaContract();
@@ -43,36 +43,60 @@ export const useCredentials = ({ page, limit }: { page: number; limit: number })
   } = useQuery({
     queryKey: [QueryKeys.Credential.List, page],
     queryFn: async () => {
-      let from = totalCredentials - page * limit;
-      const to = from + limit;
-      if (from < 0) {
-        from = 0;
+      let credentials: TCredential[];
+      if(onchain) {
+        let from = totalCredentials - page * limit;
+        const to = from + limit;
+        if (from < 0) {
+          from = 0;
+        }
+  
+        const [onchainCredentials] = await sunId!.call({
+          method: 'getCredentialsInRange',
+          args: [BigInt(from), BigInt(to)],
+        });
+  
+        const schemaUIDs = onchainCredentials.map((c) => c.schema);
+        const [schemas] = await schemaRegistry!.call({
+          method: 'getSchemas',
+          args: [schemaUIDs],
+        });
+        credentials = onchainCredentials.toReversed().map((c, idx) => {
+          return {
+            uid: c.uid,
+            schema: {
+              id: Number(schemas[idx].id),
+              name: schemas[idx].name,
+            },
+            issuer: toTronAddress(c.issuer),
+            recipient: toTronAddress(c.recipient),
+            timestamp: Number(c.time),
+            type: 'onchain',
+          } as TCredential;
+        });
+      } else {
+        const offchainCredentials = await CredentialApi.search({ page, limit }) as CredentialResponse[];
+        const schemaUIDs = offchainCredentials.map((c) => c.schema_uid);
+        const [schemas] = await schemaRegistry!.call({
+          method: 'getSchemas',
+          args: [schemaUIDs],
+        });
+        credentials = offchainCredentials.map((c, idx) => {
+          return {
+            uid: c.uid,
+            schema: {
+              id: Number(schemas[idx].id),
+              name: schemas[idx].name,
+            },
+            issuer: c.issuer,
+            recipient: c.recipient,
+            timestamp: c.created_at,
+            type: 'offchain',
+          } as TCredential;
+        });
       }
 
-      const [credentials] = await sunId!.call({
-        method: 'getCredentialsInRange',
-        args: [BigInt(from), BigInt(to)],
-      });
-
-      const schemaUIDs = credentials.map((c) => c.schema);
-      const [schemas] = await schemaRegistry!.call({
-        method: 'getSchemas',
-        args: [schemaUIDs],
-      });
-
-      return credentials.toReversed().map((c, idx) => {
-        return {
-          uid: c.uid,
-          schema: {
-            id: hexToNumber(schemas[idx].id),
-            name: schemas[idx].name,
-          },
-          issuer: toTronAddress(c.issuer),
-          recipient: toTronAddress(c.recipient),
-          timestamp: hexToNumber(c.time),
-          type: 'onchain',
-        } as TCredential;
-      });
+      return credentials;
     },
     enabled: !!totalCredentials && !!sunId && !!schemaRegistry,
   });
@@ -110,25 +134,25 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
         schema: THexString;
       };
       if (onchain) {
-        const [credentialOnchain] = await sunId!.call({
+        const [onchainCredential] = await sunId!.call({
           method: 'getCredential',
           args: [credentialId],
         });
         credential = {
-          ...credentialOnchain,
-          expirationTime: Number(credentialOnchain.expirationTime),
-          revocationTime: Number(credentialOnchain.revocationTime),
-          time: Number(credentialOnchain.time),
+          ...onchainCredential,
+          expirationTime: Number(onchainCredential.expirationTime),
+          revocationTime: Number(onchainCredential.revocationTime),
+          time: Number(onchainCredential.time),
         }
       } else {
-        const credentialOffchain = await CredentialApi.search({ uid: credentialId });
+        const offchainCredential = await CredentialApi.search({ uid: credentialId }) as CredentialResponse;
         credential = {
-          ...credentialOffchain,
-          refUID: credentialOffchain.ref_uid,
-          expirationTime: credentialOffchain.expiration_time,
+          ...offchainCredential,
+          refUID: offchainCredential.ref_uid,
+          expirationTime: offchainCredential.expiration_time,
           revocationTime: 0,
-          time: credentialOffchain.created_at,
-          schema: credentialOffchain.schema_uid,
+          time: offchainCredential.created_at,
+          schema: offchainCredential.schema_uid,
         }
       }
 

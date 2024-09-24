@@ -12,7 +12,7 @@ type CredentialPayload = {
   data: THexString;
 };
 
-type CredentialReponse = CredentialPayload & {
+export type CredentialResponse = CredentialPayload & {
   id: THexString;
   uid: THexString;
   created_at: number;
@@ -26,8 +26,8 @@ export class CredentialApi extends BaseApi {
     }>(`${ProjectENV.NEXT_PUBLIC_API_HOST}/api/credential`, payload);
   }
 
-  static async search(payload: { uid: string }) {
-    return this.post<CredentialReponse>(
+  static async search(payload: { uid: string } | { page: number; limit: number }) {
+    return this.post<CredentialResponse | CredentialResponse[]>(
       `${ProjectENV.NEXT_PUBLIC_API_HOST}/api/credential/search`,
       payload
     );
