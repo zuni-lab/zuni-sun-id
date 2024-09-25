@@ -1,4 +1,4 @@
-import { CredentialApi } from '@/api/credential';
+import { CredentialApi, CredentialResponse } from '@/api/credential';
 import { useTronWeb } from '@/components/TronProvider';
 import { QueryKeys } from '@/constants/configs';
 import { EventQuery } from '@/tron/query';
@@ -24,7 +24,7 @@ export const useCombinedData = ({ query }: { query: string }) => {
       }
 
       try {
-        const { uid } = await CredentialApi.search({ uid: query });
+        const { uid } = (await CredentialApi.search({ uid: query })) as CredentialResponse;
         return { result: uid, type: 'offchain-credential' };
       } catch (error) {}
 

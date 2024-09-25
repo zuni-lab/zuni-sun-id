@@ -5,6 +5,7 @@ import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
 import { useQuery } from '@tanstack/react-query';
 import { CredentialApi } from '@/api/credential';
+import { useCombinedData } from '@/hooks/useCombinedData';
 
 export const Search: IComponent<{
   placeholder?: string;
@@ -26,33 +27,51 @@ export const Search: IComponent<{
     setQuery('');
   }, [setQuery]);
 
-  const { data, isFetching } = useQuery({
-    queryKey: ['search', query],
-    queryFn: async () => {
-      const response = await CredentialApi.search({ uid: query });
-      if (!response) {
-        return;
-      }
-      const parsedData: TCredential = {
-        uid: response.uid,
-        issuer: response.issuer,
-        signature: response.signature,
-        schema: {
-          uid: response.schema_uid,
-        },
-        recipient: response.recipient,
-        expirationTime: response.expiration_time,
-        revocable: response.revocable,
-        refUID: response.ref_uid,
-        // data: response.data, // fix me
-        timestamp: response.created_at,
-        type: 'offchain',
-      };
+  const { data, isFetching } = useCombinedData({ query });
 
-      return parsedData;
-    },
-    enabled: !!query,
-  });
+  const handleClickSearch = () => {
+    if (!data) {
+      return;
+    }
+
+    if (data.type === 'address') {
+      console.log('show address details');
+    } else if (data.type === 'schema') {
+      console.log('show schema details');
+    } else if (data.type === 'onchain-credential') {
+      console.log('show onchain credential details');
+    } else {
+      console.log('show offchain credential details');
+    }
+  };
+
+  // const { data, isFetching } = useQuery({
+  //   queryKey: ['search', query],
+  //   queryFn: async () => {
+  //     const response = await CredentialApi.search({ uid: query });
+  //     if (!response) {
+  //       return;
+  //     }
+  //     const parsedData: TCredential = {
+  //       uid: response.uid,
+  //       issuer: response.issuer,
+  //       signature: response.signature,
+  //       schema: {
+  //         uid: response.schema_uid,
+  //       },
+  //       recipient: response.recipient,
+  //       expirationTime: response.expiration_time,
+  //       revocable: response.revocable,
+  //       refUID: response.ref_uid,
+  //       // data: response.data, // fix me
+  //       timestamp: response.created_at,
+  //       type: 'offchain',
+  //     };
+
+  //     return parsedData;
+  //   },
+  //   enabled: !!query,
+  // });
 
   return (
     <div className="flex flex-col divide-y divide-white max-w-4xl">
@@ -83,8 +102,12 @@ export const Search: IComponent<{
       )}
       {data && (
         <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32 max-w-full">
-          <div className="h-full w-full flex items-center justify-center py-8">
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+          <div
+            className="h-full w-full flex items-center justify-center py-8"
+            onClick={handleClickSearch}>
+            {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+            <p>{data.type}</p>
+            <p>{data.result}</p>
           </div>
         </div>
       )}
