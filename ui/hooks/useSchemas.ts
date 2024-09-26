@@ -28,21 +28,23 @@ const useSchemas = ({ page, limit }: { page: number; limit: number }) => {
         method: 'getSchemasInRange',
         args: [BigInt(from), BigInt(to)],
       });
-      return result.toReversed().map((r) => {
-        const definition = r.schema.split(',').map((field) => {
-          const [fieldType, fieldName] = field.split(' ');
-          return { fieldType, fieldName };
-        });
+      return result
+        .map((r) => {
+          const definition = r.schema.split(',').map((field) => {
+            const [fieldType, fieldName] = field.split(' ');
+            return { fieldType, fieldName };
+          });
 
-        return {
-          id: Number(r.id),
-          uid: r.uid,
-          name: r.name,
-          resolver: r.resolver,
-          revocable: r.revocable,
-          definition,
-        } as SchemaData;
-      });
+          return {
+            id: Number(r.id) + 1,
+            uid: r.uid,
+            name: r.name,
+            resolver: r.resolver,
+            revocable: r.revocable,
+            definition,
+          } as SchemaData;
+        })
+        .toReversed();
     },
     enabled: !!totalSchemas && !!contract,
   });
@@ -86,7 +88,7 @@ export const useDetailSchema = (schemaId: THexString) => {
   const tronWeb = useTronWeb();
 
   return useQuery({
-    queryKey: [QueryKeys.Schema, schemaId],
+    queryKey: [QueryKeys.Schema.Detail, schemaId],
     queryFn: async () => {
       const [result] = await contract!.call({
         method: 'getSchema',

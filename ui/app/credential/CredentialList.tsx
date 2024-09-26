@@ -15,6 +15,7 @@ export const CredentialList: IComponent = () => {
   const { items, isFetching } = useCredentials({
     page: currentPage,
     limit: ITEMS_PER_PAGE.CREDENTIAL,
+    credentialType: 'onchain',
   });
 
   return (

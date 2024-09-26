@@ -13,6 +13,7 @@ export const RecentCredentials: IComponent = () => {
   const { items, isFetching } = useCredentials({
     page: 1,
     limit: ITEMS_PER_PAGE.HOME,
+    credentialType: 'onchain',
   });
 
   return (

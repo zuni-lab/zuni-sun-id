@@ -22,5 +22,7 @@ type TCredential = {
   expirationTime?: number;
   revocationTime?: number;
 
-  type: 'onchain' | 'offchain';
+  type: CredentialType;
 };
+
+type CredentialType = 'onchain' | 'offchain';

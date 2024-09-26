@@ -26,7 +26,9 @@ export const useCombinedData = ({ query }: { query: string }) => {
       try {
         const { uid } = (await CredentialApi.search({ uid: query })) as CredentialResponse;
         return { result: uid, type: 'offchain-credential' };
-      } catch (error) {}
+      } catch (error) {
+        // continue regardless of error
+      }
 
       const schemaEvents = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         tronWeb,

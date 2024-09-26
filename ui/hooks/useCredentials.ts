@@ -34,11 +34,11 @@ export const useSundIdContract = () => {
 export const useCredentials = ({
   page,
   limit,
-  onchain = true,
+  credentialType,
 }: {
   page: number;
   limit: number;
-  onchain?: boolean;
+  credentialType: CredentialType;
 }) => {
   const { data: totalCredentials } = useCountCredentials();
   const { data: sunId } = useSundIdContract();
@@ -52,7 +52,7 @@ export const useCredentials = ({
     queryKey: [QueryKeys.Credential.List, page],
     queryFn: async () => {
       let credentials: TCredential[];
-      if (onchain) {
+      if (credentialType === 'onchain') {
         let from = totalCredentials - page * limit;
         const to = from + limit;
         if (from < 0) {
@@ -69,19 +69,21 @@ export const useCredentials = ({
           method: 'getSchemas',
           args: [schemaUIDs],
         });
-        credentials = onchainCredentials.toReversed().map((c, idx) => {
-          return {
-            uid: c.uid,
-            schema: {
-              id: Number(schemas[idx].id),
-              name: schemas[idx].name,
-            },
-            issuer: toTronAddress(c.issuer),
-            recipient: toTronAddress(c.recipient),
-            timestamp: Number(c.time),
-            type: 'onchain',
-          } as TCredential;
-        });
+        credentials = onchainCredentials
+          .map((c, idx) => {
+            return {
+              uid: c.uid,
+              schema: {
+                id: Number(schemas[idx].id) + 1,
+                name: schemas[idx].name,
+              },
+              issuer: toTronAddress(c.issuer),
+              recipient: toTronAddress(c.recipient),
+              timestamp: Number(c.time),
+              type: 'onchain',
+            } as TCredential;
+          })
+          .toReversed();
       } else {
         const offchainCredentials = (await CredentialApi.search({
           page,
@@ -96,7 +98,7 @@ export const useCredentials = ({
           return {
             uid: c.uid,
             schema: {
-              id: Number(schemas[idx].id),
+              id: Number(schemas[idx].id) + 1,
               name: schemas[idx].name,
             },
             issuer: c.issuer,
@@ -124,7 +126,7 @@ export const useCredentials = ({
   };
 };
 
-export const useCredentialDetail = (credentialId: THexString, onchain = true) => {
+export const useCredentialDetail = (credentialId: THexString, credentialType: CredentialType) => {
   const tronweb = useTronWeb();
   const { data: schemaContract } = useSchemaContract();
   const { data: sunId } = useSundIdContract();
@@ -144,7 +146,7 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
         data: THexString;
         schema: THexString;
       };
-      if (onchain) {
+      if (credentialType === 'onchain') {
         const [onchainCredential] = await sunId!.call({
           method: 'getCredential',
           args: [credentialId],
@@ -197,14 +199,14 @@ export const useCredentialDetail = (credentialId: THexString, onchain = true) =>
         refUID: credential.refUID,
         data,
         schema: {
-          id: Number(schema.id),
+          id: Number(schema.id) + 1,
           uid: schema.uid,
           name: schema.name,
         },
         timestamp: credential.time * 1000,
         expirationTime: credential.expirationTime * 1000,
         revocationTime: credential.revocationTime * 1000,
-        type: 'onchain',
+        type: credentialType,
       } as TCredential;
     },
     enabled: !!sunId && !!schemaContract,
@@ -215,10 +217,12 @@ export const useCredentialsBySchema = ({
   page,
   // limit,
   schema,
+  credentialType,
 }: {
   page: number;
   // limit: number;
   schema: string;
+  credentialType: CredentialType;
 }) => {
   const { data: totalCredentials } = useCountCredentials();
   const tronWeb = useTronWeb();
@@ -228,24 +232,28 @@ export const useCredentialsBySchema = ({
     isLoading: isFetching,
     refetch: refetchSchemas,
   } = useQuery({
-    queryKey: [QueryKeys.Schema.Credentials, schema, page],
+    queryKey: [QueryKeys.Schema.Credentials, schema, page, credentialType],
     queryFn: async () => {
-      const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
-        tronWeb,
-        ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
-      );
-      const issuedCredentialEvents = schemaEvents.filter(
-        (e) => e.result.schemaUID === schema.slice(2)
-      );
+      if (credentialType === 'onchain') {
+        const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+          tronWeb,
+          ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+        );
+        const issuedCredentialEvents = schemaEvents.filter(
+          (e) => e.result.schemaUID === schema.slice(2)
+        );
 
-      return issuedCredentialEvents.map((e) => {
-        return {
-          uid: '0x' + e.result.uid,
-          issuer: toTronAddress(e.result.issuer),
-          recipient: toTronAddress(e.result.recipient),
-          time: e.timestamp / 1000,
-        };
-      });
+        return issuedCredentialEvents.map((e) => {
+          return {
+            uid: '0x' + e.result.uid,
+            issuer: toTronAddress(e.result.issuer),
+            recipient: toTronAddress(e.result.recipient),
+            time: e.timestamp / 1000,
+          };
+        });
+      } else {
+        return [];
+      }
     },
   });
 

@@ -30,7 +30,7 @@ const RuleItem: IComponent<{
 
 export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [isOnchain, setIsOnchain] = useState(true);
+  const [credentialType, setCredentialType] = useState<CredentialType>('onchain');
 
   const tronweb = useTronWeb();
   const { data, isLoading } = useDetailSchema(schemaId as THexString);
@@ -41,6 +41,7 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
     page: currentPage,
     schema: schemaId,
     // limit: ITEMS_PER_PAGE.CREDENTIAL,
+    credentialType,
   });
 
   if (isLoading) {
@@ -96,13 +97,13 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
             renderRightTop={
               <div className="flex px-2 py-1 rounded-sm">
                 <button
-                  className={`px-4 py-2 ${isOnchain ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-                  onClick={() => setIsOnchain(true)}>
+                  className={`px-4 py-2 ${credentialType === 'onchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
+                  onClick={() => setCredentialType('onchain')}>
                   Onchain
                 </button>
                 <button
-                  className={`px-4 py-2 ${!isOnchain ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-                  onClick={() => setIsOnchain(false)}>
+                  className={`px-4 py-2 ${credentialType === 'offchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
+                  onClick={() => setCredentialType('offchain')}>
                   Offchain
                 </button>
               </div>

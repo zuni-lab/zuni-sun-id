@@ -3,8 +3,6 @@ import { Loader, SearchIcon, Slash } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
-import { useQuery } from '@tanstack/react-query';
-import { CredentialApi } from '@/api/credential';
 import { useCombinedData } from '@/hooks/useCombinedData';
 
 export const Search: IComponent<{

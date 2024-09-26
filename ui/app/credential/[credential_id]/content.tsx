@@ -25,10 +25,10 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const tronweb = useTronWeb();
   const searchParams = useSearchParams();
 
-  const offchain = searchParams.get('offchain') === 'true';
+  const credentialType = (searchParams.get('type') || 'onchain') as CredentialType;
   const { data: credential, isFetching } = useCredentialDetail(
     credentialId as THexString,
-    !offchain
+    credentialType
   );
 
   return (
