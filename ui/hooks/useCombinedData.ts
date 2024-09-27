@@ -14,18 +14,18 @@ export const useCombinedData = ({ query }: { query: string }) => {
 
   return useQuery({
     queryKey: [QueryKeys.CombinedData.List],
-    queryFn: async (): Promise<QueryCombinedDataResult | undefined> => {
+    queryFn: async (): Promise<QueryCombinedDataResult | null> => {
       if (query.length !== SCHEMA_UID_LENGTH && query.length !== ADDRESS_LENGTH) {
-        return undefined;
+        return null;
       }
 
       if (query.length === ADDRESS_LENGTH) {
-        return isTronAddress(query) ? { result: query, type: 'address' } : undefined;
+        return isTronAddress(query) ? { result: query, type: 'address' } : null;
       }
 
       try {
         const { uid } = (await CredentialApi.search({ uid: query })) as CredentialResponse;
-        return { result: uid, type: 'offchain-credential' };
+        return { result: uid, type: 'offchain' };
       } catch (error) {
         // continue regardless of error
       }
@@ -45,8 +45,11 @@ export const useCombinedData = ({ query }: { query: string }) => {
       );
       const onchainCredential = sunIdEvents.find((e) => e.result.uid);
       if (onchainCredential) {
-        return { result: onchainCredential.result.uid, type: 'onchain-credential' };
+        console.log('found onchain', onchainCredential.result.uid);
+        return { result: onchainCredential.result.uid, type: 'onchain' };
       }
+
+      return null;
     },
   });
 };
