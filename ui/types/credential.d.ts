@@ -1,10 +1,10 @@
 type TCredential = {
-  uid: string;
-  issuer: string;
+  uid: THexString;
+  issuer: THexString;
 
-  recipient: string;
+  recipient: THexString;
   revocable: boolean;
-  refUID: string;
+  refUID: THexString;
 
   data?: {
     name: string;
@@ -13,9 +13,9 @@ type TCredential = {
 
   signature?: string;
 
-  schema?: {
+  schema: {
     id?: number;
-    uid: string;
+    uid: THexString;
     name?: string;
   };
   timestamp: number;
@@ -23,6 +23,19 @@ type TCredential = {
   revocationTime?: number;
 
   type: CredentialType;
+};
+
+type TQueryCredential = {
+  uid: THexString;
+  issuer: string;
+  recipient: string;
+  revocable: boolean;
+  refUID: THexString;
+  expirationTime: number;
+  revocationTime: number;
+  time: number;
+  data: THexString;
+  schema: THexString;
 };
 
 type CredentialType = 'onchain' | 'offchain';

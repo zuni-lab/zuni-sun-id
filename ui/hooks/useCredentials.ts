@@ -135,18 +135,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
   return useQuery({
     queryKey: [QueryKeys.Credential.Detail, credentialId],
     queryFn: async () => {
-      let credential: {
-        uid: THexString;
-        issuer: string;
-        recipient: string;
-        revocable: boolean;
-        refUID: THexString;
-        expirationTime: number;
-        revocationTime: number;
-        time: number;
-        data: THexString;
-        schema: THexString;
-      };
+      let credential: TQueryCredential;
       if (credentialType === 'onchain') {
         const [onchainCredential] = await sunId!.call({
           method: 'getCredential',
@@ -214,6 +203,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
   });
 };
 
+// TODO: search offchain by schema
 export const useCredentialsBySchema = ({
   page,
   // limit,
@@ -270,6 +260,7 @@ export const useCredentialsBySchema = ({
   };
 };
 
+// TODO: search offchain by address
 export const useCredentialsByAddress = ({
   page,
   // limit,

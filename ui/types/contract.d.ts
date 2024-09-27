@@ -20,7 +20,7 @@ type SchemaData = {
   timestamp: number;
 };
 
-type QueryCombinedDataType = 'onchain-credential' | 'offchain-credential' | 'schema' | 'address';
+type QueryCombinedDataType = CredentialType | 'schema' | 'address';
 
 type QueryCombinedDataResult = {
   result: string;
