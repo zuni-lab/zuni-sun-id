@@ -26,7 +26,7 @@ export const CredentialTableHeaders = [
     className: 'w-40',
   },
   {
-    label: 'Type',
+    label: 'Valid',
     className: 'w-40',
   },
   {

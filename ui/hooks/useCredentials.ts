@@ -73,16 +73,21 @@ export const useCredentials = ({
           .map((c, idx) => {
             return {
               uid: c.uid,
+              issuer: c.issuer,
+              recipient: c.recipient,
+              revocable: c.revocable,
+              refUID: c.refUID,
               schema: {
                 id: Number(schemas[idx].id) + 1,
+                uid: schemas[idx].uid,
                 name: schemas[idx].name,
                 uid: schemas[idx].uid,
               },
-              issuer: toTronAddress(c.issuer),
-              recipient: toTronAddress(c.recipient),
               timestamp: Number(c.time),
-              type: 'onchain',
-            } as TCredential;
+              expirationTime: Number(c.expirationTime),
+              revocationTime: Number(c.revocationTime),
+              type: 'onchain' as CredentialType,
+            };
           })
           .toReversed();
       } else {
@@ -98,15 +103,20 @@ export const useCredentials = ({
         credentials = offchainCredentials.map((c, idx) => {
           return {
             uid: c.uid,
-            schema: {
-              id: Number(schemas[idx].id) + 1,
-              name: schemas[idx].name,
-            },
             issuer: c.issuer,
             recipient: c.recipient,
+            revocable: c.revocable,
+            refUID: c.ref_uid,
+            schema: {
+              id: Number(schemas[idx].id) + 1,
+              uid: schemas[idx].uid,
+              name: schemas[idx].name,
+            },
             timestamp: c.created_at,
-            type: 'offchain',
-          } as TCredential;
+            expirationTime: c.expiration_time,
+            revocationTime: 0, // TODO: revoke offchain
+            type: 'offchain' as CredentialType,
+          };
         });
       }
 
@@ -183,8 +193,8 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
 
       return {
         uid: credential.uid,
-        issuer: toTronAddress(credential.issuer),
-        recipient: toTronAddress(credential.recipient),
+        issuer: credential.issuer,
+        recipient: credential.recipient,
         revocable: credential.revocable,
         refUID: credential.refUID,
         data,
