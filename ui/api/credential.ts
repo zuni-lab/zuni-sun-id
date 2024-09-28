@@ -2,10 +2,10 @@ import { ProjectENV } from '@env';
 import { BaseApi } from './api';
 
 type CredentialPayload = {
-  issuer: string;
+  issuer: THexString;
   signature: THexString;
   schema_uid: THexString;
-  recipient: string;
+  recipient: THexString;
   expiration_time: number;
   revocable: boolean;
   ref_uid: THexString;

@@ -19,8 +19,8 @@ type TCredential = {
     name?: string;
   };
   timestamp: number;
-  expirationTime?: number;
-  revocationTime?: number;
+  expirationTime: number;
+  revocationTime: number;
 
   type: CredentialType;
 };
