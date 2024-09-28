@@ -4,6 +4,9 @@ import { useCallback, useState } from 'react';
 import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
 import { useCombinedData } from '@/hooks/useCombinedData';
+import { HexLink } from './builders/HexLink';
+import { AppRouter } from '@/constants/router';
+import { Chip } from './builders/Chip';
 
 export const Search: IComponent<{
   placeholder?: string;
@@ -31,45 +34,8 @@ export const Search: IComponent<{
     if (!data) {
       return;
     }
-
-    if (data.type === 'address') {
-      console.log('show address details');
-    } else if (data.type === 'schema') {
-      console.log('show schema details');
-    } else if (data.type === 'onchain') {
-      console.log('show onchain credential details');
-    } else {
-      console.log('show offchain credential details');
-    }
+    clearSearch();
   };
-
-  // const { data, isFetching } = useQuery({
-  //   queryKey: ['search', query],
-  //   queryFn: async () => {
-  //     const response = await CredentialApi.search({ uid: query });
-  //     if (!response) {
-  //       return;
-  //     }
-  //     const parsedData: TCredential = {
-  //       uid: response.uid,
-  //       issuer: response.issuer,
-  //       signature: response.signature,
-  //       schema: {
-  //         uid: response.schema_uid,
-  //       },
-  //       recipient: response.recipient,
-  //       expirationTime: response.expiration_time,
-  //       revocable: response.revocable,
-  //       refUID: response.ref_uid,
-  //       // data: response.data, // fix me
-  //       timestamp: response.created_at,
-  //       type: 'offchain',
-  //     };
-
-  //     return parsedData;
-  //   },
-  //   enabled: !!query,
-  // });
 
   return (
     <div className="flex flex-col divide-y divide-white max-w-4xl">
@@ -91,23 +57,41 @@ export const Search: IComponent<{
           <Slash className="w-4 h-4" />
         </Button>
       </div>
-      {isFetching && (
+      {isFetching ? (
         <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32">
           <div className="h-full w-full flex items-center justify-center py-8">
             <Loader className="w-10 h-10 animate-spin" />
           </div>
         </div>
-      )}
-      {data && (
-        <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32 max-w-full">
-          <div
-            className="h-full w-full flex items-center justify-center py-8"
-            onClick={handleClickSearch}>
-            {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-            <p>{data.type}</p>
-            <p>{data.result}</p>
+      ) : (
+        data &&
+        data !== 'none' && (
+          <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32 max-w-full">
+            <div
+              className="h-full w-full flex items-center justify-center py-8"
+              onClick={handleClickSearch}>
+              <Chip text={data === 'onchain' || data === 'offchain' ? 'credential' : data} />
+              {data === 'address' ? (
+                <HexLink
+                  content={query}
+                  isFull={true}
+                  href={`${AppRouter.Address}/${query}`}></HexLink>
+              ) : data === 'schema' ? (
+                <HexLink content={query} href={`${AppRouter.Schema}/${query}`}></HexLink>
+              ) : data === 'onchain' ? (
+                <HexLink
+                  content={query}
+                  href={`${AppRouter.Credential}/${query}?type=onchain`}></HexLink>
+              ) : data === 'offchain' ? (
+                <HexLink
+                  content={query}
+                  href={`${AppRouter.Credential}/${query}?type=offchain`}></HexLink>
+              ) : (
+                <div className="text-white">No result found</div>
+              )}
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );
