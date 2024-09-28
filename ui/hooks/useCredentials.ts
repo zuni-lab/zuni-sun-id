@@ -3,7 +3,7 @@ import { SUN_ID_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/query';
-import { hexToNumber, toHexAddress, toTronAddress } from '@/utils/tools';
+import { hexToNumber, toTronAddress } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -216,12 +216,12 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
 // TODO: search offchain by schema
 export const useCredentialsBySchema = ({
   page,
-  // limit,
+  limit,
   schema,
   credentialType,
 }: {
   page: number;
-  // limit: number;
+  limit: number;
   schema: string;
   credentialType: CredentialType;
 }) => {
@@ -233,14 +233,14 @@ export const useCredentialsBySchema = ({
     isLoading: isFetching,
     refetch: refetchSchemas,
   } = useQuery({
-    queryKey: [QueryKeys.Schema.Credentials, schema, page, credentialType],
+    queryKey: [QueryKeys.Schema.Credentials, schema, page, limit, credentialType],
     queryFn: async () => {
       if (credentialType === 'onchain') {
-        const schemaEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+        const sunIdEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
           tronWeb,
           ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
         );
-        const issuedCredentialEvents = schemaEvents.filter(
+        const issuedCredentialEvents = sunIdEvents.filter(
           (e) => e.result.schemaUID === schema.slice(2)
         );
 
@@ -273,33 +273,37 @@ export const useCredentialsBySchema = ({
 // TODO: search offchain by address
 export const useCredentialsByAddress = ({
   page,
-  // limit,
+  limit,
   address,
 }: {
   page: number;
-  // limit: number;
+  limit: number;
   address: string;
 }) => {
   const tronWeb = useTronWeb();
   return useQuery({
-    queryKey: [QueryKeys.Credential.Address, address, page],
-    queryFn: async () => {
+    queryKey: [QueryKeys.Credential.Address, address, page, limit],
+    queryFn: async (): Promise<{
+      issued: number;
+      received: number;
+      onchainCredentials: any[];
+      offchainCredentials: any[];
+    }> => {
       const issueCredentailEvents =
         await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
           tronWeb,
           ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
         );
-      const hexAddress = address.startsWith('0x') ? address : toHexAddress(address);
 
       let issued = 0;
       let received = 0;
 
       const issuedCredentialEvents = issueCredentailEvents.filter((e) => {
         if (e.name === 'Issued') {
-          if (e.result.issuer === hexAddress) {
+          if (e.result.issuer === address) {
             issued++;
             return true;
-          } else if (e.result.recipient === hexAddress) {
+          } else if (e.result.recipient === address) {
             received++;
             return true;
           }
@@ -307,11 +311,11 @@ export const useCredentialsByAddress = ({
         return false;
       });
 
-      const credentials = issuedCredentialEvents.map((e) => {
+      const onchainCredentials = issuedCredentialEvents.map((e) => {
         return {
           uid: '0x' + e.result.uid,
-          issuer: toTronAddress(e.result.issuer),
-          recipient: toTronAddress(e.result.recipient),
+          issuer: e.result.issuer,
+          recipient: e.result.recipient,
           time: e.timestamp / 1000,
         };
       });
@@ -319,7 +323,8 @@ export const useCredentialsByAddress = ({
       return {
         issued,
         received,
-        credentials,
+        onchainCredentials,
+        offchainCredentials: [],
       };
     },
   });
