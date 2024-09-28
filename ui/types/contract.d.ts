@@ -20,9 +20,4 @@ type SchemaData = {
   timestamp: number;
 };
 
-type QueryCombinedDataType = CredentialType | 'schema' | 'address';
-
-type QueryCombinedDataResult = {
-  result: string;
-  type: QueryCombinedDataType;
-};
+type QueryCombinedDataResult = CredentialType | 'schema' | 'address' | 'none';

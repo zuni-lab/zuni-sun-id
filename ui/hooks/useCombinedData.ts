@@ -13,31 +13,28 @@ export const useCombinedData = ({ query }: { query: string }) => {
   const tronWeb = useTronWeb();
 
   return useQuery({
-    queryKey: [QueryKeys.CombinedData.List],
-    queryFn: async (): Promise<QueryCombinedDataResult | null> => {
+    queryKey: [QueryKeys.CombinedData.List, query],
+    queryFn: async (): Promise<QueryCombinedDataResult> => {
       if (query.length !== SCHEMA_UID_LENGTH && query.length !== ADDRESS_LENGTH) {
-        return null;
+        return 'none';
       }
 
       if (query.length === ADDRESS_LENGTH) {
-        return isTronAddress(query) ? { result: query, type: 'address' } : null;
+        return isTronAddress(query) ? 'address' : 'none';
       }
 
       try {
         const { uid } = (await CredentialApi.search({ uid: query })) as CredentialResponse;
-        return { result: uid, type: 'offchain' };
+        if (uid) return 'offchain';
       } catch (error) {
         // continue regardless of error
       }
-
       const schemaEvents = await EventQuery.getEventsByContractAddress<RegisterSchemaEvent>(
         tronWeb,
-        ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+        ProjectENV.NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS as TTronAddress
       );
-      const schema = schemaEvents.find((e) => e.result.uid === query);
-      if (schema) {
-        return { result: schema.result.uid, type: 'schema' };
-      }
+      const schema = schemaEvents.find((e) => e.result.uid === query.slice(2));
+      if (schema) return 'schema';
 
       const sunIdEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
         tronWeb,
@@ -45,11 +42,10 @@ export const useCombinedData = ({ query }: { query: string }) => {
       );
       const onchainCredential = sunIdEvents.find((e) => e.result.uid);
       if (onchainCredential) {
-        console.log('found onchain', onchainCredential.result.uid);
-        return { result: onchainCredential.result.uid, type: 'onchain' };
+        return 'onchain';
       }
 
-      return null;
+      return 'none';
     },
   });
 };
