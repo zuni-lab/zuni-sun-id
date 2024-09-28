@@ -8,6 +8,7 @@ export const AppRouter = {
 
 export type RouterKey = keyof typeof AppRouter;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const RouterMeta: Record<RouterKey, { title: string; description?: string; icon: any }> = {
   Home: { title: 'Home', description: 'HOME', icon: null },
   Schema: {
