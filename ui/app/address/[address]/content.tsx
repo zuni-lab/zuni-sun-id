@@ -5,15 +5,18 @@ import { SunTable } from '@/components/builders/SunTable';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { CredentialSchemaTableHeaders } from '@/constants/table';
 import { useCredentialsByAddress } from '@/hooks/useCredentials';
+import { toHexAddress } from '@/utils/tools';
+import { useState } from 'react';
 
 export const UserCredentialList: IComponent<{ address: string }> = ({ address }) => {
   //   const tronweb = useTronWeb();
   //   const searchParams = useSearchParams();
 
-  //   const offchain = searchParams.get('offchain') === 'true';
+  const [credentialType, setCredentialType] = useState<CredentialType>('onchain');
   const { data, isFetching } = useCredentialsByAddress({
     page: 1,
-    address,
+    address: toHexAddress(address),
+    limit: ITEMS_PER_PAGE.CREDENTIAL,
   });
 
   return (
@@ -21,36 +24,31 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
       <div>
         <h1 className="text-2xl font-bold">Address: {address}</h1>
         <div className="flex gap-4">
-          <div>Issued: {data?.issued} Credential</div>
-          <div>Received: {data?.received} Credential</div>
+          <div>Issued: {data?.issued} credentials</div>
+          <div>Received: {data?.received} credentials</div>
         </div>
       </div>
       <SunTable
         title="List of credentials"
         columns={CredentialSchemaTableHeaders}
-        items={data?.credentials ?? []}
+        items={credentialType === 'onchain' ? data?.onchainCredentials : data?.offchainCredentials}
         isLoading={isFetching}
         renderRow={CredentialSchemaRow}
         maxItems={ITEMS_PER_PAGE.CREDENTIAL}
-        //   pagination={{
-        //     currentPage: currentPage,
-        //     totalItems: totalCredentials,
-        //     onPageChange: (page) => setCurrentPage(page),
-        //   }}
-        //   renderRightTop={
-        //     <div className="flex px-2 py-1 rounded-sm">
-        //       <button
-        //         className={`px-4 py-2 ${isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-        //         onClick={() => setIsOnchain(true)}>
-        //         Onchain
-        //       </button>
-        //       <button
-        //         className={`px-4 py-2 ${!isOnchain ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-        //         onClick={() => setIsOnchain(false)}>
-        //         Offchain
-        //       </button>
-        //     </div>
-        //   }
+        renderRightTop={
+          <div className="flex px-2 py-1 rounded-sm">
+            <button
+              className={`px-4 py-2 ${credentialType === 'onchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
+              onClick={() => setCredentialType('onchain')}>
+              Onchain
+            </button>
+            <button
+              className={`px-4 py-2 ${credentialType === 'offchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
+              onClick={() => setCredentialType('offchain')}>
+              Offchain
+            </button>
+          </div>
+        }
       />
     </section>
   );

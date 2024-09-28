@@ -68,8 +68,6 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
     }
     return;
   };
-  console.log('issuer', credential?.issuer);
-  console.log('address', address);
 
   return (
     <main>

@@ -36,7 +36,7 @@ export const Search: IComponent<{
       console.log('show address details');
     } else if (data.type === 'schema') {
       console.log('show schema details');
-    } else if (data.type === 'onchain-credential') {
+    } else if (data.type === 'onchain') {
       console.log('show onchain credential details');
     } else {
       console.log('show offchain credential details');

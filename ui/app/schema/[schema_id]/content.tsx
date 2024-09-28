@@ -40,7 +40,7 @@ export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => 
   const { items, isFetching } = useCredentialsBySchema({
     page: currentPage,
     schema: schemaId,
-    // limit: ITEMS_PER_PAGE.CREDENTIAL,
+    limit: ITEMS_PER_PAGE.CREDENTIAL,
     credentialType,
   });
 

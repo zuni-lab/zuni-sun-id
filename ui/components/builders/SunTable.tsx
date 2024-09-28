@@ -18,7 +18,7 @@ import { AppRouter } from '@/constants/router';
 interface SunTableProps<T> {
   title: string;
   columns: { label: string; className?: string }[];
-  items: T[];
+  items?: T[];
   renderRow: (row: T, index?: number) => JSX.Element;
   button?: 'schema' | 'credential';
   renderRightTop?: JSX.Element;
@@ -94,14 +94,14 @@ export const SunTable = <T,>({
             </TableRow>
           ))}
 
-        {!isLoading && items.length === 0 && (
+        {!isLoading && (!items || items.length === 0) && (
           <TableRow>
             <TableCell colSpan={columns.length} className="text-center">
               No data available
             </TableCell>
           </TableRow>
         )}
-        {!isLoading && items.length > 0 && <TableBody>{items.map(renderRow)}</TableBody>}
+        {!isLoading && items && items.length > 0 && <TableBody>{items.map(renderRow)}</TableBody>}
         {footerButton && (
           <TableFooter>
             <TableRow>
@@ -111,7 +111,7 @@ export const SunTable = <T,>({
         )}
       </Table>
 
-      {!isLoading && items.length > 0 && pagination && !!maxPage && maxPage > 1 && (
+      {!isLoading && items && items.length > 0 && pagination && !!maxPage && maxPage > 1 && (
         <div className="mt-4 flex justify-end gap-4 items-center border-t py-4">
           <span className="hidden sm:flex">
             {(pagination?.currentPage ?? 1) * maxItems - maxItems + 1} -{' '}
