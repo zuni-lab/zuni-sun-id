@@ -1,3 +1,4 @@
+import { SchemaList } from '@/app/schema/SchemaList';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -6,5 +7,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <main>Choose a schema to create a credential</main>;
+  return (
+    <section className="py-16">
+      <div className="text-center text-2xl font-semibold">Choose a schema to issue credential</div>
+      <SchemaList />
+    </section>
+  );
 }
