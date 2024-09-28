@@ -1,5 +1,8 @@
 services:
   ui:
+    build:
+      context: ../
+      dockerfile: docker/ui.dockerfile
     image: zunilab/sun-id-ui
     container_name: sun-id-ui
     ports:

@@ -21,9 +21,10 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
   return (
     <div className="w-full h-auto relative">
       {ProjectENV.NEXT_PUBLIC_NOTIFICATION && (
-        <div className="bg-black text-lg font-bold text-white text-center p-3.5">
-          {ProjectENV.NEXT_PUBLIC_NOTIFICATION}
-        </div>
+        <div
+          className="bg-black text-lg font-bold text-white text-center p-3.5"
+          dangerouslySetInnerHTML={{ __html: ProjectENV.NEXT_PUBLIC_NOTIFICATION }}
+        />
       )}
       <Navigation />
       {heading && <Heading {...heading} />}

@@ -28,12 +28,12 @@ import { useTxResult } from '@/states/useTxResult';
 import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { cx } from 'class-variance-authority';
 import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useSchemaContract } from '@/hooks/useContract';
+import { cx } from 'class-variance-authority';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`

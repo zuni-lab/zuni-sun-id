@@ -14,9 +14,9 @@ WORKDIR /app
 RUN mkdir -p /temp/dev && \
     mkdir -p /temp/dev/ui && \
     mkdir -p /temp/dev/packages
-COPY ./package.json ./bun.lockb /temp/dev
-COPY ./ui /temp/dev/ui
-COPY ./packages /temp/dev/packages
+COPY package.json bun.lockb /temp/dev
+COPY ui /temp/dev/ui
+COPY packages /temp/dev/packages
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 FROM base AS builder

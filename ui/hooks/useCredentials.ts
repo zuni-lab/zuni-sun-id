@@ -76,6 +76,7 @@ export const useCredentials = ({
               schema: {
                 id: Number(schemas[idx].id) + 1,
                 name: schemas[idx].name,
+                uid: schemas[idx].uid,
               },
               issuer: toTronAddress(c.issuer),
               recipient: toTronAddress(c.recipient),

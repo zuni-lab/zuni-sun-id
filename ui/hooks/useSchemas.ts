@@ -67,7 +67,6 @@ export const useCountSchemas = () => {
   const { data, refetch } = useQuery({
     queryKey: [QueryKeys.Schema.Total],
     queryFn: async () => {
-      console.log('contract', contract);
       const [result] = await contract!.call({
         method: 'totalSchemas',
         args: [],

@@ -83,20 +83,6 @@ const TronWebProvider: IComponent = ({ children }) => {
     setBalance(balance);
   }, [tronWeb, address]);
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((window as any).tronWeb) {
-      setTronWeb(window.tronWeb);
-    } else {
-      console.warn('TronLink not installed. Using default TronWeb');
-      setTronWeb(defaultTronWeb);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
-
   const disconnectWallet = useCallback(async () => {
     try {
       if (window.tronWeb) {
@@ -125,6 +111,25 @@ const TronWebProvider: IComponent = ({ children }) => {
     },
     [tronWeb, network]
   );
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((window as any).tronWeb) {
+      setTronWeb(window.tronWeb);
+    } else {
+      console.warn('TronLink not installed. Using default TronWeb');
+      setTronWeb(defaultTronWeb);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBalance();
+  }, [fetchBalance]);
+
+  useEffect(() => {
+    connectWallet(network);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <TronWebContext.Provider

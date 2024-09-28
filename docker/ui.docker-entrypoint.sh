@@ -12,12 +12,10 @@ function apply_path {
         export $(cat .env | grep -v '#' | awk '/=/ {print $1}')
     fi
 
-    # Replace placeholders in /app/dist directory
     for var in $env_vars; do
-        value=$(eval echo \$$var)
-        echo "Replacing ${var} with ${value}"
-        find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_${var}#${value}#g"
-
+        value=$(eval echo "\$$var")
+        echo "Replacing $var with $value"
+        find /app/.next '(' -type d -name .git -prune ')' -o -type f -print0 | xargs -0 sed -i "s#APP_$var#$(printf '%s' "$value" | sed 's/[&/\]/\\&/g')#g"
     done
 }
 

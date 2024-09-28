@@ -12,7 +12,7 @@ export const CredentialRow = ({ uid, schema, issuer, recipient, type, timestamp 
       <HexLink content={uid} href={`${AppRouter.Credential}/${uid}`} />
     </TableCell>
     <TableCell className="flex items-center gap-2 border p-2 my-2 rounded-lg">
-      <Chip text={`#${schema?.id}`} />
+      <Chip text={`#${schema?.id}`} href={`${AppRouter.Schema}/${schema?.uid}`} />
       <span className="text-base font-semibold">{schema?.name}</span>
     </TableCell>
     <TableCell className="w-80">
@@ -73,7 +73,7 @@ export const SchemaRow = ({
           <li
             key={index}
             className="w-fit flex border text-white font-medium text-sm gap-1 p-1 rounded-md">
-            <span className="py-1 px-2 w-fit uppercase  bg-main rounded-md font-semibold">
+            <span className="py-1 px-2 w-fit uppercase bg-main rounded-md font-semibold">
               {fieldType}
             </span>
             <span className="py-1 px-2 w-fit bg-gray-700 rounded-md">{fieldName}</span>
