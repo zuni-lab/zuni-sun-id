@@ -14,9 +14,9 @@ WORKDIR /app
 RUN mkdir -p /temp/dev && \
     mkdir -p /temp/dev/ui && \
     mkdir -p /temp/dev/packages
-COPY ../package.json ../bun.lockb /temp/dev
-COPY ../ui /temp/dev/ui
-COPY ../packages /temp/dev/packages
+COPY ./package.json ./bun.lockb /temp/dev
+COPY ./ui /temp/dev/ui
+COPY ./packages /temp/dev/packages
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 FROM base AS builder
@@ -31,10 +31,10 @@ COPY --from=deps /temp/dev/packages ./packages
 COPY --from=deps /temp/dev/ui ./ui
 ENV NODE_ENV production
 
-ENV NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS APP_NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS
-ENV NEXT_PUBLIC_SUN_ID_ADDRESS APP_NEXT_PUBLIC_SUN_ID_ADDRESS
-ENV NEXT_PUBLIC_API_HOST APP_NEXT_PUBLIC_API_HOST
-ENV NEXT_PUBLIC_NOTIFICATION APP_NEXT_PUBLIC_NOTIFICATION
+ENV NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS=APP_NEXT_PUBLIC_SCHEMA_REGISTRY_ADDRESS
+ENV NEXT_PUBLIC_SUN_ID_ADDRESS=APP_NEXT_PUBLIC_SUN_ID_ADDRESS
+ENV NEXT_PUBLIC_API_HOST=APP_NEXT_PUBLIC_API_HOST
+ENV NEXT_PUBLIC_NOTIFICATION=APP_NEXT_PUBLIC_NOTIFICATION
 
 RUN cd ui && bun run build
 
