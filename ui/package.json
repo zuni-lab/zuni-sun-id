@@ -43,8 +43,9 @@
     "lucide-react": "^0.395.0",
     "moment": "^2.30.1",
     "negotiator": "^0.6.3",
-    "next": "14.0.3",
+    "next": "14.2.13",
     "next-nprogress-bar": "2.1.2",
+    "node-polyfill-webpack-plugin": "^4.0.0",
     "react": "^18.2.0",
     "react-day-picker": "^9.0.9",
     "react-dom": "^18.2.0",
@@ -54,6 +55,7 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "tronweb": "^5.3.2",
+    "tsconfig": "workspace:*",
     "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },
@@ -87,7 +89,6 @@
     "prettier": "^3.3.2",
     "sass": "^1.68.0",
     "tailwindcss": "^3.3.3",
-    "tsconfig": "workspace:*",
     "typescript": "^5.2.2"
   },
   "lint-staged": {

@@ -20,7 +20,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint', 'import', 'prettier'],
+  plugins: ['react', 'import', 'prettier'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'warn',
     'arrow-body-style': 'off',

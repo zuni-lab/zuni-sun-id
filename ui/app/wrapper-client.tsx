@@ -7,7 +7,7 @@ import '@tronweb3/tronwallet-adapter-react-ui/style.css';
 import { Footer } from '@/components/Footer';
 import { Heading } from '@/components/Heading';
 import { Navigation } from '@/components/Navigation';
-import { useCurrentHeading } from '@/constants/router';
+import { useCurrentHeading } from '@/constants/meta';
 import { ProjectENV } from '@env';
 import { Authentication } from './Authentication';
 

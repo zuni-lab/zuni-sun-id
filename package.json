@@ -16,5 +16,6 @@
   "workspaces": [
     "ui",
     "packages/*"
-  ]
+  ],
+  "trustedDependencies": ["ui"]
 }

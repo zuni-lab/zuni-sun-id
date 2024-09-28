@@ -182,12 +182,12 @@ export const IssueCredentialForm: IComponent<{
 
           await CredentialApi.issue({
             issuer: `0x${tronWeb.address.toHex(address).replace('41', '')}`,
-            signature: signature,
-            schema_uid: data.uid,
+            signature: signature as THexString,
+            schema_uid: data.uid as THexString,
             recipient: recipient as string,
             expiration_time: expiration,
             revocable: values[CredentialFieldKeys.Revocable] as boolean,
-            ref_uid: refUID as string,
+            ref_uid: refUID as THexString,
             data: rawData,
           });
 
