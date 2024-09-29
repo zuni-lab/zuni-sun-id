@@ -57,42 +57,43 @@ export const Search: IComponent<{
           <Slash className="w-4 h-4" />
         </Button>
       </div>
-      {isFetching ? (
-        <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32">
-          <div className="h-full w-full flex items-center justify-center py-8">
-            <Loader className="w-10 h-10 animate-spin" />
-          </div>
-        </div>
-      ) : (
-        data &&
-        data !== 'none' && (
-          <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32 max-w-full">
-            <div
-              className="h-full w-full flex items-center justify-center py-8"
-              onClick={handleClickSearch}>
-              <Chip text={data === 'onchain' || data === 'offchain' ? 'credential' : data} />
-              {data === 'address' ? (
-                <HexLink
-                  content={query}
-                  isFull={true}
-                  href={`${AppRouter.Address}/${query}`}></HexLink>
-              ) : data === 'schema' ? (
-                <HexLink content={query} href={`${AppRouter.Schema}/${query}`}></HexLink>
-              ) : data === 'onchain' ? (
-                <HexLink
-                  content={query}
-                  href={`${AppRouter.Credential}/${query}?type=onchain`}></HexLink>
-              ) : data === 'offchain' ? (
-                <HexLink
-                  content={query}
-                  href={`${AppRouter.Credential}/${query}?type=offchain`}></HexLink>
-              ) : (
-                <div className="text-white">No result found</div>
-              )}
+      {query &&
+        (isFetching ? (
+          <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32">
+            <div className="h-full w-full flex items-center justify-center py-8">
+              <Loader className="w-10 h-10 animate-spin" />
             </div>
           </div>
-        )
-      )}
+        ) : (
+          data &&
+          data !== 'none' && (
+            <div className="bg-accent px-2 mt-1 border-t border-white rounded-xl min-h-32 max-w-full">
+              <div
+                className="h-full w-full flex items-center justify-center py-8"
+                onClick={handleClickSearch}>
+                <Chip text={data === 'onchain' || data === 'offchain' ? 'credential' : data} />
+                {data === 'address' ? (
+                  <HexLink
+                    content={query}
+                    isFull={true}
+                    href={`${AppRouter.Address}/${query}`}></HexLink>
+                ) : data === 'schema' ? (
+                  <HexLink content={query} href={`${AppRouter.Schema}/${query}`}></HexLink>
+                ) : data === 'onchain' ? (
+                  <HexLink
+                    content={query}
+                    href={`${AppRouter.Credential}/${query}?type=onchain`}></HexLink>
+                ) : data === 'offchain' ? (
+                  <HexLink
+                    content={query}
+                    href={`${AppRouter.Credential}/${query}?type=offchain`}></HexLink>
+                ) : (
+                  <div className="text-white">No result found</div>
+                )}
+              </div>
+            </div>
+          )
+        ))}
     </div>
   );
 };

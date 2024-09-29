@@ -73,15 +73,17 @@ export const CredentialSchemaRow = ({
   issuer,
   recipient,
   time,
+  type,
 }: {
   uid: string;
   issuer: string;
   recipient: string;
   time: number;
+  type: CredentialType;
 }) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
-      <HexLink content={uid} href={`${AppRouter.Credential}/${uid}`} />
+      <HexLink content={uid} href={`${AppRouter.Credential}/${uid}?type=${type}`} />
     </TableCell>
     <TableCell className="w-80">
       <HexLink

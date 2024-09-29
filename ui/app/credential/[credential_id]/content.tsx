@@ -73,7 +73,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
     <main>
       {isFetching ? (
         <Loader className="w-12 h-12 animate-spin m-auto mt-12" />
-      ) : credential ? (
+      ) : credential && credential.uid !== EMPTY_UID ? (
         <div>
           <section className="flex flex-col gap-4 mt-10">
             <div className="flex items-center">
