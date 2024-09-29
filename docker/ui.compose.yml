@@ -8,6 +8,6 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ../../envs/.env.production:/app/.env
+      - ../../envs/fe.env:/app/.env
       - ./ui.docker-entrypoint.sh:/app/docker-entrypoint.sh
     restart: always

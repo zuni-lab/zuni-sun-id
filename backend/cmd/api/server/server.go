@@ -2,10 +2,12 @@ package server
 
 import (
 	"context"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/zuni-lab/zuni-sun-id/config"
+	"github.com/zuni-lab/zuni-sun-id/internal/worker"
 	"github.com/zuni-lab/zuni-sun-id/pkg/db"
 	"github.com/zuni-lab/zuni-sun-id/pkg/openobserve"
 	"github.com/zuni-lab/zuni-sun-id/pkg/tron"
@@ -15,6 +17,7 @@ import (
 type Server struct {
 	Raw           *echo.Echo
 	traceProvider *sdktrace.TracerProvider
+	workers       []worker.Worker
 }
 
 func New() *Server {
@@ -37,18 +40,27 @@ func New() *Server {
 	e.HideBanner = true
 	tp := openobserve.SetupTraceHTTP()
 
+	w := worker.NewScheduler(time.Second*30, tron.RevokedOffchainEvent)
+	w.AddJob(w.ProcessRevokedCredentials)
+
 	setupAddHandlerEvent(e)
 	setupMiddleware(e)
 	setupErrorHandler(e)
 	setupRoute(e)
 	setupValidator(e)
 
-	return &Server{e, tp}
+	return &Server{e, tp, []worker.Worker{w}}
 }
 
 func (s *Server) Start(addr string) error {
 	loadSvcs()
+
+	for _, w := range s.workers {
+		w.Start()
+	}
+
 	s.printRoutes()
+
 	return s.Raw.Start(addr)
 }
 

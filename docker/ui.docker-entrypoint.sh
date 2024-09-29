@@ -13,9 +13,8 @@ function apply_path {
     fi
 
     for var in $env_vars; do
-        value=$(eval echo "\$$var")
-        echo "Replacing $var with $value"
-        find /app/.next '(' -type d -name .git -prune ')' -o -type f -print0 | xargs -0 sed -i "s#APP_$var#$(printf '%s' "$value" | sed 's/[&/\]/\\&/g')#g"
+        echo "Replacing ${var} with ${!var}"
+        find /app/.next \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i "s#APP_${var}#${!var}#g"
     done
 }
 
