@@ -24,7 +24,7 @@ import { ToastTemplate } from '@/constants/toast';
 import { useCredentialContract, useSignCredentialOffChain } from '@/hooks/useContract';
 import { useTxResult } from '@/states/useTxResult';
 import { getValidationSchema } from '@/utils/schema';
-import { cx, isValidAddress, isValidBytesWithLength } from '@/utils/tools';
+import { cx, isValidAddress, isValidBytesWithLength, toHexAddress } from '@/utils/tools';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { ChevronDownIcon, Loader } from 'lucide-react';
@@ -170,6 +170,8 @@ export const IssueCredentialForm: IComponent<{
 
           openTxResult(tx);
         } else {
+          const recipient = toHexAddress(values[CredentialFieldKeys.Recipient] as string);
+
           const signature = await signOffchain({
             schemaUID: data.uid,
             recipient: recipient,
@@ -178,12 +180,11 @@ export const IssueCredentialForm: IComponent<{
             refUID: refUID,
             data: rawData,
           });
-
           await CredentialApi.issue({
             issuer: `0x${tronWeb.address.toHex(address).replace('41', '')}`,
             signature: signature as THexString,
             schema_uid: data.uid as THexString,
-            recipient: recipient as string,
+            recipient,
             expiration_time: expiration,
             revocable: values[CredentialFieldKeys.Revocable] as boolean,
             ref_uid: refUID as THexString,
