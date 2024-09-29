@@ -27,6 +27,9 @@ type ServerEnv struct {
 
 	OPENOBSERVE_ENDPOINT   string `validate:"url"`
 	OPENOBSERVE_CREDENTIAL string `validate:"min=1"`
+	SUN_ID_ADDRESS         string `validate:"min=20"`
+	TRON_GRID_API_URL      string `validate:"min=1"`
+	TRON_GRID_API_KEY      string `validate:"min=1"`
 }
 
 var Env ServerEnv
@@ -85,6 +88,9 @@ func loadEnv() {
 
 		OPENOBSERVE_ENDPOINT:   os.Getenv("OPENOBSERVE_ENDPOINT"),
 		OPENOBSERVE_CREDENTIAL: os.Getenv("OPENOBSERVE_CREDENTIAL"),
+		SUN_ID_ADDRESS:         os.Getenv("SUN_ID_ADDRESS"),
+		TRON_GRID_API_URL:      os.Getenv("TRON_GRID_API_URL"),
+		TRON_GRID_API_KEY:      os.Getenv("TRON_GRID_API_KEY"),
 	}
 
 	validate := validator.New()

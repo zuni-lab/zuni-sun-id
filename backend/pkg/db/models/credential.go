@@ -13,6 +13,7 @@ type Credential struct {
 	Recipient      string             `json:"recipient" bson:"recipient,omitempty"`
 	ExpirationTime uint64             `json:"expiration_time" bson:"expiration_time,omitempty"`
 	Revocable      bool               `json:"revocable" bson:"revocable,omitempty"`
+	IsRevoked      bool               `json:"is_revoked" bson:"is_revoked,omitempty"`
 	RefUID         string             `json:"ref_uid" bson:"ref_uid,omitempty"`
 	Data           string             `json:"data" bson:"data,omitempty"`
 	CreatedAt      int64              `json:"created_at,omitempty" bson:"created_at,omitempty"`

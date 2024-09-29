@@ -8,6 +8,7 @@ import (
 	"github.com/zuni-lab/zuni-sun-id/config"
 	"github.com/zuni-lab/zuni-sun-id/pkg/db"
 	"github.com/zuni-lab/zuni-sun-id/pkg/openobserve"
+	"github.com/zuni-lab/zuni-sun-id/pkg/tron"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -62,6 +63,7 @@ func (s *Server) Close() {
 
 func loadSvcs() {
 	db.Init()
+	tron.Init()
 }
 
 func closeSvcs() {
