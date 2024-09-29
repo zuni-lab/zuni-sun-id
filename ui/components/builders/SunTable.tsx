@@ -63,7 +63,7 @@ export const SunTable = <T,>({
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h1 className="my-2 mb-4 text-xl font-semibold">{title}</h1>
+        <h1 className="my-2 mb-4 text-xl font-semibold capitalize">{title}</h1>
         {renderRightTop ? (
           renderRightTop
         ) : button === 'schema' ? (
