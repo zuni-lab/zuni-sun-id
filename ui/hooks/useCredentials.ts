@@ -49,7 +49,7 @@ export const useCredentials = ({
     isLoading: isFetching,
     refetch: refetchSchemas,
   } = useQuery({
-    queryKey: [QueryKeys.Credential.List, page],
+    queryKey: [QueryKeys.Credential.List, page, limit, credentialType],
     queryFn: async () => {
       let credentials: TCredential[];
       if (credentialType === 'onchain') {

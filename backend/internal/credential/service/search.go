@@ -51,17 +51,12 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 
 	filters := bson.D{}
 
-	if input.SchemaUID != "" && input.Address == "" {
+	if input.SchemaUID != "" {
 		filters = append(filters, bson.E{Key: "schema_uid", Value: input.SchemaUID})
-
-	} else if input.SchemaUID == "" && input.Address != "" {
+	} 
+	
+	if input.Address != "" {
 		filters = append(filters, bson.E{Key: "$or", Value: bson.A{
-			bson.D{{Key: "recipient", Value: input.Address}},
-			bson.D{{Key: "issuer", Value: input.Address}},
-		}})
-	} else {
-		filters = append(filters, bson.E{Key: "$or", Value: bson.A{
-			bson.D{{Key: "schema_uid", Value: input.SchemaUID}},
 			bson.D{{Key: "recipient", Value: input.Address}},
 			bson.D{{Key: "issuer", Value: input.Address}},
 		}})

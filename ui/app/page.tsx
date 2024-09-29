@@ -19,7 +19,8 @@ export default function Page() {
           ))}
         </section>
       </div>
-      <RecentCredentials />
+      <RecentCredentials credentialType="onchain" />
+      <RecentCredentials credentialType="offchain" />
       <RecentSchemas />
     </main>
   );

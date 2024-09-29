@@ -9,16 +9,18 @@ import { CredentialTableHeaders } from '../../constants/table';
 import useCredentials from '@/hooks/useCredentials';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 
-export const RecentCredentials: IComponent = () => {
+export const RecentCredentials: IComponent<{
+  credentialType: CredentialType;
+}> = ({ credentialType }) => {
   const { items, isFetching } = useCredentials({
     page: 1,
     limit: ITEMS_PER_PAGE.HOME,
-    credentialType: 'onchain',
+    credentialType,
   });
 
   return (
     <SunTable
-      title="Recent Credentials"
+      title={`Recent ${credentialType} Credentials`}
       columns={CredentialTableHeaders}
       items={items ?? []}
       isLoading={isFetching}
