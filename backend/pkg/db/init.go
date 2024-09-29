@@ -15,6 +15,7 @@ var (
 	DB     *mongo.Database
 
 	Credential *mongo.Collection
+	Tron	   *mongo.Collection
 )
 
 func Init() {
@@ -35,6 +36,7 @@ func Init() {
 	DB = client.Database(config.Env.MONGODB_DATABASE)
 
 	Credential = DB.Collection("credentials")
+	Tron = DB.Collection("tron")
 
 	initIndexes()
 

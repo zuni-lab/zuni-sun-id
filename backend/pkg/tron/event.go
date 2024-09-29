@@ -6,19 +6,24 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+
+	"github.com/zuni-lab/zuni-sun-id/config"
+)
+
+const (
+	RevokedOffchainEvent = "RevokedOffchain"
 )
 
 type RevokedEvent struct {
-	Recipient string `json:"recipient"`
-	Issuer    string `json:"issuer"`
-	Uid       string `json:"uid"`
-	SchemaUID string `json:"schemaUID"`
+	Revoker   string `json:"revoker"`
+	Data      string `json:"data"`
+	Timestamp string `json:"timestamp"`
 }
 
 type (
 	EventData[T any] struct {
-		BlockNumber           int64                  `json:"block_number"`
-		BlockTimestamp        int64                  `json:"block_timestamp"`
+		BlockNumber           uint64                 `json:"block_number"`
+		BlockTimestamp        uint64                 `json:"block_timestamp"`
 		CallerContractAddress string                 `json:"caller_contract_address"`
 		ContractAddress       string                 `json:"contract_address"`
 		EventIndex            int                    `json:"event_index"`
@@ -30,8 +35,9 @@ type (
 		TransactionID         string                 `json:"transaction_id"`
 	}
 	EventMeta struct {
-		PageSize int `json:"page_size"`
-		At       int `json:"at"`
+		PageSize    int    `json:"page_size"`
+		At          int    `json:"at"`
+		Fingerprint string `json:"fingerprint"`
 	}
 
 	GetEventResponse[T any] struct {
@@ -76,8 +82,18 @@ func populateStructFromMap(result map[string]interface{}, targetStruct interface
 	return nil
 }
 
-func GetEvent[T any](transactionID string) (*GetEventResponse[T], error) {
-	url := fmt.Sprintf("%s/v1/transactions/%s/events", TronClient.ApiUrl, transactionID)
+type GetEventParams struct {
+	ContractAddress string
+	EventName       string
+	Fingerprint     string
+}
+
+func GetEvent[T any](params *GetEventParams) (*GetEventResponse[T], error) {
+	url := fmt.Sprintf("%s/v1/contracts/%s/events?event_name=%s&order_by=block_timestamp,desc&limit=200", TronClient.ApiUrl, params.ContractAddress, params.EventName)
+	if params.Fingerprint != "" {
+		url += fmt.Sprintf("&fingerprint=%s", params.Fingerprint)
+	}
+
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("TRON-PRO-API-KEY", TronClient.ApiKey)
@@ -115,9 +131,12 @@ func GetEvent[T any](transactionID string) (*GetEventResponse[T], error) {
 	return &response, nil
 }
 
-func GetRevokedEvent(transactionID string) (*GetEventResponse[RevokedEvent], error) {
-	// return
-	result, err := GetEvent[RevokedEvent](transactionID)
+func GetRevokedOffchainEvent(fingerprint string) (*GetEventResponse[RevokedEvent], error) {
+	result, err := GetEvent[RevokedEvent](&GetEventParams{
+		ContractAddress: config.Env.SUN_ID_ADDRESS,
+		EventName:       RevokedOffchainEvent,
+		Fingerprint:     fingerprint,
+	})
 	if err != nil {
 		return nil, err
 	}

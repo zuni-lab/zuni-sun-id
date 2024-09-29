@@ -2,14 +2,6 @@ package service
 
 import (
 	"context"
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-	"github.com/zuni-lab/zuni-sun-id/pkg/db"
-	"github.com/zuni-lab/zuni-sun-id/pkg/db/models"
-	"github.com/zuni-lab/zuni-sun-id/pkg/tron"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type RevokeCredentialRequest struct {
@@ -19,41 +11,45 @@ type RevokeCredentialRequest struct {
 
 func RevokeCredential(ctx context.Context, input *RevokeCredentialRequest) (bool, error) {
 
-	filters := bson.D{
-		{Key: "uid", Value: input.Uid},
-	}
+	// txIdWithoutOx := strings.Replace(input.TxID, "0x", "", 1)
+	// inputTxIdWithoutOx := strings.Replace(input.TxID, "0x", "", 1)
 
-	projection := bson.M{
-		"uid":        1,
-		"is_revoked": 1,
-	}
+	// filters := bson.D{
+	// 	{Key: "uid", Value: input.Uid},
+	// }
 
-	var cred models.Credential
+	// projection := bson.M{
+	// 	"uid":        1,
+	// 	"is_revoked": 1,
+	// }
 
-	err := db.Credential.FindOne(ctx, filters, options.FindOne().SetProjection(projection)).Decode(&cred)
+	// var cred models.Credential
 
-	if err != nil {
-		return false, err
-	}
+	// err := db.Credential.FindOne(ctx, filters, options.FindOne().SetProjection(projection)).Decode(&cred)
 
-	if cred.IsRevoked {
-		return true, nil
-	}
+	// if err != nil {
+	// 	return false, err
+	// }
 
-	event, err := tron.GetRevokedEvent(input.TxID)
-	if err != nil {
-		return false, err
-	}
+	// if cred.IsRevoked {
+	// 	return true, nil
+	// }
 
-	if len(event.Data) == 0 {
-		return false, echo.NewHTTPError(http.StatusNotFound, "event not found")
-	}
+	// event, err := tron.GetRevokedEvent(txIdWithoutOx)
+	// if err != nil {
+	// 	return false, err
+	// }
 
-	if event.Data[0].ParsedResult.Uid != input.Uid {
-		return false, echo.NewHTTPError(http.StatusBadRequest, "uid mismatch")
-	}
+	// if len(event.Data) == 0 {
+	// 	return false, echo.NewHTTPError(http.StatusNotFound, "event not found")
+	// }
 
-	_, err = db.Credential.UpdateOne(ctx, filters, bson.D{{Key: "$set", Value: bson.D{{Key: "is_revoked", Value: true}}}})
+	// if event.Data[0].ParsedResult.Uid != inputTxIdWithoutOx {
+	// 	return false, echo.NewHTTPError(http.StatusBadRequest, "uid mismatch")
+	// }
 
-	return err == nil, err
+	// _, err = db.Credential.UpdateOne(ctx, filters, bson.D{{Key: "$set", Value: bson.D{{Key: "is_revoked", Value: true}}}})
+
+	// return err == nil, err
+	return false, nil
 }
