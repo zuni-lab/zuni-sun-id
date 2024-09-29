@@ -76,10 +76,10 @@ interface ISunID {
 
     /// @notice Emitted when an credential has been revoked.
     /// @param recipient The recipient of the credential.
-    /// @param issuer The issuing account.
+    /// @param revoker The revoking account.
     /// @param schemaUID The UID of the schema.
     /// @param uid The UID the revoked credential.
-    event Revoked(address indexed recipient, address indexed issuer, bytes32 uid, bytes32 indexed schemaUID);
+    event Revoked(address indexed recipient, address indexed revoker, bytes32 uid, bytes32 indexed schemaUID);
 
     /// @notice Emitted when a data has been timestamped.
     /// @param data The data.
