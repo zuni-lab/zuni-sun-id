@@ -19,8 +19,7 @@ type searchOneCredentialRequest struct {
 
 type searchManyCredentialRequest struct {
 	SchemaUID string `json:"schema_uid"`
-	Recipient string `json:"recipient"`
-	RefUID    string `json:"ref_uid"`
+	Address   string `json:"address"`
 	Page      int64  `json:"page"`
 	Limit     int64  `json:"limit"`
 }
@@ -50,12 +49,22 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 		return nil, echo.NewHTTPError(http.StatusBadRequest, "page and limit must be greater than 0")
 	}
 
-	filters := bson.D{
-		{Key: "$or", Value: bson.A{
+	filters := bson.D{}
+
+	if input.SchemaUID != "" && input.Address == "" {
+		filters = append(filters, bson.E{Key: "schema_uid", Value: input.SchemaUID})
+
+	} else if input.SchemaUID == "" && input.Address != "" {
+		filters = append(filters, bson.E{Key: "$or", Value: bson.A{
+			bson.D{{Key: "recipient", Value: input.Address}},
+			bson.D{{Key: "issuer", Value: input.Address}},
+		}})
+	} else {
+		filters = append(filters, bson.E{Key: "$or", Value: bson.A{
 			bson.D{{Key: "schema_uid", Value: input.SchemaUID}},
-			bson.D{{Key: "recipient", Value: input.Recipient}},
-			bson.D{{Key: "ref_uid", Value: input.RefUID}},
-		}},
+			bson.D{{Key: "recipient", Value: input.Address}},
+			bson.D{{Key: "issuer", Value: input.Address}},
+		}})
 	}
 
 	skip := int64((input.Page - 1) * input.Limit)
@@ -82,6 +91,26 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 	count, err := db.Credential.CountDocuments(ctx, filters)
 	if err != nil {
 		return nil, fmt.Errorf("failed to count documents: %w", err)
+	}
+
+	issuedCount, received := 0, 0
+
+	if input.Address != "" {
+		for _, cred := range creds {
+			if cred.Recipient == input.Address {
+				received += 1
+			} else if cred.Issuer == input.Address {
+				issuedCount += 1
+			}
+		}
+		return map[string]interface{}{
+			"total": count,
+			"items": creds,
+			"address_counts": map[string]interface{}{
+				"issued":   issuedCount,
+				"received": received,
+			},
+		}, nil
 	}
 
 	return map[string]interface{}{

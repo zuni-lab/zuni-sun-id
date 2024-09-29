@@ -9,4 +9,5 @@ module.exports = {
   parserOptions: {
     sourceType: "module",
   },
+  ignorePatterns: ["backend/", "contracts"],
 };
