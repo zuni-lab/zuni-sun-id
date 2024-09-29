@@ -220,7 +220,6 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
   });
 };
 
-// TODO: search offchain by schema
 export const useCredentialsBySchema = ({
   page,
   limit,
@@ -229,7 +228,7 @@ export const useCredentialsBySchema = ({
 }: {
   page: number;
   limit: number;
-  schema: string;
+  schema: THexString;
   credentialType: CredentialType;
 }) => {
   const { data: totalCredentials } = useCountCredentials();
@@ -241,15 +240,7 @@ export const useCredentialsBySchema = ({
     refetch: refetchSchemas,
   } = useQuery({
     queryKey: [QueryKeys.Schema.Credentials, schema, page, limit, credentialType],
-    queryFn: async (): Promise<
-      {
-        uid: THexString;
-        issuer: THexString;
-        recipient: THexString;
-        time: number;
-        type: CredentialType;
-      }[]
-    > => {
+    queryFn: async (): Promise<TCredentialItem[]> => {
       if (credentialType === 'onchain') {
         const sunIdEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
           tronWeb,
@@ -307,7 +298,7 @@ export const useCredentialsByAddress = ({
 }: {
   page: number;
   limit: number;
-  address: string;
+  address: THexString;
 }) => {
   const tronWeb = useTronWeb();
   return useQuery({
@@ -315,8 +306,8 @@ export const useCredentialsByAddress = ({
     queryFn: async (): Promise<{
       issued: number;
       received: number;
-      onchainCredentials: any[];
-      offchainCredentials: any[];
+      onchainCredentials: TCredentialItem[];
+      offchainCredentials: TCredentialItem[];
     }> => {
       const issueCredentailEvents =
         await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
@@ -342,18 +333,34 @@ export const useCredentialsByAddress = ({
 
       const onchainCredentials = issuedCredentialEvents.map((e) => {
         return {
-          uid: '0x' + e.result.uid,
+          uid: ('0x' + e.result.uid) as THexString,
           issuer: e.result.issuer,
           recipient: e.result.recipient,
           time: e.timestamp / 1000,
+          type: 'onchain' as CredentialType,
+        };
+      });
+
+      const { items, address_counts } = (await CredentialApi.search({
+        page,
+        limit,
+        address,
+      })) as CredentialsPaginationResponse;
+      const offchainCredentials = items.map((c) => {
+        return {
+          uid: c.uid,
+          issuer: c.issuer,
+          recipient: c.recipient,
+          time: c.created_at,
+          type: 'offchain' as CredentialType,
         };
       });
 
       return {
-        issued,
-        received,
+        issued: issued + address_counts.issued,
+        received: received + address_counts.received,
         onchainCredentials,
-        offchainCredentials: [],
+        offchainCredentials,
       };
     },
   });

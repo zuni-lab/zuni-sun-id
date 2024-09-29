@@ -20,6 +20,10 @@ export type CredentialResponse = CredentialPayload & {
 };
 
 export type CredentialsPaginationResponse = {
+  address_counts: {
+    issued: number;
+    received: number;
+  };
   total: number;
   items: CredentialResponse[];
 };
@@ -32,7 +36,9 @@ export class CredentialApi extends BaseApi {
   }
 
   static async search(
-    payload: { uid: string } | { page: number; limit: number; schema_uid?: string }
+    payload:
+      | { uid: string }
+      | { page: number; limit: number; schema_uid?: THexString; address?: THexString }
   ) {
     return this.post<CredentialResponse | CredentialsPaginationResponse>(
       `${ProjectENV.NEXT_PUBLIC_API_HOST}/api/credential/search`,

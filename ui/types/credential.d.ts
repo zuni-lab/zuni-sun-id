@@ -39,3 +39,11 @@ type TQueryCredential = {
 };
 
 type CredentialType = 'onchain' | 'offchain';
+
+type TCredentialItem = {
+  uid: THexString;
+  issuer: THexString;
+  recipient: THexString;
+  time: number;
+  type: CredentialType;
+};

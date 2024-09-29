@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'All Schemas of SunID',
 };
 
-const Page: TNextPage<{ schema_id: string }> = async ({ params: { schema_id } }) => {
+const Page: TNextPage<{ schema_id: THexString }> = async ({ params: { schema_id } }) => {
   return <DetailSchema schemaId={schema_id} />;
 };
 
