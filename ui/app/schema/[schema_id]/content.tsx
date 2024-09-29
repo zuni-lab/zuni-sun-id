@@ -28,7 +28,7 @@ const RuleItem: IComponent<{
   );
 };
 
-export const DetailSchema: IComponent<{ schemaId: string }> = ({ schemaId }) => {
+export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [credentialType, setCredentialType] = useState<CredentialType>('onchain');
 
