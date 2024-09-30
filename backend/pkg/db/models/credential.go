@@ -5,7 +5,7 @@ import (
 )
 
 type Credential struct {
-	ID             primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ID             primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	UID            string             `json:"uid" bson:"uid,omitempty"`
 	Issuer         string             `json:"issuer" bson:"issuer,omitempty"`
 	Signature      string             `json:"signature" bson:"signature,omitempty"`
@@ -16,6 +16,7 @@ type Credential struct {
 	IsRevoked      bool               `json:"is_revoked" bson:"is_revoked,omitempty"`
 	RefUID         string             `json:"ref_uid" bson:"ref_uid,omitempty"`
 	Data           string             `json:"data" bson:"data,omitempty"`
+	CID            string             `json:"cid,omitempty" bson:"cid"`
 	CreatedAt      int64              `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt      int64              `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }

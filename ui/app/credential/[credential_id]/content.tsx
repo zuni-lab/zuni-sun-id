@@ -49,6 +49,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       if (credential.type === 'onchain') {
         tx = await contract.send({
           method: 'revoke',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           args: [[credential.schema.uid, credential.uid] as any],
         });
       } else {
@@ -60,6 +61,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       ToastTemplate.Credential.SubmitOnChain();
 
       openTxResult(tx);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       ToastTemplate.Schema.SubmitError();
