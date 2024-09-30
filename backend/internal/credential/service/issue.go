@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
+	btfs "github.com/zuni-lab/zuni-sun-id/pkg/btfs"
 	"github.com/zuni-lab/zuni-sun-id/pkg/db"
 	"github.com/zuni-lab/zuni-sun-id/pkg/db/models"
 	"golang.org/x/crypto/sha3"
@@ -32,6 +34,40 @@ func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (string
 		return "", fmt.Errorf("failed to get credential uid: %w", err)
 	}
 
+	minimalCredential := models.Credential{
+		UID:            uid,
+		Issuer:         input.Issuer,
+		Signature:      input.Signature,
+		SchemaUID:      input.SchemaUID,
+		Recipient:      input.Recipient,
+		ExpirationTime: input.ExpirationTime,
+		Revocable:      input.Revocable,
+		RefUID:         input.RefUID,
+		Data:           input.Data,
+	}
+
+	storedData := map[string]interface{}{
+		"uid":             minimalCredential.UID,
+		"issuer":          minimalCredential.Issuer,
+		"signature":       minimalCredential.Signature,
+		"schema_uid":      minimalCredential.SchemaUID,
+		"recipient":       minimalCredential.Recipient,
+		"expiration_time": minimalCredential.ExpirationTime,
+		"revocable":       minimalCredential.Revocable,
+		"ref_uid":         minimalCredential.RefUID,
+		"data":            minimalCredential.Data,
+	}
+
+	credentialJSON, err := json.Marshal(storedData)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal credential data: %w", err)
+	}
+
+	cid, err := btfs.StoreDataInBTFS(credentialJSON)
+	if err != nil {
+		return "", fmt.Errorf("failed to store credential in BTFS: %w", err)
+	}
+
 	credential := models.Credential{
 		UID:            uid,
 		Issuer:         input.Issuer,
@@ -41,6 +77,7 @@ func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (string
 		ExpirationTime: input.ExpirationTime,
 		Revocable:      input.Revocable,
 		RefUID:         input.RefUID,
+		CID:            cid,
 		Data:           input.Data,
 		CreatedAt:      now,
 		UpdatedAt:      now,

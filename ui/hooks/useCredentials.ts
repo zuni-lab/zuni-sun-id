@@ -306,8 +306,10 @@ export const useCredentialsByAddress = ({
     queryFn: async (): Promise<{
       issued: number;
       received: number;
-      onchainCredentials: TCredentialItem[];
-      offchainCredentials: TCredentialItem[];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onchainCredentials: any[];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      offchainCredentials: any[];
     }> => {
       const issueCredentailEvents =
         await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(

@@ -30,6 +30,7 @@ type ServerEnv struct {
 	SUN_ID_ADDRESS         string `validate:"min=20"`
 	TRON_GRID_API_URL      string `validate:"min=1"`
 	TRON_GRID_API_KEY      string `validate:"min=1"`
+	BTFS_NODE_URL          string `validate:"min=1"`
 }
 
 var Env ServerEnv
@@ -91,6 +92,7 @@ func loadEnv() {
 		SUN_ID_ADDRESS:         os.Getenv("SUN_ID_ADDRESS"),
 		TRON_GRID_API_URL:      os.Getenv("TRON_GRID_API_URL"),
 		TRON_GRID_API_KEY:      os.Getenv("TRON_GRID_API_KEY"),
+		BTFS_NODE_URL:          os.Getenv("BTFS_NODE_URL"),
 	}
 
 	validate := validator.New()
