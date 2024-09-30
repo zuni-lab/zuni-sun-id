@@ -18,13 +18,12 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
 
   const heading = useCurrentHeading();
 
+  const notification = ProjectENV.NEXT_PUBLIC_NOTIFICATION?.replace(/_/g, ' ');
+
   return (
     <div className="w-full h-auto relative">
       {ProjectENV.NEXT_PUBLIC_NOTIFICATION && (
-        <div
-          className="bg-black text-lg font-bold text-white text-center p-3.5"
-          dangerouslySetInnerHTML={{ __html: ProjectENV.NEXT_PUBLIC_NOTIFICATION }}
-        />
+        <div className="bg-black text-sm font-bold text-white text-center p-2">{notification}</div>
       )}
       <Navigation />
       {heading && <Heading {...heading} />}

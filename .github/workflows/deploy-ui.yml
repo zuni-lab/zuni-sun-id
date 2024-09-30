@@ -14,7 +14,7 @@ permissions:
 env:
   REGISTRY: ghcr.io
   REPO_NAME: ${{ github.repository }}
-  BASE_APP_DIR: /root/zuni 
+  BASE_APP_DIR: /root/zuni/ui 
 
 name: Build and Deploy
 
@@ -38,7 +38,7 @@ jobs:
       - name: Set lower case repository name
         id: set_repo_name
         run: |
-          echo "APP_IMAGE=${{ env.REGISTRY }}/$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]'):$(echo "${{ github.ref_name }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+          echo "APP_IMAGE=${{ env.REGISTRY }}/$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]'):ui >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
