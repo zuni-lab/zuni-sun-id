@@ -3,8 +3,8 @@ on:
     branches:
       - main
     paths:
-      - 'ui/**'
-      - '.github/workflows/deploy-ui.yml'   
+      - 'backend/**'
+      - '.github/workflows/deploy-api.yml'   
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ permissions:
 env:
   REGISTRY: ghcr.io
   REPO_NAME: ${{ github.repository }}
-  BASE_APP_DIR: /root/zuni/ui 
+  BASE_APP_DIR: /root/zuni/api 
 
 name: Build and Deploy
 
@@ -38,7 +38,7 @@ jobs:
       - name: Set lower case repository name
         id: set_repo_name
         run: |
-          echo "APP_IMAGE=${{ env.REGISTRY }}/$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]'):ui" >> $GITHUB_OUTPUT
+          echo "APP_IMAGE=${{ env.REGISTRY }}/$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]'):api" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -54,8 +54,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./docker/ui.dockerfile 
+          context: backend
+          file: docker/api.dockerfile 
           push: true
           tags: ${{ steps.set_repo_name.outputs.APP_IMAGE }}
           cache-from: type=local,src=/tmp/.buildx-cache

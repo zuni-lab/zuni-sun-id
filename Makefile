@@ -7,3 +7,7 @@ fe:
 fe-build:
 	@echo "Building frontend..."
 	@docker compose -f docker/ui.compose.yml up --build -d
+
+be:
+	@echo "Starting backend..."
+	@docker compose -f docker/api.compose.yml up -d

@@ -3,12 +3,12 @@ services:
     image: server 
     container_name: server 
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../backend
+      dockerfile: ../docker/api.dockerfile
     ports:
       - 12345:12345
     volumes:
-      - ./.env:/app/.env
+      - ../../envs/be.env:/app/.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:12345/health"]
       interval: 30s
