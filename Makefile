@@ -10,4 +10,4 @@ fe-build:
 
 be:
 	@echo "Starting backend..."
-	@docker compose -f docker/api.compose.yml up -d
+	@docker compose -f docker/api.compose.yml up --build -d
