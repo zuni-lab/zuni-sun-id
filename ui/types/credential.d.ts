@@ -21,7 +21,7 @@ type TCredential = {
   timestamp: number;
   expirationTime: number;
   revocationTime: number;
-
+  cid?: string;
   type: CredentialType;
 };
 
@@ -36,6 +36,7 @@ type TQueryCredential = {
   time: number;
   data: THexString;
   schema: THexString;
+  cid?: string;
 };
 
 type CredentialType = 'onchain' | 'offchain';

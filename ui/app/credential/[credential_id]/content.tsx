@@ -8,6 +8,7 @@ import { useCredentialContract } from '@/hooks/useContract';
 import { useCredentialDetail } from '@/hooks/useCredentials';
 import { useTxResult } from '@/states/useTxResult';
 import { cx, EMPTY_UID, getRelativeTime, toTronAddress } from '@/utils/tools';
+import { ProjectENV } from '@env';
 import { Loader } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -141,6 +142,16 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
                 {getRelativeTime(credential.revocationTime / 1000)})
               </div>
             )}
+            <hr className="my-4" />
+            <div className="flex gap-2">
+              Credential link:
+              <a
+                target="_blank"
+                className="text-blue-500"
+                href={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}>
+                {`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
+              </a>
+            </div>
           </section>
         </div>
       ) : (

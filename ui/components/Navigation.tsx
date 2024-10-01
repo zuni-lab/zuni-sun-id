@@ -25,7 +25,7 @@ export const Navigation: IComponent = () => {
         <NavigationMenu>
           <NavigationMenuList>
             {Object.entries(AppRouter)
-              .filter(([k]) => k !== 'Home' && k !== 'Vaults')
+              .filter(([k]) => k !== 'Home' && k !== 'Address')
               .map(([k, v]) => (
                 <NavigationMenuItem key={v}>
                   <Link href={v} passHref legacyBehavior>

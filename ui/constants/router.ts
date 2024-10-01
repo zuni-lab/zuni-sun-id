@@ -1,8 +1,8 @@
 export const AppRouter = {
   Home: '/',
   Schema: '/schema',
-  Address: '/address',
   Credential: '/credential',
+  Address: '/address',
   Docs: '/docs',
 };
 

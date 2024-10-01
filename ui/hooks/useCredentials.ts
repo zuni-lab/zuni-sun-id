@@ -114,6 +114,7 @@ export const useCredentials = ({
             timestamp: c.created_at,
             expirationTime: c.expiration_time,
             revocationTime: 0, // TODO: revoke offchain
+            cid: c.cid,
             type: 'offchain' as CredentialType,
           };
         });
@@ -175,6 +176,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
           revocationTime: Number(revocationTime),
           time: offchainCredential.created_at,
           schema: offchainCredential.schema_uid,
+          cid: offchainCredential.cid,
         };
       }
 
@@ -214,6 +216,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
         expirationTime: credential.expirationTime * 1000,
         revocationTime: credential.revocationTime * 1000,
         type: credentialType,
+        cid: credential.cid,
       } as TCredential;
     },
     enabled: !!sunId && !!schemaContract,

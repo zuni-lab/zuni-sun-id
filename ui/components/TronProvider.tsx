@@ -49,6 +49,7 @@ const TronWebProvider: IComponent = ({ children }) => {
 
   const connectWallet = useCallback(
     async (selectedNetwork: TSupportedNetworks) => {
+      console.log('connectWallet', selectedNetwork);
       try {
         const networkConfig = tronNetworks[selectedNetwork];
 

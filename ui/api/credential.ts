@@ -15,6 +15,7 @@ type CredentialPayload = {
 export type CredentialResponse = CredentialPayload & {
   id: THexString;
   uid: THexString;
+  cid: string;
   created_at: number;
   updated_at: number;
 };
