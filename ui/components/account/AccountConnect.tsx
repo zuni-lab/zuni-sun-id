@@ -1,14 +1,10 @@
 'use client';
 
-import { SupportedNetworks, TSupportedNetworks } from '@/constants/configs';
 import { formatBalance } from '@/utils/tools';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ExitIcon } from '@radix-ui/react-icons';
-import { NetworkType } from '@tronweb3/tronwallet-abstract-adapter';
-import { cx } from 'class-variance-authority';
 import { clsx } from 'clsx';
 import { Copy } from 'lucide-react';
-import { useCallback } from 'react';
 import { TronLogo } from '../icons/TronLogo';
 import { Button } from '../shadcn/Button';
 import { useTron } from '../TronProvider';
@@ -16,16 +12,15 @@ import { Address } from './Address';
 import { Identicon } from './Idention';
 
 export const AccountConnect: IComponent = () => {
-  const { connected, address, network, balance, setNetwork, connectWallet, disconnectWallet } =
-    useTron();
+  const { connected, address, network, balance, disconnectWallet } = useTron();
 
-  const handleNetworkChange = useCallback(
-    (network: TSupportedNetworks) => {
-      setNetwork(network);
-      connectWallet(network);
-    },
-    [setNetwork, connectWallet]
-  );
+  // const handleNetworkChange = useCallback(
+  //   (network: TSupportedNetworks) => {
+  //     setNetwork(network);
+  //     connectWallet(network);
+  //   },
+  //   [setNetwork, connectWallet]
+  // );
 
   return (
     <div className="w-full h-full">
@@ -60,7 +55,7 @@ export const AccountConnect: IComponent = () => {
                 />
               </div>
 
-              <div className="mb-2 font-bold">Select Network:</div>
+              {/* <div className="mb-2 font-bold">Select Network:</div>
               {SupportedNetworks.map((nw) => (
                 <DropdownMenu.Item
                   key={nw}
@@ -77,7 +72,7 @@ export const AccountConnect: IComponent = () => {
                     {nw === network ? '✔' : ''}
                   </span>
                 </DropdownMenu.Item>
-              ))}
+              ))} */}
 
               <hr className="h-px my-4 self-stretch border-transparent bg-zinc-400 bg-opacity-20" />
               <div className="inline-flex items-center justify-start gap-2">
@@ -93,7 +88,7 @@ export const AccountConnect: IComponent = () => {
                 type="button"
                 aria-label="Disconnect"
                 className="pb-4 inline-flex items-center justify-between self-stretch"
-                onClick={async () => await disconnectWallet()}>
+                onClick={async () => disconnectWallet()}>
                 <span className="font-inter w-32 text-left text-base font-medium hover:bg-opacity-80 hover:opacity-80">
                   Log out
                 </span>
@@ -114,7 +109,7 @@ export const ConnectButton: IComponent = () => {
     <Button
       type="button"
       className="bg-accent-foreground transition-all duration-150 px-6 !py-0 hover:bg-gray-800/80"
-      onClick={() => connectWallet(NetworkType.Shasta)}>
+      onClick={() => connectWallet()}>
       Connect Wallet
     </Button>
   );

@@ -7,6 +7,9 @@ import { tronNetworks, TSupportedNetworks } from '@/constants/configs';
 import { MOCK_PRIVATE_KEY } from '@/constants/mock';
 import { NetworkType } from '@tronweb3/tronwallet-abstract-adapter';
 import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react';
+import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { getNetworkInfoByTronWeb } from '@tronweb3/tronwallet-adapters';
+import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
 
 type TronWebContextProps = {
   tronWeb: TronWeb | null;
@@ -15,7 +18,7 @@ type TronWebContextProps = {
   balance: string;
   connected: boolean;
   setNetwork: (network: TSupportedNetworks) => void;
-  connectWallet: (network: TSupportedNetworks) => void;
+  connectWallet: () => void;
   disconnectWallet: () => void;
   signTronData: (contract: string, types: object, values: object) => Promise<string>;
 };
@@ -42,38 +45,16 @@ export const useTronWeb = () => {
 };
 
 const TronWebProvider: IComponent = ({ children }) => {
+  const { setVisible } = useWalletModal();
+  const { disconnect, address: connectedAddr } = useWallet();
   const [tronWeb, setTronWeb] = useState<TronWeb | null>(null);
   const [network, setNetwork] = useState<TSupportedNetworks>(NetworkType.Shasta);
   const [address, setAddress] = useState('');
   const [balance, setBalance] = useState('');
 
-  const connectWallet = useCallback(
-    async (selectedNetwork: TSupportedNetworks) => {
-      console.log('connectWallet', selectedNetwork);
-      try {
-        const networkConfig = tronNetworks[selectedNetwork];
-
-        // Initialize TronWeb with the selected network
-        const tronInstance = new TronWeb(
-          networkConfig.fullNode,
-          networkConfig.solidityNode,
-          networkConfig.eventServer
-        );
-
-        // Check if TronLink is installed and connected
-        if (window.tronWeb && window?.tronWeb?.defaultAddress?.base58) {
-          setTronWeb(window.tronWeb); // Use TronLink if available
-          setAddress(window.tronWeb.defaultAddress.base58);
-        } else {
-          setTronWeb(tronInstance);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        throw new Error('Failed to connect wallet:', error.message);
-      }
-    },
-    [setTronWeb, setAddress]
-  );
+  const connectWallet = async () => {
+    setVisible(true);
+  };
 
   const fetchBalance = useCallback(async () => {
     if (!tronWeb || !address) {
@@ -86,6 +67,7 @@ const TronWebProvider: IComponent = ({ children }) => {
 
   const disconnectWallet = useCallback(async () => {
     try {
+      await disconnect();
       if (window.tronWeb) {
         setTronWeb(null);
         setAddress('');
@@ -94,7 +76,7 @@ const TronWebProvider: IComponent = ({ children }) => {
     } catch (error) {
       console.error('Failed to disconnect wallet:', error);
     }
-  }, [setTronWeb, setAddress, setBalance]);
+  }, [setTronWeb, setAddress, setBalance, disconnect]);
 
   const signTronData = useCallback(
     async (contract: string, types: object, values: object) => {
@@ -128,9 +110,20 @@ const TronWebProvider: IComponent = ({ children }) => {
   }, [fetchBalance]);
 
   useEffect(() => {
-    connectWallet(network);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    (async () => {
+      // Check if TronLink is installed and connected
+      if (connectedAddr && window.tronWeb) {
+        const { networkType } = await getNetworkInfoByTronWeb(window.tronWeb);
+        if (networkType != NetworkType.Shasta) {
+          throw new Error('Please connect to Shasta testnet');
+        }
+
+        setNetwork(networkType as TSupportedNetworks);
+        setTronWeb(window.tronWeb);
+        setAddress(connectedAddr);
+      }
+    })();
+  }, [connectedAddr]);
 
   return (
     <TronWebContext.Provider
