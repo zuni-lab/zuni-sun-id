@@ -1,5 +1,6 @@
 export const AppRouter = {
   Home: '/',
+  MyCredentials: '/address',
   Schemas: '/schema',
   Credentials: '/credential',
   Address: '/address',
@@ -11,6 +12,11 @@ export type RouterKey = keyof typeof AppRouter;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const RouterMeta: Record<RouterKey, { title: string; description?: string; icon: any }> = {
   Home: { title: 'Home', description: 'HOME', icon: null },
+  MyCredentials: {
+    title: 'My Credential',
+    description: 'View and manage your SunID credentials.',
+    icon: null,
+  },
   Schemas: {
     title: 'View and Manage Credential Schemas',
     description: 'Explore all available schemas for issuing credentials on SunID.',

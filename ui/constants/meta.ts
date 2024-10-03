@@ -24,14 +24,21 @@ const RouterHeadings: Record<RouterKey, { title: string; descs?: string[] }> = {
     title: 'Welcome to SunID',
     descs: ['Securely manage and verify real-world data using the power of blockchain.'],
   },
-  Schema: {
+  MyCredentials: {
+    title: 'My Credentials',
+    descs: [
+      'View and manage your SunID credentials.',
+      'Easily access and verify your credentials with the power of Tron and BTFS.',
+    ],
+  },
+  Schemas: {
     title: 'View and Manage Credential Schemas',
     descs: [
       'Explore all available schemas for issuing credentials on SunID.',
       'Create, manage, and review schemas to securely define the structure of real-world data on the blockchain.',
     ],
   },
-  Credential: {
+  Credentials: {
     title: 'View and Manage Credentials',
     descs: [
       'Browse, issue, and verify credentials stored on the SunID platform.',
