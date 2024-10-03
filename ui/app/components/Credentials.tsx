@@ -9,9 +9,10 @@ import { CredentialTableHeaders } from '../../constants/table';
 import useCredentials from '@/hooks/useCredentials';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 
-export const RecentCredentials: IComponent<{
+export const Credentials: IComponent<{
+  title: string;
   credentialType: CredentialType;
-}> = ({ credentialType }) => {
+}> = ({ title, credentialType }) => {
   const { items, isFetching } = useCredentials({
     page: 1,
     limit: ITEMS_PER_PAGE.HOME,
@@ -20,7 +21,7 @@ export const RecentCredentials: IComponent<{
 
   return (
     <SunTable
-      title={`Recent ${credentialType} Credentials`}
+      title={title}
       columns={CredentialTableHeaders}
       items={items ?? []}
       isLoading={isFetching}

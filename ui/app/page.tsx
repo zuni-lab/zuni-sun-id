@@ -1,7 +1,7 @@
 import { MOCK_STATS } from '@/constants/mock';
 import { RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
-import { RecentCredentials } from './components/RecentCredentials';
+import { Credentials } from './components/Credentials';
 import { RecentSchemas } from './components/RecentSchemas';
 
 export const metadata: Metadata = RouterMeta.Home;
@@ -19,8 +19,8 @@ export default function Page() {
           ))}
         </section>
       </div>
-      <RecentCredentials credentialType="onchain" />
-      <RecentCredentials credentialType="offchain" />
+      <Credentials title="Recent Onchain Credentials" credentialType="onchain" />
+      <Credentials title="Recent Offchain Credentials" credentialType="offchain" />
       <RecentSchemas />
     </main>
   );
