@@ -63,7 +63,7 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
                 <div className="font-bold ps-4">{data.uid}</div>
               </div>
               <SunIDButton
-                href={`${AppRouter.Credential}/issue/${data.uid}`}
+                href={`${AppRouter.Credentials}/issue/${data.uid}`}
                 name="Issue Credential"
               />
             </div>

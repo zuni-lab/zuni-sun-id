@@ -67,9 +67,9 @@ export const SunTable = <T,>({
         {renderRightTop ? (
           renderRightTop
         ) : button === 'schema' ? (
-          <SunIDButton href={`${AppRouter.Schema}/create`} name="Create Schema" />
+          <SunIDButton href={`${AppRouter.Schemas}/create`} name="Create Schema" />
         ) : button === 'credential' ? (
-          <SunIDButton href={`${AppRouter.Credential}/issue`} name="Issue Credential" />
+          <SunIDButton href={`${AppRouter.Credentials}/issue`} name="Issue Credential" />
         ) : null}
       </div>
       <Table className="w-full">

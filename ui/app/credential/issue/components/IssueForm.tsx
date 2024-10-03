@@ -272,7 +272,7 @@ export const IssueCredentialForm: IComponent<{
             <h3 className="uppercase text-gray-600 font-bold text-lg">{data.name}</h3>
             <HexLink
               content={'#' + data.uid}
-              href={`${AppRouter.Schema}/${data.uid}`}
+              href={`${AppRouter.Schemas}/${data.uid}`}
               className="text-base pl-0 text-gray-500"
               isFull
             />

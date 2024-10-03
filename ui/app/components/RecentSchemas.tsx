@@ -29,7 +29,7 @@ export const RecentSchemas: IComponent = () => {
             variant: 'link',
             className: 'w-full',
           })}
-          href={AppRouter.Schema}>
+          href={AppRouter.Schemas}>
           View all schemas
         </Link>
       }

@@ -32,7 +32,7 @@ export const RecentCredentials: IComponent<{
             variant: 'link',
             className: 'w-full',
           })}
-          href={AppRouter.Credential}>
+          href={AppRouter.Credentials}>
           View all Credential
         </Link>
       }

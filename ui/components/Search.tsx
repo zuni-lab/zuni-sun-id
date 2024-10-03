@@ -78,15 +78,15 @@ export const Search: IComponent<{
                     isFull={true}
                     href={`${AppRouter.Address}/${query}`}></HexLink>
                 ) : data === 'schema' ? (
-                  <HexLink content={query} href={`${AppRouter.Schema}/${query}`}></HexLink>
+                  <HexLink content={query} href={`${AppRouter.Schemas}/${query}`}></HexLink>
                 ) : data === 'onchain' ? (
                   <HexLink
                     content={query}
-                    href={`${AppRouter.Credential}/${query}?type=onchain`}></HexLink>
+                    href={`${AppRouter.Credentials}/${query}?type=onchain`}></HexLink>
                 ) : data === 'offchain' ? (
                   <HexLink
                     content={query}
-                    href={`${AppRouter.Credential}/${query}?type=offchain`}></HexLink>
+                    href={`${AppRouter.Credentials}/${query}?type=offchain`}></HexLink>
                 ) : (
                   <div className="text-white">No result found</div>
                 )}

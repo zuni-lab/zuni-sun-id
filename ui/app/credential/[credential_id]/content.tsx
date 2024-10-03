@@ -119,7 +119,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
                 <div className="font-bold">{credential.schema?.name}</div>
                 <HexLink
                   content={credential.schema?.uid}
-                  href={`${AppRouter.Schema}/${credential.schema?.uid}`}
+                  href={`${AppRouter.Schemas}/${credential.schema?.uid}`}
                   className="text-base pl-0"
                   isFull
                 />

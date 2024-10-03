@@ -29,7 +29,7 @@ export const CredentialRow = ({
       <TableCell className="w-60">
         <HexLink
           content={uid}
-          href={`${AppRouter.Credential}/${uid}?type=${type}`}
+          href={`${AppRouter.Credentials}/${uid}?type=${type}`}
           className={cx('w-60', {
             'text-gray-500': !isValid,
           })}
@@ -84,7 +84,7 @@ export const CredentialSchemaRow = ({
 }) => (
   <TableRow key={uid}>
     <TableCell className="w-40">
-      <HexLink content={uid} href={`${AppRouter.Credential}/${uid}?type=${type}`} />
+      <HexLink content={uid} href={`${AppRouter.Credentials}/${uid}?type=${type}`} />
     </TableCell>
     <TableCell className="w-80">
       <HexLink
@@ -112,10 +112,10 @@ export const SchemaRow = ({
 }: SchemaData) => (
   <TableRow key={uid} className="text-lg">
     <TableCell>
-      <Chip text={`#${id}`} href={`${AppRouter.Schema}/${uid}`} />
+      <Chip text={`#${id}`} href={`${AppRouter.Schemas}/${uid}`} />
     </TableCell>
     <TableCell>
-      <HexLink content={uid} href={`${AppRouter.Schema}/${uid}`} />
+      <HexLink content={uid} href={`${AppRouter.Schemas}/${uid}`} />
     </TableCell>
     <TableCell className="font-semibold">{name}</TableCell>
     <TableCell className="w-120">
