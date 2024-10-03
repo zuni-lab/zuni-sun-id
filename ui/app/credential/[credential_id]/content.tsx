@@ -1,8 +1,10 @@
 'use client';
 
 import { Chip } from '@/components/builders/Chip';
+import { HexLink } from '@/components/builders/HexLink';
 import { Button } from '@/components/shadcn/Button';
 import { useTron } from '@/components/TronProvider';
+import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
 import { useCredentialContract } from '@/hooks/useContract';
 import { useCredentialDetail } from '@/hooks/useCredentials';
@@ -115,7 +117,12 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
               <Chip text={`#${credential.schema?.id}`} />
               <div className="ms-4">
                 <div className="font-bold">{credential.schema?.name}</div>
-                <div className="font-bold">{credential.uid}</div>
+                <HexLink
+                  content={credential.schema?.uid}
+                  href={`${AppRouter.Schema}/${credential.schema?.uid}`}
+                  className="text-base pl-0"
+                  isFull
+                />
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -123,8 +130,25 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
                 <RuleItem key={index} type={name} name={value as string} />
               ))}
             </div>
-            <div>Holder: {credential.recipient && toTronAddress(credential.recipient)}</div>
-            <div>Issuer: {credential.issuer && toTronAddress(credential.issuer)}</div>
+
+            <div>
+              <span className="me-2">Holder:</span>
+              <HexLink
+                content={toTronAddress(credential.recipient)}
+                href={`${AppRouter.Address}/${toTronAddress(credential.recipient)}`}
+                className="text-base pl-0"
+                isFull
+              />
+            </div>
+            <div>
+              <span className="me-2">Issuer:</span>
+              <HexLink
+                content={toTronAddress(credential.issuer)}
+                href={`${AppRouter.Address}/${toTronAddress(credential.issuer)}`}
+                className="text-base pl-0"
+                isFull
+              />
+            </div>
             <div>
               Created at: {new Date(credential.timestamp).toUTCString()} (
               {getRelativeTime(credential.timestamp / 1000)})
@@ -143,7 +167,17 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
               </div>
             )}
             <hr className="my-4" />
-            {credential.cid && (
+            {credential.type === 'onchain' ? (
+              <div className="flex gap-2">
+                Transaction Hash:
+                <a
+                  target="_blank"
+                  className="text-blue-500"
+                  href={`${ProjectENV.NEXT_PUBLIC_TRON_SCAN_URL}/#/transaction/${credential.txhash}`}>
+                  {`${credential.txhash}`}
+                </a>
+              </div>
+            ) : (
               <div className="flex gap-2">
                 Credential link:
                 <a

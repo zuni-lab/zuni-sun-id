@@ -113,6 +113,7 @@ const TronWebProvider: IComponent = ({ children }) => {
     (async () => {
       // Check if TronLink is installed and connected
       if (connectedAddr && window.tronWeb) {
+        console.log('Wallet connected:', connectedAddr);
         const { networkType } = await getNetworkInfoByTronWeb(window.tronWeb);
         if (networkType != NetworkType.Shasta) {
           throw new Error('Please connect to Shasta testnet');

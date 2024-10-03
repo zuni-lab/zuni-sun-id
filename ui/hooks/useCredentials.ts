@@ -155,11 +155,19 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
           method: 'getCredential',
           args: [credentialId],
         });
+        const events = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+          tronweb,
+          ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+        );
+        const issuedCredentialEvent = events.find(
+          (e) => e.result.uid === credentialId.slice(2) && e.name === 'Issued'
+        );
         credential = {
           ...onchainCredential,
           expirationTime: Number(onchainCredential.expirationTime),
           revocationTime: Number(onchainCredential.revocationTime),
           time: Number(onchainCredential.time),
+          txhash: issuedCredentialEvent?.transaction,
         };
       } else {
         const offchainCredential = (await CredentialApi.search({
@@ -217,6 +225,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
         revocationTime: credential.revocationTime * 1000,
         type: credentialType,
         cid: credential.cid,
+        txhash: credential.txhash,
       } as TCredential;
     },
     enabled: !!sunId && !!schemaContract,

@@ -14,6 +14,7 @@ export const CredentialRow = ({
   expirationTime,
   revocationTime,
   timestamp,
+  type,
 }: TCredential) => {
   const isValid =
     (revocationTime == 0 || revocationTime * 1000 > new Date().getTime()) &&
@@ -28,7 +29,7 @@ export const CredentialRow = ({
       <TableCell className="w-60">
         <HexLink
           content={uid}
-          href={`${AppRouter.Credential}/${uid}`}
+          href={`${AppRouter.Credential}/${uid}?type=${type}`}
           className={cx('w-60', {
             'text-gray-500': !isValid,
           })}

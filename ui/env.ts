@@ -10,6 +10,7 @@ const ProjectENVSchema = z.object({
   NEXT_PUBLIC_API_HOST: z.string().default('http://localhost:8080'),
   NEXT_PUBLIC_NOTIFICATION: z.string().optional(),
   NEXT_PUBLIC_BTFS_GATEWAY_URL: z.string().default(''),
+  NEXT_PUBLIC_TRON_SCAN_URL: z.string().default('https://shasta.tronscan.org'),
 });
 
 /**
@@ -22,4 +23,5 @@ export const ProjectENV = ProjectENVSchema.parse({
   NEXT_PUBLIC_API_HOST: process.env.NEXT_PUBLIC_API_HOST,
   NEXT_PUBLIC_NOTIFICATION: process.env.NEXT_PUBLIC_NOTIFICATION,
   NEXT_PUBLIC_BTFS_GATEWAY_URL: process.env.NEXT_PUBLIC_BTFS_GATEWAY_URL,
+  NEXT_PUBLIC_TRON_SCAN_URL: process.env.NEXT_PUBLIC_TRON_SCAN_URL,
 });
