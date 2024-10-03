@@ -143,15 +143,17 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
               </div>
             )}
             <hr className="my-4" />
-            <div className="flex gap-2">
-              Credential link:
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}>
-                {`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
-              </a>
-            </div>
+            {credential.cid && (
+              <div className="flex gap-2">
+                Credential link:
+                <a
+                  target="_blank"
+                  className="text-blue-500"
+                  href={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}>
+                  {`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
+                </a>
+              </div>
+            )}
           </section>
         </div>
       ) : (
