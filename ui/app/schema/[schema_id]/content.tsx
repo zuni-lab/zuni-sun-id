@@ -35,7 +35,7 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
   const tronweb = useTronWeb();
   const { data, isLoading } = useDetailSchema(schemaId as THexString);
 
-  const { data: totalCredentials } = useCountCredentials();
+  const { data: totalCredentials } = useCountCredentials({ credentialType });
 
   const { items, isFetching } = useCredentialsBySchema({
     page: currentPage,
@@ -91,7 +91,7 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
             maxItems={ITEMS_PER_PAGE.CREDENTIAL}
             pagination={{
               currentPage: currentPage,
-              totalItems: totalCredentials,
+              totalItems: totalCredentials || 0,
               onPageChange: (page) => setCurrentPage(page),
             }}
             renderRightTop={

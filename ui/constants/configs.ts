@@ -23,6 +23,7 @@ export const QueryKeys = {
     List: 'credential-list',
     Detail: 'credential-detail',
     Address: 'credential-address',
+    TotalAddress: 'credential-total-address',
   },
   CombinedData: {
     List: 'combined-data-list',

@@ -1,14 +1,13 @@
+import { CredentialApi, CredentialResponse, CredentialsPaginationResponse } from '@/api/credential';
 import { useTronWeb } from '@/components/TronProvider';
 import { SUN_ID_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/query';
-import { hexToNumber } from '@/utils/tools';
 import { ProjectENV } from '@env';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSchemaContract } from './useContract';
-import { CredentialApi, CredentialResponse, CredentialsPaginationResponse } from '@/api/credential';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
 
@@ -40,7 +39,7 @@ export const useCredentials = ({
   limit: number;
   credentialType: CredentialType;
 }) => {
-  const { data: totalCredentials } = useCountCredentials();
+  const { data: totalCredentials } = useCountCredentials({ credentialType });
   const { data: sunId } = useSundIdContract();
   const { data: schemaRegistry } = useSchemaContract();
 
@@ -53,6 +52,10 @@ export const useCredentials = ({
     queryFn: async () => {
       let credentials: TCredential[];
       if (credentialType === 'onchain') {
+        if (!totalCredentials) {
+          return [];
+        }
+
         let from = totalCredentials - page * limit;
         const to = from + limit;
         if (from < 0) {
@@ -243,7 +246,7 @@ export const useCredentialsBySchema = ({
   schema: THexString;
   credentialType: CredentialType;
 }) => {
-  const { data: totalCredentials } = useCountCredentials();
+  const { data: totalCredentials } = useCountCredentials({ credentialType });
   const tronWeb = useTronWeb();
 
   const {
@@ -302,7 +305,6 @@ export const useCredentialsBySchema = ({
   };
 };
 
-// TODO: search offchain by address
 export const useCredentialsByAddress = ({
   page,
   limit,
@@ -380,24 +382,69 @@ export const useCredentialsByAddress = ({
   });
 };
 
-export const useCountCredentials = () => {
+export const useCountCredentialsAddresses = () => {
   const { data: contract } = useSundIdContract();
+  const tronWeb = useTronWeb();
 
-  const { data, refetch } = useQuery({
-    queryKey: [QueryKeys.Credential.Total],
+  return useQuery({
+    queryKey: [QueryKeys.Credential.TotalAddress],
     queryFn: async () => {
-      const [result] = await contract!.call({
-        method: 'totalCredentials',
-        args: [],
-      });
-      return result;
+      const events = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+        tronWeb,
+        ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+      );
+
+      const { items } = (await CredentialApi.search({
+        page: 1,
+        limit: 10_000,
+      })) as CredentialsPaginationResponse;
+
+      const issuedEvents = events.filter((e) => e.name === 'Issued');
+
+      const onchainIssuers = issuedEvents.map((e) => e.result.issuer);
+      const onchainRecipients = issuedEvents.map((e) => e.result.recipient);
+
+      const offchainIssuers = items.map((c) => c.issuer);
+      const offchainRecipients = items.map((c) => c.recipient);
+
+      const addresses = new Set([
+        ...onchainIssuers,
+        ...onchainRecipients,
+        ...offchainIssuers,
+        ...offchainRecipients,
+      ]);
+      let total = addresses.size;
+      if (addresses.has('0x0000000000000000000000000000000000000000')) total--;
+      return total;
     },
-    refetchInterval: 10_000,
     refetchOnMount: true,
     enabled: !!contract,
   });
+};
 
-  return { data: hexToNumber(data), refetch };
+export const useCountCredentials = ({ credentialType }: { credentialType: CredentialType }) => {
+  const { data: contract } = useSundIdContract();
+
+  return useQuery({
+    queryKey: [QueryKeys.Credential.Total, credentialType],
+    queryFn: async () => {
+      if (credentialType === 'onchain') {
+        const [result] = await contract!.call({
+          method: 'totalCredentials',
+          args: [],
+        });
+        return Number(result);
+      } else {
+        const { total } = (await CredentialApi.search({
+          page: 1,
+          limit: 10_000,
+        })) as CredentialsPaginationResponse;
+        return total;
+      }
+    },
+    refetchOnMount: true,
+    enabled: !!contract,
+  });
 };
 
 export default useCredentials;
