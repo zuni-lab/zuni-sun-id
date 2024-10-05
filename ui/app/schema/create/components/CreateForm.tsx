@@ -160,9 +160,10 @@ export const CreateSchemaForm: IComponent = () => {
 
         ToastTemplate.Schema.Submit();
         setSubmitting(false);
-        openTxResult(tx);
+        openTxResult(tx, 'RegisterSchema');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        console.error(error);
         ToastTemplate.Schema.SubmitError();
         setSubmitting(false);
       }

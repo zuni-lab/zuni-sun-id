@@ -1,12 +1,14 @@
-type RegisterSchemaEvent = {
+type GeneralUIDEvent = {
   uid: string;
+};
+
+type RegisterSchemaEvent = GeneralUIDEvent & {
   registerer: THexString;
 };
 
-type IssueCredentialEvent = {
+type IssueCredentialEvent = GeneralUIDEvent & {
   recipient: THexString;
   issuer: THexString;
-  uid: string;
   schemaUID: string;
 };
 
@@ -21,3 +23,5 @@ type SchemaData = {
 };
 
 type QueryCombinedDataResult = CredentialType | 'schema' | 'address' | 'none';
+
+type TxResultType = 'RegisterSchema' | 'IssueCredential' | 'RevokeCredential';

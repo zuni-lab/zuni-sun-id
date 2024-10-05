@@ -1,9 +1,9 @@
 import { useTronWeb } from '@/components/TronProvider';
-import { TxQuery } from '@/tron/query';
+import { EventQuery } from '@/tron/query';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-export const useTxInfo = (txHash: string | undefined, maxRetries: number) => {
+export const useTxInfo = <T>(txHash: string | undefined, maxRetries: number) => {
   const [count, setCount] = useState(0);
   const tronWeb = useTronWeb();
 
@@ -16,13 +16,14 @@ export const useTxInfo = (txHash: string | undefined, maxRetries: number) => {
     queryKey: ['events', txHash],
     queryFn: async () => {
       setCount((c) => c + 1);
-      return await TxQuery.getTransactionInfo(tronWeb, txHash!);
+      const events = await EventQuery.getEventsByTransactionID<T>(tronWeb, txHash as string);
+      return events[0];
     },
-    refetchInterval: 5000,
+    refetchInterval: 2000,
     enabled: !!txHash && count < maxRetries,
   });
 
-  const isLoading = isFetching || (count < maxRetries && !txInfo?.id);
+  const isLoading = isFetching || (count < maxRetries && !txInfo?.transaction);
 
   return { txInfo, isLoading, isError, error, count };
 };

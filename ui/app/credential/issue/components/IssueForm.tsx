@@ -168,7 +168,7 @@ export const IssueCredentialForm: IComponent<{
 
           ToastTemplate.Credential.SubmitOnChain();
 
-          openTxResult(tx);
+          openTxResult(tx, 'IssueCredential');
         } else {
           const recipient = toHexAddress(values[CredentialFieldKeys.Recipient] as string);
 
@@ -196,14 +196,14 @@ export const IssueCredentialForm: IComponent<{
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error(error);
-        ToastTemplate.Schema.SubmitError();
+        ToastTemplate.Credential.SubmitError();
       } finally {
         setSubmitting(false);
       }
       return;
     }
 
-    ToastTemplate.Schema.SubmitError();
+    ToastTemplate.Credential.SubmitError();
     setSubmitting(false);
   });
 
@@ -284,7 +284,7 @@ export const IssueCredentialForm: IComponent<{
         {renderInputField({
           name: CredentialFieldKeys.Recipient as TCredentialInput,
           label: 'Recipient',
-          placeholder: 'The optional recipient address, etc: TEg.. or 0x...',
+          placeholder: 'The recipient address, etc: TEg.. or 0x...',
           required: false,
         })}
 

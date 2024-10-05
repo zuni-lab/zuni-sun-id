@@ -11,12 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../shadcn/Dialog';
+import { ProjectENV } from '@env';
+import { HexLink } from './HexLink';
+import { AppRouter } from '@/constants/router';
 
 const MAX_RETRIES = 15;
 
 export const TxResult: IComponent = () => {
-  const { visible, txHash, close } = useTxResult();
-  const { txInfo, isLoading, isError, error } = useTxInfo(txHash, MAX_RETRIES);
+  const { visible, txHash, txResultType, close } = useTxResult();
+  const { txInfo, isLoading, isError, error } = useTxInfo<GeneralUIDEvent>(txHash, MAX_RETRIES);
 
   return (
     <Dialog open={visible}>
@@ -31,7 +34,11 @@ export const TxResult: IComponent = () => {
               ? 'Loading transaction info'
               : isError
                 ? 'Error loading transaction'
-                : 'Events'}
+                : txResultType === 'RegisterSchema'
+                  ? 'Registered Schema Successfully'
+                  : txResultType === 'IssueCredential'
+                    ? 'Issued Credential Successfully'
+                    : 'Revoked Credential Successfully'}
           </DialogTitle>
           <DialogDescription>
             {isLoading && (
@@ -53,28 +60,28 @@ export const TxResult: IComponent = () => {
                 {!isLoading && !!txInfo ? (
                   <div className="w-full bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4 shadow-sm space-y-4 mt-4">
                     <p>
-                      <strong>Transaction:</strong> #{txInfo.id}
+                      <strong>
+                        {txResultType === 'RegisterSchema' ? 'Schema UID:' : 'Credential UID:'}
+                      </strong>
+                      <HexLink
+                        content={'0x' + txInfo.result.uid}
+                        href={`${AppRouter.Credentials}/0x${txInfo.result.uid}`}
+                        className="text-sm pl-0"
+                        isFull
+                      />
                     </p>
                     <p>
-                      <strong>Block:</strong> {txInfo.blockNumber}
+                      <strong>Transaction:</strong>
+                      <HexLink
+                        content={txInfo.transaction}
+                        href={`${ProjectENV.NEXT_PUBLIC_TRON_SCAN_URL}/#/transaction/${txInfo.transaction}`}
+                        className="text-sm pl-0"
+                        isFull
+                      />
                     </p>
                     <p>
-                      <strong>Contract:</strong> {txInfo.contract_address}
-                    </p>
-                    <p>
-                      <strong>Timestamp:</strong> {new Date(txInfo.blockTimeStamp).toDateString()} -{' '}
-                      {new Date(txInfo.blockTimeStamp).toLocaleTimeString()}
-                    </p>
-                    <p className="truncate">
-                      <strong>Result:</strong>{' '}
-                      <span
-                        className={cx({
-                          'text-green-600': txInfo.result === 'SUCCESS',
-                          'text-destructive':
-                            txInfo?.result === 'FAILED' || txInfo?.receipt?.result === 'REVERT',
-                        })}>
-                        {txInfo?.result || txInfo?.receipt?.result || 'PENDING'}
-                      </span>
+                      <strong>Timestamp:</strong> {new Date(txInfo.timestamp).toDateString()} -{' '}
+                      {new Date(txInfo.timestamp).toLocaleTimeString()}
                     </p>
                   </div>
                 ) : null}
