@@ -88,14 +88,14 @@ export const Search: IComponent<{
           onClick={clearSearch}>
           <Slash className="w-4 h-4" />
         </Button> */}
-        {isFetching && (
+        {query && isFetching && (
           <div className="absolute top-full left-0 right-0 bg-accent px-2 py-1 mt-1 rounded-xl w-full min-h-20 flex flex-col items-center justify-center cursor-pointer hover:bg-muted shadow-sm shadow-gray-200 border border-gray-200">
             <div className="h-full w-full flex items-center justify-center py-2">
               <Loader className="w-10 h-10 animate-spin" />
             </div>
           </div>
         )}
-        {!isFetching && data && data !== 'none' && (
+        {query && !isFetching && data && data !== 'none' && (
           <div
             className="absolute top-full left-0 right-0 bg-accent px-2 py-1 mt-1 rounded-xl w-full min-h-20 flex flex-col items-center justify-center cursor-pointer hover:bg-muted shadow-sm shadow-gray-200 border border-gray-200"
             onClick={handleClick}>

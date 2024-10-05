@@ -54,7 +54,9 @@ const SchemaDeclareTokenKey = (index: number) => `${SchemaFieldKeys.DeclareStmts
 const SchemaDeclareTypeKey = (index: number) => `${SchemaFieldKeys.DeclareStmts}.${index}.type`;
 
 const baseFormSchema = z.object({
-  [SchemaFieldKeys.Name]: z.string().optional(),
+  [SchemaFieldKeys.Name]: z
+    .string()
+    .refine((val) => val.trim().length > 0, 'This field is required'),
   [SchemaFieldKeys.ResolverAddress]: z
     .string()
     .default('0x0000000000000000000000000000000000000000')
@@ -228,15 +230,7 @@ export const CreateSchemaForm: IComponent = () => {
           name: SchemaFieldKeys.Name as TSchemaInput<TAPP_NAME>,
           label: 'Name',
           placeholder: 'The name of the schema',
-          required: false,
         })}
-
-        {/* {renderInputField({
-          name: SchemaFieldKeys.Description as TSchemaInput<TAPP_NAME>,
-          label: 'Description',
-          placeholder: 'The description of the vault',
-          required: false,
-        })} */}
 
         <div className="space-y-3">
           <FormLabel required>Schema definition</FormLabel>
@@ -308,7 +302,7 @@ export const CreateSchemaForm: IComponent = () => {
         </div>
         {renderInputField({
           name: SchemaFieldKeys.ResolverAddress as TSchemaInput<TAPP_NAME>,
-          label: 'Resolver address',
+          label: 'Resolver address (optional)',
           placeholder: 'The address of the resolver, eg: 0x...',
           description:
             'An optional smart contract address that will be executed before the schema is created',

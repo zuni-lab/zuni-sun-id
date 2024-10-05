@@ -62,6 +62,7 @@ const TronWebProvider: IComponent = ({ children }) => {
     }
 
     const balance = await tronWeb.trx.getBalance(address);
+    console.log('balance', balance);
     setBalance(balance);
   }, [tronWeb, address]);
 

@@ -1,16 +1,19 @@
 'use client';
 
 import { Chip } from '@/components/builders/Chip';
+import { CopyToClipboard } from '@/components/builders/HexLink';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
 import { SunIDButton } from '@/components/builders/SunIDButton';
 import { SunTable } from '@/components/builders/SunTable';
+import { TabSwitch } from '@/components/builders/TabSwitch';
 import { useTronWeb } from '@/components/TronProvider';
-import { ITEMS_PER_PAGE } from '@/constants/configs';
+import { ITEMS_PER_PAGE, tronNetworks } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import { CredentialSchemaTableHeaders } from '@/constants/table';
 import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredentials';
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
+import { link } from 'fs';
 import { Loader } from 'lucide-react';
 import { useState } from 'react';
 
@@ -19,10 +22,31 @@ const RuleItem: IComponent<{
   name: string;
 }> = ({ type, name }) => {
   return (
-    <div className="flex gap-2 rounded-md overflow-hidden ">
-      <div className="w-2/5 bg-gray-700 flex items-center px-4 font-medium uppercase">{type}</div>
-      <div className="w-3/5 bg-primary p-2">
+    <div className="flex gap-1 rounded-md overflow-hidden text-white">
+      <div className="w-2/5 bg-main flex items-center px-4 font-semibold uppercase">{type}</div>
+      <div className="w-3/5 p-2 bg-gray-700">
         <div className=" font-bold">{name}</div>
+      </div>
+    </div>
+  );
+};
+
+const Item: IComponent<{
+  title: string;
+  value: string;
+  link?: string;
+}> = ({ title, value, link }) => {
+  return (
+    <div className="flex gap-2 items-center">
+      <div className="w-32 uppercase font-bold  text-gray-600 text-sm">{title}</div>
+      <div className="w-1/2 font-semibold text-gray-800">
+        {link ? (
+          <a href={link} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
+            {value}
+          </a>
+        ) : (
+          value
+        )}
       </div>
     </div>
   );
@@ -60,26 +84,46 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Chip text={`#${data.id}`} />
-                <div className="font-bold ps-4">{data.uid}</div>
+                <div className="font-bold ps-4 pr-2">{data.uid}</div>
+                <CopyToClipboard content={data.uid} />
               </div>
               <SunIDButton
                 href={`${AppRouter.Credentials}/issue/${data.uid}`}
-                name="Issue Credential"
+                name="Issue Credential With This Schema"
               />
             </div>
-            <div className="font-bold">Schema Name: {data.name}</div>
-            <div className="flex flex-col gap-4">
-              {data.definition.map(({ fieldName, fieldType }, index) => (
-                <RuleItem key={index} type={fieldType} name={fieldName} />
-              ))}
-            </div>
-            <div>Revocable Credentials: {data.revocable ? 'Yes' : 'No'}</div>
-            <div>Schema Resolver: {isZeroAddress(data.resolver) ? 'None' : data.resolver}</div>
-            <div>Transaction ID: 0x{data.tx}</div>
-            <div>Created by: {data.creator && tronweb.address.fromHex(data.creator)}</div>
-            <div>
-              Created at: {new Date(data.timestamp).toUTCString()} (
-              {getRelativeTime(data.timestamp / 1000)})
+            <hr className="my-2 bg-gray-300 border-gray-300" />
+            <div className="flex gap-8">
+              <div className="space-y-4">
+                <Item title="Name" value={data.name} />
+                <Item title="Revocable" value={data.revocable ? 'Yes' : 'No'} />
+                <Item
+                  title="Resolver"
+                  value={isZeroAddress(data.resolver) ? 'None' : data.resolver}
+                />
+                <Item
+                  title="Transaction"
+                  value={`0x${data.tx}`}
+                  link={`${tronNetworks.Shasta.scanner}/#/transaction/${data.tx}`}
+                />
+                <Item
+                  title="Created By"
+                  value={data.creator && tronweb.address.fromHex(data.creator)}
+                  link={`${AppRouter.Address}/${data.creator}`}
+                />
+                <Item
+                  title="Created At"
+                  value={`${new Date(data.timestamp).toLocaleDateString()}  ${new Date(data.timestamp).toLocaleTimeString()} (${getRelativeTime(data.timestamp / 1000)})`}
+                />
+              </div>
+              <div className="px-4 grow">
+                <h1 className="text-lg font-semibold text-gray-600 mb-2">Schema</h1>
+                <div className="w-full flex flex-col gap-4">
+                  {data.definition.map(({ fieldName, fieldType }, index) => (
+                    <RuleItem key={index} type={fieldType} name={fieldName} />
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
           <SunTable
@@ -94,20 +138,17 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
               totalItems: totalCredentials || 0,
               onPageChange: (page) => setCurrentPage(page),
             }}
-            renderRightTop={
-              <div className="flex px-2 py-1 rounded-sm">
-                <button
-                  className={`px-4 py-2 ${credentialType === 'onchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-                  onClick={() => setCredentialType('onchain')}>
-                  Onchain
-                </button>
-                <button
-                  className={`px-4 py-2 ${credentialType === 'offchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-                  onClick={() => setCredentialType('offchain')}>
-                  Offchain
-                </button>
-              </div>
+            renderBellowHeader={
+              <TabSwitch
+                tabs={['onchain', 'offchain']}
+                selectedTab={credentialType}
+                className="!w-60 text-sm"
+                onChange={(value) => {
+                  setCredentialType(value as CredentialType);
+                }}
+              />
             }
+            button="none"
           />
         </div>
       )}

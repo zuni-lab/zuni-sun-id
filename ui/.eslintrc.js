@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['base', 'plugin:react-hooks/recommended', 'next/core-web-vitals', 'next'],
+  extends: ['plugin:react-hooks/recommended', 'next/core-web-vitals', 'next'],
   overrides: [
     {
       files: ['*.js'],
