@@ -2,6 +2,7 @@
 
 import { AppRouter } from '@/constants/router';
 import { cx, getRelativeTime, isZeroAddress, toTronAddress } from '@/utils/tools';
+import { useRouter } from 'next/navigation';
 import { TableCell, TableRow } from '../shadcn/Table';
 import { Chip } from './Chip';
 import { HexLink } from './HexLink';
@@ -20,39 +21,48 @@ export const CredentialRow = ({
     (revocationTime == 0 || revocationTime * 1000 > new Date().getTime()) &&
     (expirationTime == 0 || expirationTime * 1000 > new Date().getTime());
 
+  const router = useRouter();
+
   return (
     <TableRow
       key={uid}
       className={cx({
-        'bg-gray-300 hover:bg-gray-300 !text-gray-500': !isValid,
+        'bg-gray-200 hover:bg-gray-300 !text-gray-500': !isValid,
       })}>
-      <TableCell className="w-60">
+      <TableCell>
         <HexLink
           content={uid}
           href={`${AppRouter.Credentials}/${uid}?type=${type}`}
-          className={cx('w-60', {
+          className={cx({
             'text-gray-500': !isValid,
           })}
         />
       </TableCell>
-      <TableCell className="flex items-center gap-2 border p-2 my-2 rounded-lg">
-        <Chip text={`#${schema?.id}`} />
-        <span className="text-base font-semibold">{schema?.name}</span>
+      <TableCell>
+        <button
+          className="w-fit flex items-center gap-2 border p-2 my-2 rounded-lg hover:bg-opacity-80"
+          onClick={() => {
+            console.log({ schema });
+            router.push(`${AppRouter.Schemas}/${schema?.uid}`);
+          }}>
+          <Chip text={`#${schema?.id}`} color={!isValid ? 'gray' : undefined} />
+          <span className="text-base font-semibold">{schema?.name}</span>
+        </button>
       </TableCell>
       <TableCell>
         <HexLink
           content={toTronAddress(issuer)}
           href={`${AppRouter.Address}/${toTronAddress(issuer)}`}
-          className={cx('w-80', {
+          className={cx({
             'text-gray-500': !isValid,
           })}
         />
       </TableCell>
-      <TableCell className="w-80">
+      <TableCell>
         <HexLink
           content={toTronAddress(recipient)}
           href={`${AppRouter.Address}/${toTronAddress(recipient)}`}
-          className={cx('w-80', {
+          className={cx({
             'text-gray-500': !isValid,
           })}
         />

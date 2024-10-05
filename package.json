@@ -1,13 +1,9 @@
 {
   "name": "zuni-sun-id",
   "version": "0.0.1",
-  "repository": "git@github.com:zuni-lab/zuni-dapp-template.git",
-  "devDependencies": {
-    "husky": "^9.0.11"
-  },
+  "repository": "git@github.com:zuni-lab/zuni-sun-id.git",
   "private": true,
   "scripts": {
-    "prepare": "husky",
     "dev": "bun --filter='ui' dev",
     "build": "bun --filter='ui' run build",
     "start": "bun --filter='ui' start",

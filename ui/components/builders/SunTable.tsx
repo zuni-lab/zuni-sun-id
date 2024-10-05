@@ -20,8 +20,9 @@ interface SunTableProps<T> {
   columns: { label: string; className?: string }[];
   items?: T[];
   renderRow: (row: T, index?: number) => JSX.Element;
-  button?: 'schema' | 'credential';
+  button?: 'schema' | 'credential' | 'none';
   renderRightTop?: JSX.Element;
+  renderBellowHeader?: JSX.Element;
   isLoading?: boolean;
   footerButton?: React.ReactNode;
   initialSkeleton?: number;
@@ -45,6 +46,7 @@ export const SunTable = <T,>({
   maxItems = 10,
   pagination,
   initialSkeleton = 10,
+  renderBellowHeader,
 }: SunTableProps<T>) => {
   if (pagination && footerButton) {
     throw new Error('Cannot have both pagination and footer button');
@@ -72,6 +74,7 @@ export const SunTable = <T,>({
           <SunIDButton href={`${AppRouter.Credentials}/issue`} name="Issue Credential" />
         ) : null}
       </div>
+      {renderBellowHeader && <div className="mb-4">{renderBellowHeader}</div>}
       <Table className="w-full">
         <TableHeader>
           <TableRow>

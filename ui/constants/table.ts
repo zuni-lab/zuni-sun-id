@@ -5,7 +5,6 @@ export const SchemaTableHeaders = [
   { label: 'Schema', className: '' },
   { label: 'Revocable', className: 'w-8' },
   { label: 'Resolver', className: 'w-32' },
-  // { label: 'Time', className: 'w-40' },
 ];
 
 export const CredentialTableHeaders = [
@@ -27,11 +26,9 @@ export const CredentialTableHeaders = [
   },
   {
     label: 'Valid',
-    className: 'w-40',
   },
   {
     label: 'Time',
-    className: 'w-40',
   },
 ];
 
