@@ -23,7 +23,7 @@ export const AccountConnect: IComponent = () => {
   // );
 
   return (
-    <div className="w-full h-full">
+    <div className="w-fit h-full">
       {connected && (
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild className="cursor-pointer w-[340px]">

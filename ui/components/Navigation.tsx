@@ -20,34 +20,34 @@ export const Navigation: IComponent = () => {
   const { address } = useTron();
 
   return (
-    <div className="flex items-center py-6 px-12 gap-12 border-b border-accent shadow-accent shadow-sm">
+    <div className="flex items-center py-6 px-6 gap-4 border-b border-accent">
       <Link href="/">
         <LogoSvg />
       </Link>
-      <div className="w-[600px]">
+      <NavigationMenu>
+        <NavigationMenuList>
+          {Object.entries(AppRouter)
+            .filter(
+              ([k]) => k !== 'Home' && k !== 'Address' && (address ? true : k !== 'MyCredentials')
+            )
+            .map(([k, v]) => (
+              <NavigationMenuItem key={v} className="px-2">
+                <Link
+                  href={k === 'MyCredentials' ? v.concat(`/${address}`) : v}
+                  passHref
+                  legacyBehavior>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    {spaceBetweenCamelCase(k)}
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+      <div className="grow">
         <Search placeholder="Search by credential, schema, address, etc." />
       </div>
-      <div className="flex justify-end items-center grow gap-4">
-        <NavigationMenu>
-          <NavigationMenuList>
-            {Object.entries(AppRouter)
-              .filter(
-                ([k]) => k !== 'Home' && k !== 'Address' && (address ? true : k !== 'MyCredentials')
-              )
-              .map(([k, v]) => (
-                <NavigationMenuItem key={v}>
-                  <Link
-                    href={k === 'MyCredentials' ? v.concat(`/${address}`) : v}
-                    passHref
-                    legacyBehavior>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      {spaceBetweenCamelCase(k)}
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+      <div className="flex justify-end items-center gap-2">
         <AccountConnect />
       </div>
     </div>

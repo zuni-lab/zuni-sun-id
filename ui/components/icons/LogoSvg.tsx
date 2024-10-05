@@ -1,8 +1,8 @@
 export const LogoSvg: ISvgComponent = (props) => {
   return (
     <svg
-      width={250}
-      height={56}
+      width={200}
+      height={44}
       {...props}
       viewBox="0 0 1000 224"
       fill="none"
