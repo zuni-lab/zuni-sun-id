@@ -65,7 +65,7 @@ export const TxResult: IComponent = () => {
                       </strong>
                       <HexLink
                         content={'0x' + txInfo.result.uid}
-                        href={`${AppRouter.Credentials}/0x${txInfo.result.uid}`}
+                        href={`${txResultType === 'RegisterSchema' ? AppRouter.Schemas : AppRouter.Credentials}/0x${txInfo.result.uid}`}
                         className="text-sm pl-0"
                         isFull
                       />
