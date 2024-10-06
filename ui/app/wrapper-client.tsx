@@ -19,7 +19,7 @@ export const WrapperClientLayout: IComponent = ({ children }) => {
 
   const heading = useCurrentHeading();
 
-  const notification = ProjectENV.NEXT_PUBLIC_NOTIFICATION?.replace(/_/g, ' ');
+  const notification = ProjectENV.NEXT_PUBLIC_NOTIFICATION?.replace(/_/g, ' ').replace(/'/g, "")
 
   return (
     <div className="w-full h-auto relative">
