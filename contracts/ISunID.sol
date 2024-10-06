@@ -78,7 +78,7 @@ interface ISunID {
     /// @param recipient The recipient of the credential.
     /// @param revoker The revoking account.
     /// @param schemaUID The UID of the schema.
-    /// @param uid The UID the revoked credential.
+    /// @param uid The UID of the revoked credential.
     event Revoked(address indexed recipient, address indexed revoker, bytes32 uid, bytes32 indexed schemaUID);
 
     /// @notice Emitted when a data has been timestamped.
@@ -88,9 +88,9 @@ interface ISunID {
 
     /// @notice Emitted when a data has been revoked.
     /// @param revoker The address of the revoker.
-    /// @param data The data.
+    /// @param uid The UID of the revoked credential.
     /// @param timestamp The timestamp.
-    event RevokedOffchain(address indexed revoker, bytes32 indexed data, uint64 indexed timestamp);
+    event RevokedOffchain(address indexed revoker, bytes32 indexed uid, uint64 indexed timestamp);
 
     /// @notice Returns the address of the global schema registry.
     /// @return The address of the global schema registry.
