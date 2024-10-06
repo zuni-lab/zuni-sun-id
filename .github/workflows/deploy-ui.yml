@@ -4,7 +4,8 @@ on:
       - main
     paths:
       - 'ui/**'
-      - '.github/workflows/deploy-ui.yml'   
+      - '.github/workflows/deploy-ui.yml'
+      - 'docker/ui.dockerfile'      
 
 permissions:
   contents: write

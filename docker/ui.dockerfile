@@ -2,17 +2,17 @@ FROM node:20-buster AS base
 WORKDIR /app
 
 ENV PATH="/root/.bun/bin:${PATH}"
-RUN apt-get update && apt-get install -y curl python3 make g++ git &&
-    curl -fsSL https://bun.sh/install | bash &&
-    bun install -g husky &&
+RUN apt-get update && apt-get install -y curl python3 make g++ git && \
+    curl -fsSL https://bun.sh/install | bash && \
+    bun install -g husky && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 FROM base AS deps
 
 WORKDIR /app
 
-RUN mkdir -p /temp/dev &&
-    mkdir -p /temp/dev/ui &&
+RUN mkdir -p /temp/dev && \
+    mkdir -p /temp/dev/ui && \
     mkdir -p /temp/dev/packages
 COPY package.json bun.lockb /temp/dev
 COPY ui /temp/dev/ui
@@ -47,8 +47,8 @@ RUN apk add --no-cache bash
 
 ENV NODE_ENV production
 
-RUN addgroup --system --gid 1001 nodejs &&
-    adduser --system --uid 1001 nextjs &&
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
     chown -R nextjs:nodejs /app
 
 COPY --from=builder --chown=nextjs:nodejs /app/ui/public ./public
