@@ -206,6 +206,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
               title="BTFS link"
               value={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
               link={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
+              valueClassname='grow'
             />
           )}
         </section>
