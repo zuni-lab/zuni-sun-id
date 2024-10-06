@@ -50,11 +50,7 @@ const baseCredentialSchema = z.object({
     .string()
     .transform((val) => val.trim())
     .refine(
-      (val) =>
-        val.length === 0
-          ? true
-          : // 
-            (defaultTronWeb as any)?.isAddress(val.replace('0x', '')) || isValidAddress(val),
+      (val) => (defaultTronWeb as any)?.isAddress(val.replace('0x', '')) || isValidAddress(val),
       {
         message: 'Invalid recipient address',
       }
@@ -162,7 +158,7 @@ export const IssueCredentialForm: IComponent<{
 
           const tx = await contract.send({
             method: 'issue',
-            // 
+            //
             args: [args] as any,
           });
 
@@ -180,7 +176,7 @@ export const IssueCredentialForm: IComponent<{
             refUID: refUID,
             data: rawData,
           });
-          await CredentialApi.issue({
+          const result = await CredentialApi.issue({
             issuer: `0x${tronWeb.address.toHex(address).replace('41', '')}`,
             signature: signature as THexString,
             schema_uid: data.uid as THexString,
@@ -191,9 +187,12 @@ export const IssueCredentialForm: IComponent<{
             data: rawData,
           });
 
+          console.log({ result });
+
           ToastTemplate.Credential.SubmitOffChain();
+          openTxResult('', 'IssueCredentialOffchain', result);
         }
-        // 
+        //
       } catch (error: any) {
         console.error(error);
         ToastTemplate.Credential.SubmitError();
@@ -285,7 +284,6 @@ export const IssueCredentialForm: IComponent<{
           name: CredentialFieldKeys.Recipient as TCredentialInput,
           label: 'Recipient',
           placeholder: 'The recipient address, etc: TEg.. or 0x...',
-          required: false,
         })}
 
         {data.definition.map((d) => {

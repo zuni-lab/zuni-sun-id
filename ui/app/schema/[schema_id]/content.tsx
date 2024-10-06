@@ -1,15 +1,17 @@
 'use client';
 
-import { link } from 'fs';
 import { Loader } from 'lucide-react';
 import { useState } from 'react';
 
 import { Chip } from '@/components/builders/Chip';
+import {
+  CredentialTypeSwitch,
+  useCredentialType,
+} from '@/components/builders/CredentialTypeSwitch';
 import { CopyToClipboard } from '@/components/builders/HexLink';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
 import { SunIDButton } from '@/components/builders/SunIDButton';
 import { SunTable } from '@/components/builders/SunTable';
-import { TabSwitch } from '@/components/builders/TabSwitch';
 import { useTronWeb } from '@/components/TronProvider';
 import { ITEMS_PER_PAGE, tronNetworks } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
@@ -55,7 +57,7 @@ const Item: IComponent<{
 
 export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [credentialType, setCredentialType] = useState<CredentialType>('onchain');
+  const { credentialType, setCredentialType } = useCredentialType();
 
   const tronweb = useTronWeb();
   const { data, isLoading } = useDetailSchema(schemaId as THexString);
@@ -80,7 +82,7 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
   return (
     <main>
       {!isLoading && data && (
-        <div>
+        <div className="space-y-1">
           <section className="flex flex-col gap-4 mt-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -140,12 +142,10 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
               onPageChange: (page) => setCurrentPage(page),
             }}
             renderBellowHeader={
-              <TabSwitch
-                tabs={['onchain', 'offchain']}
-                selectedTab={credentialType}
-                className="!w-60 text-sm"
-                onChange={(value) => {
-                  setCredentialType(value as CredentialType);
+              <CredentialTypeSwitch
+                credentialType={credentialType}
+                setCredentialType={(value) => {
+                  setCredentialType(value);
                 }}
               />
             }

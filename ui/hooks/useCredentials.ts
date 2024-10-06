@@ -139,6 +139,7 @@ export const useCredentials = ({
   return {
     items,
     isFetching: isFetching,
+    total: totalCredentials,
   };
 };
 

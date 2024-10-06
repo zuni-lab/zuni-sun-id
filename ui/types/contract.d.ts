@@ -24,4 +24,8 @@ type SchemaData = {
 
 type QueryCombinedDataResult = CredentialType | 'schema' | 'address' | 'none';
 
-type TxResultType = 'RegisterSchema' | 'IssueCredential' | 'RevokeCredential';
+type TxResultType =
+  | 'RegisterSchema'
+  | 'IssueCredential'
+  | 'RevokeCredential'
+  | 'IssueCredentialOffchain';

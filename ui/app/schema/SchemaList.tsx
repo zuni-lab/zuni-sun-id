@@ -9,7 +9,9 @@ import useSchemas from '@/hooks/useSchemas';
 
 import { SchemaTableHeaders } from '../../constants/table';
 
-export const SchemaList: IComponent = () => {
+export const SchemaList: IComponent<{
+  displayButton?: boolean;
+}> = ({ displayButton = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { items, total, isFetching } = useSchemas({
@@ -30,6 +32,7 @@ export const SchemaList: IComponent = () => {
         totalItems: total,
         onPageChange: (page) => setCurrentPage(page),
       }}
+      button={displayButton ? 'schema' : 'none'}
     />
   );
 };

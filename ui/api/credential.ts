@@ -34,6 +34,8 @@ export class CredentialApi extends BaseApi {
   static async issue(payload: CredentialPayload) {
     return this.post<{
       uid: string;
+      cid: string;
+      schema_uid: string;
     }>(`${ProjectENV.NEXT_PUBLIC_API_HOST}/api/credential`, payload);
   }
 

@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <section className="py-16">
-      <div className="text-center text-2xl font-semibold">Choose a schema to issue credential</div>
-      <SchemaList />
+    <section className="py-8">
+      <div className="text-center text-2xl font-semibold pb-4">Choose a schema to issue credential</div>
+      <SchemaList displayButton={false} />
     </section>
   );
 }

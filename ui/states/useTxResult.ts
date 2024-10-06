@@ -1,19 +1,27 @@
 import { create } from 'zustand';
 
+type OffchainTxResult = {
+  uid: string;
+  cid: string;
+  schema_uid: string;
+};
+
 interface IEventState {
-  txResultType?: TxResultType;
-  txHash?: string;
   visible: boolean;
-  open: (txHash: string, txResultType?: TxResultType) => void;
+  txResultType?: TxResultType;
+  offchainResult?: OffchainTxResult;
+  txHash?: string;
+  open: (txHash: string, txResultType?: TxResultType, offchainResult?: OffchainTxResult) => void;
   close: () => void;
 }
 
 export const useTxResult = create<IEventState>((set) => ({
+  visible: false,
   txResultType: undefined,
   txHash: undefined,
-  visible: false,
-  open: (txHash: string, txResultType?: TxResultType) => {
-    set({ txHash, visible: true, txResultType });
+  offchainResult: undefined,
+  open: (txHash: string, txResultType?: TxResultType, offchainResult?: OffchainTxResult) => {
+    set({ txHash, visible: true, txResultType, offchainResult });
   },
   close: () => {
     set({ txHash: '', visible: false });
