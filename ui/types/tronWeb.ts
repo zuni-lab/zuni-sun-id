@@ -15,7 +15,7 @@ export type TronWebWithExt = TronWeb & {
     toHex(address: string): string;
   };
   sha3: (value: string) => THexString;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // 
   contract: (abi: any, address: string) => Promise<any>;
   event: {
     getEventsByContractAddress<T = unknown>(

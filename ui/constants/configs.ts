@@ -34,9 +34,12 @@ export type TSupportedNetworks = NetworkType.Mainnet | NetworkType.Shasta;
 export const SupportedNetworks: TSupportedNetworks[] = [NetworkType.Mainnet, NetworkType.Shasta];
 
 // src/config/networks.js
-export const tronNetworks: Record<TSupportedNetworks, Network & {
-  scanner?: string;
-}> = {
+export const tronNetworks: Record<
+  TSupportedNetworks,
+  Network & {
+    scanner?: string;
+  }
+> = {
   Mainnet: {
     chainId: '0x2b6653dc',
     networkType: NetworkType.Mainnet,
@@ -50,6 +53,6 @@ export const tronNetworks: Record<TSupportedNetworks, Network & {
     fullNode: 'https://api.shasta.trongrid.io',
     solidityNode: 'https://api.shasta.trongrid.io',
     eventServer: 'https://api.shasta.trongrid.io',
-    scanner: "https://shasta.tronscan.org"
+    scanner: 'https://shasta.tronscan.org',
   },
 };

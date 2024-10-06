@@ -1,12 +1,14 @@
+import { ProjectENV } from '@env';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+
 import { CredentialApi, CredentialResponse, CredentialsPaginationResponse } from '@/api/credential';
 import { useTronWeb } from '@/components/TronProvider';
 import { SUN_ID_ABI } from '@/constants/abi';
 import { QueryKeys } from '@/constants/configs';
 import { TronContract } from '@/tron/contract';
 import { EventQuery } from '@/tron/query';
-import { ProjectENV } from '@env';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+
 import { useSchemaContract } from './useContract';
 
 let sunIdContract: TronContract<typeof SUN_ID_ABI> | null = null;
@@ -206,7 +208,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
       const data = dataValues.map((v, i) => {
         return {
           name: definition[i].fieldName,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // 
           value: (v as any).toString(),
         };
       });
@@ -320,9 +322,9 @@ export const useCredentialsByAddress = ({
     queryFn: async (): Promise<{
       issued: number;
       received: number;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 
       onchainCredentials: any[];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 
       offchainCredentials: any[];
     }> => {
       const issueCredentailEvents =

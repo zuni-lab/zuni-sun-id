@@ -1,9 +1,13 @@
 'use client';
 
+import { ProjectENV } from '@env';
+import { Loader } from 'lucide-react';
+
+import { AppRouter } from '@/constants/router';
 import { useTxInfo } from '@/hooks/useTxInfo';
 import { useTxResult } from '@/states/useTxResult';
 import { cx } from '@/utils/tools';
-import { Loader } from 'lucide-react';
+
 import {
   Dialog,
   DialogContent,
@@ -11,9 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../shadcn/Dialog';
-import { ProjectENV } from '@env';
 import { HexLink } from './HexLink';
-import { AppRouter } from '@/constants/router';
 
 const MAX_RETRIES = 15;
 

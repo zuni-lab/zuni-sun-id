@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import { DetailSchema } from './content';
 
 export const metadata: Metadata = {

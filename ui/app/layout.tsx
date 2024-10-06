@@ -1,11 +1,11 @@
 import './global.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Metadata } from 'next';
 import { Nunito, Roboto_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import ProgressBarClient from '@/components/ProgressBar';
 import { TransitionLayout } from '@/layouts/TransitionLayout';

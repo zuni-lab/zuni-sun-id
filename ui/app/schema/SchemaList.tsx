@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
+
 import { SchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import useSchemas from '@/hooks/useSchemas';
-import { useState } from 'react';
+
 import { SchemaTableHeaders } from '../../constants/table';
 
 export const SchemaList: IComponent = () => {

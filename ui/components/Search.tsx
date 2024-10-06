@@ -1,10 +1,12 @@
+import { Loader, SearchIcon } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
+
 import { AppRouter } from '@/constants/router';
 import { useActionDebounce } from '@/hooks/useAction';
 import { useCombinedData } from '@/hooks/useCombinedData';
 import { useSearch } from '@/states/useSearch';
-import { Loader, SearchIcon } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+
 import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
 

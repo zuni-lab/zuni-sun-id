@@ -8,8 +8,9 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/shadcn/Navigation';
 import { AppRouter } from '@/constants/router';
-import { LogoSvg } from './icons/LogoSvg';
+
 import { AccountConnect } from './account/AccountConnect';
+import { LogoSvg } from './icons/LogoSvg';
 import { Search } from './Search';
 import { useTron } from './TronProvider';
 

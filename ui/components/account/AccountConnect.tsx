@@ -1,10 +1,12 @@
 'use client';
 
-import { formatBalance } from '@/utils/tools';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ExitIcon } from '@radix-ui/react-icons';
 import { clsx } from 'clsx';
 import { Copy } from 'lucide-react';
+
+import { formatBalance } from '@/utils/tools';
+
 import { TronLogo } from '../icons/TronLogo';
 import { Button } from '../shadcn/Button';
 import { useTron } from '../TronProvider';

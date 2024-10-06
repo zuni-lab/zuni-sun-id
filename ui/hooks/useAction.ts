@@ -63,7 +63,6 @@ const useActionDebounce = (
    * @type action
    */
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   let action: Function | null;
   const [id] = useState(uniqueId('debounce_'));
 
@@ -103,7 +102,7 @@ const useActionDebounce = (
   return onAction;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// 
 const useOverflowDetection: (deps: any) => [MutableRefObject<HTMLDivElement | null>, boolean] = (
   deps
 ) => {

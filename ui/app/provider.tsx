@@ -1,7 +1,5 @@
 'use client';
 
-import TronProvider from '@/components/TronProvider';
-import { ToastTemplate } from '@/constants/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
@@ -13,6 +11,9 @@ import { WalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks';
 import { WalletModalProvider } from '@tronweb3/tronwallet-adapter-react-ui';
 import { TronLinkAdapter } from '@tronweb3/tronwallet-adapters';
 import React, { useMemo } from 'react';
+
+import TronProvider from '@/components/TronProvider';
+import { ToastTemplate } from '@/constants/toast';
 
 const onError = (e: WalletError) => {
   if (e instanceof WalletNotFoundError) {

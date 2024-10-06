@@ -7,7 +7,6 @@ export class BaseApi {
     return response.json();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected static async post<T>(url: string, payload: any): Promise<T> {
     return this.fetch(url, {
       method: 'POST',

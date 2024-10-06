@@ -1,5 +1,9 @@
 'use client';
 
+import { link } from 'fs';
+import { Loader } from 'lucide-react';
+import { useState } from 'react';
+
 import { Chip } from '@/components/builders/Chip';
 import { CopyToClipboard } from '@/components/builders/HexLink';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
@@ -13,9 +17,6 @@ import { CredentialSchemaTableHeaders } from '@/constants/table';
 import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredentials';
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
-import { link } from 'fs';
-import { Loader } from 'lucide-react';
-import { useState } from 'react';
 
 const RuleItem: IComponent<{
   type: string;
