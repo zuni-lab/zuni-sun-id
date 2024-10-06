@@ -76,6 +76,7 @@ export const TxResult: IComponent = () => {
                         {txResultType === 'RegisterSchema' ? 'Schema UID:' : 'Credential UID:'}
                       </strong>
                       <HexLink
+                        onClick={close}
                         content={'0x' + txInfo.result.uid}
                         href={`${txResultType === 'RegisterSchema' ? AppRouter.Schemas : AppRouter.Credentials}/0x${txInfo.result.uid}`}
                         className="text-sm pl-0 text-blue-500"
@@ -85,6 +86,7 @@ export const TxResult: IComponent = () => {
                     <p>
                       <strong>Transaction:</strong>
                       <HexLink
+                        onClick={close}
                         content={txInfo.transaction}
                         href={`${ProjectENV.NEXT_PUBLIC_TRON_SCAN_URL}/#/transaction/${txInfo.transaction}`}
                         className="text-sm pl-0 text-blue-500"
