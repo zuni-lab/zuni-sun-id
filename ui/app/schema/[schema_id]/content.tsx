@@ -8,8 +8,10 @@ import {
   CredentialTypeSwitch,
   useCredentialType,
 } from '@/components/builders/CredentialTypeSwitch';
+import { DetailItem } from '@/components/builders/DetailItem';
 import { CopyToClipboard } from '@/components/builders/HexLink';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
+import { RuleItem } from '@/components/builders/RuleItem';
 import { SunIDButton } from '@/components/builders/SunIDButton';
 import { SunTable } from '@/components/builders/SunTable';
 import { useTronWeb } from '@/components/TronProvider';
@@ -19,41 +21,6 @@ import { CredentialSchemaTableHeaders } from '@/constants/table';
 import { useCountCredentials, useCredentialsBySchema } from '@/hooks/useCredentials';
 import { useDetailSchema } from '@/hooks/useSchemas';
 import { getRelativeTime, isZeroAddress } from '@/utils/tools';
-
-const RuleItem: IComponent<{
-  type: string;
-  name: string;
-}> = ({ type, name }) => {
-  return (
-    <div className="flex gap-1 rounded-md overflow-hidden text-white">
-      <div className="w-2/5 bg-main flex items-center px-4 font-semibold uppercase">{type}</div>
-      <div className="w-3/5 p-2 bg-gray-700">
-        <div className=" font-bold">{name}</div>
-      </div>
-    </div>
-  );
-};
-
-const Item: IComponent<{
-  title: string;
-  value: string;
-  link?: string;
-}> = ({ title, value, link }) => {
-  return (
-    <div className="flex gap-2 items-center">
-      <div className="w-32 uppercase font-bold  text-gray-600 text-sm">{title}</div>
-      <div className="w-1/2 font-semibold text-gray-800">
-        {link ? (
-          <a href={link} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
-            {value}
-          </a>
-        ) : (
-          value
-        )}
-      </div>
-    </div>
-  );
-};
 
 export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -98,29 +65,33 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
             <hr className="my-2 bg-gray-300 border-gray-300" />
             <div className="flex gap-8">
               <div className="space-y-4">
-                <Item title="Name" value={data.name} />
-                <Item title="Revocable" value={data.revocable ? 'Yes' : 'No'} />
-                <Item
+                <DetailItem title="Name" value={data.name} />
+                <DetailItem
+                  title="Revocable"
+                  value={data.revocable ? 'Yes' : 'No'}
+                  valueClassname={data.revocable ? 'text-orange-500' : 'text-gray-500'}
+                />
+                <DetailItem
                   title="Resolver"
                   value={isZeroAddress(data.resolver) ? 'None' : data.resolver}
                 />
-                <Item
+                <DetailItem
                   title="Transaction"
                   value={`0x${data.tx}`}
                   link={`${tronNetworks.Shasta.scanner}/#/transaction/${data.tx}`}
                 />
-                <Item
+                <DetailItem
                   title="Created By"
                   value={data.creator && tronweb.address.fromHex(data.creator)}
                   link={`${AppRouter.Address}/${data.creator}`}
                 />
-                <Item
+                <DetailItem
                   title="Created At"
                   value={`${new Date(data.timestamp).toLocaleDateString()}  ${new Date(data.timestamp).toLocaleTimeString()} (${getRelativeTime(data.timestamp / 1000)})`}
                 />
               </div>
               <div className="px-4 grow">
-                <h1 className="text-lg font-semibold text-gray-600 mb-2">Schema</h1>
+                <h1 className="text-sm font-semibold text-gray-600 mb-1 uppercase">Schema</h1>
                 <div className="w-full flex flex-col gap-4">
                   {data.definition.map(({ fieldName, fieldType }, index) => (
                     <RuleItem key={index} type={fieldType} name={fieldName} />

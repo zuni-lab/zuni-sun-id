@@ -10,16 +10,33 @@ import { useSearch } from '@/states/useSearch';
 import { Button } from './shadcn/Button';
 import { Input } from './shadcn/Input';
 
+const MAX_CHARS = 66;
+
+const chunkContent = (content: string) => {
+  const chunks: string[] = [];
+  for (let i = 0; i < content.length; i += MAX_CHARS) {
+    chunks.push(content.slice(i, i + MAX_CHARS));
+  }
+  return chunks;
+};
 export const SearchItem: IComponent<{
   title: string;
   content: string;
 }> = ({ title, content }) => {
+  const chunks = chunkContent(content);
+
   return (
     <div className="flex flex-col gap-2 py-2">
       <span className="text-sm font-semibold bg-red-500 text-white w-fit px-2 py-1 rounded-md">
         {title}
       </span>
-      <p className="w-full text-[15px] ext-sm font-bold">{content}</p>
+      <div>
+        {chunks.map((chunk, index) => (
+          <p key={index} className="w-full text-[15px] text-sm font-bold">
+            {chunk}
+          </p>
+        ))}
+      </div>
     </div>
   );
 };

@@ -29,10 +29,13 @@ export const Navigation: IComponent = () => {
         <NavigationMenuList>
           {Object.entries(AppRouter)
             .filter(
-              ([k]) => k !== 'Home' && k !== 'Address' && (address ? true : k !== 'MyCredentials')
+              ([k]) =>
+                k !== 'Home' &&
+                k !== 'Address' &&
+                (address ? true : k !== 'MyCredentials')
             )
             .map(([k, v]) => (
-              <NavigationMenuItem key={v} className="px-2">
+              <NavigationMenuItem key={v}>
                 <Link
                   href={k === 'MyCredentials' ? v.concat(`/${address}`) : v}
                   passHref
