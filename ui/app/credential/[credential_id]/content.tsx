@@ -33,7 +33,6 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const { data: contract } = useCredentialContract();
   const isValid =
     !!credential && isCredentialValid(credential.revocationTime, credential.expirationTime);
-
   const handleRevoke = async () => {
     setSubmitting(true);
 
@@ -109,10 +108,10 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
             ) : (
               <div>
                 <Button
-                  className={'px-4 rounded grow bg-gray-500 w-48 font-bold'}
+                  className={'px-4 rounded grow bg-gray-700 w-48 font-bold'}
                   size={'lg'}
                   disabled={true}>
-                  Invalid
+                  {credential.revocationTime < new Date().getTime() ? 'Revoked' : 'Expired'}
                 </Button>
               </div>
             )}
@@ -153,12 +152,16 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
 
                 <DetailItem
                   title="Created At"
-                  value={`${new Date(credential.timestamp).toLocaleDateString()} ${new Date(credential.timestamp).toLocaleTimeString()} (${getRelativeTime(credential.timestamp / 1000)})`}
+                  value={`${new Date(credential.timestamp).toLocaleDateString()} ${new Date(credential.timestamp).toLocaleTimeString()} (${getRelativeTime(credential.timestamp)})`}
                 />
 
                 <DetailItem
                   title="Expiration"
-                  value={`${new Date(credential.expirationTime).toLocaleDateString()} ${new Date(credential.expirationTime).toLocaleTimeString()} (${getRelativeTime(credential.expirationTime / 1000)})`}
+                  value={
+                    credential.expirationTime === 0
+                      ? 'Never'
+                      : `${new Date(credential.expirationTime).toLocaleDateString()} ${new Date(credential.expirationTime).toLocaleTimeString()} (${getRelativeTime(credential.expirationTime)})`
+                  }
                 />
                 {credential.refUID !== EMPTY_UID && (
                   <DetailItem title="Reference" value={credential.refUID} />
@@ -167,7 +170,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
                 {credential.revocationTime > 0 && (
                   <DetailItem
                     title="Revoked at"
-                    value={`${new Date(credential.revocationTime).toLocaleDateString()} ${new Date(credential.revocationTime).toLocaleTimeString()} (${getRelativeTime(credential.revocationTime / 1000)})`}
+                    value={`${new Date(credential.revocationTime).toLocaleDateString()} ${new Date(credential.revocationTime).toLocaleTimeString()} (${getRelativeTime(credential.revocationTime)})`}
                   />
                 )}
               </div>
