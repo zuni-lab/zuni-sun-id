@@ -16,7 +16,7 @@ const (
 
 type RevokedEvent struct {
 	Revoker   string `json:"revoker"`
-	Data      string `json:"data"`
+	UID       string `json:"uid"`
 	Timestamp string `json:"timestamp"`
 }
 

@@ -19,7 +19,7 @@ func handleUpdateCredentialStatusTx(data []tron.RevokedEvent, blockNumber uint64
 	for _, event := range data {
 		// Update the credential status to revoked
 		filter := models.Credential{
-			UID:    "0x" + event.Data,
+			UID:    "0x" + event.UID,
 			Issuer: event.Revoker,
 		}
 
