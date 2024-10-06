@@ -12,10 +12,10 @@ func IssueCredential(c echo.Context) error {
 		return err
 	}
 
-	uid, err := service.IssueCredential(c.Request().Context(), &body)
+	result, err := service.IssueCredential(c.Request().Context(), &body)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(200, map[string]string{"uid": uid})
+	return c.JSON(200, result)
 }

@@ -26,12 +26,17 @@ type IssueCredentialRequest struct {
 	Data           string `json:"data" validate:"bytes"`
 }
 
-func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (string, error) {
+type IssueCredentialResponse struct {
+	Cid       string `json:"cid"`
+	UID       string `json:"uid"`
+	SchemaUID string `json:"schema_uid"`
+}
 
+func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (*IssueCredentialResponse, error) {
 	now := time.Now().Unix()
 	uid, err := getCredentialUID(input, now)
 	if err != nil {
-		return "", fmt.Errorf("failed to get credential uid: %w", err)
+		return nil, fmt.Errorf("failed to get credential uid: %w", err)
 	}
 
 	minimalCredential := models.Credential{
@@ -60,12 +65,12 @@ func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (string
 
 	credentialJSON, err := json.Marshal(storedData)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal credential data: %w", err)
+		return nil, fmt.Errorf("failed to marshal credential data: %w", err)
 	}
 
 	cid, err := btfs.StoreDataInBTFS(credentialJSON)
 	if err != nil {
-		return "", fmt.Errorf("failed to store credential in BTFS: %w", err)
+		return nil, fmt.Errorf("failed to store credential in BTFS: %w", err)
 	}
 
 	credential := models.Credential{
@@ -85,10 +90,14 @@ func IssueCredential(ctx context.Context, input *IssueCredentialRequest) (string
 
 	_, err = db.Credential.InsertOne(ctx, credential)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return uid, nil
+	return &IssueCredentialResponse{
+		Cid:       cid,
+		UID:       uid,
+		SchemaUID: input.SchemaUID,
+	}, nil
 }
 
 func getCredentialUID(input *IssueCredentialRequest, now int64) (string, error) {
