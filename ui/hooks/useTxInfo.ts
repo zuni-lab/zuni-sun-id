@@ -18,6 +18,7 @@ export const useTxInfo = <T>(txHash: string | undefined, maxRetries: number) => 
     queryFn: async () => {
       setCount((c) => c + 1);
       const events = await EventQuery.getEventsByTransactionID<T>(tronWeb, txHash as string);
+      setCount(0);
       return events[0];
     },
     refetchInterval: 2000,
