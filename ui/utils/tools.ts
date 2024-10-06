@@ -40,7 +40,7 @@ export const toUtcTime = (date: Date) => {
 };
 
 export const getRelativeTime = (unixTimestamp: number): string => {
-  const date = new Date(unixTimestamp * 1000); // Convert seconds to milliseconds
+  const date = new Date(unixTimestamp); // Convert seconds to milliseconds
   return formatDistanceToNow(date, { addSuffix: true });
 };
 
