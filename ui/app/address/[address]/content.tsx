@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-
+import {
+  CredentialTypeSwitch,
+  useCredentialType,
+} from '@/components/builders/CredentialTypeSwitch';
+import { CopyToClipboard } from '@/components/builders/HexLink';
 import { CredentialSchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
@@ -13,7 +16,8 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
   //   const tronweb = useTronWeb();
   //   const searchParams = useSearchParams();
 
-  const [credentialType, setCredentialType] = useState<CredentialType>('onchain');
+  const { credentialType, setCredentialType } = useCredentialType();
+
   const { data, isFetching } = useCredentialsByAddress({
     page: 1,
     address: toHexAddress(address),
@@ -21,12 +25,21 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
   });
 
   return (
-    <section>
-      <div>
-        <h1 className="text-2xl font-bold">Address: {address}</h1>
-        <div className="flex gap-4">
-          <div>Issued: {data?.issued} credentials</div>
-          <div>Received: {data?.received} credentials</div>
+    <section className="px-0 mt-12">
+      <div className="px-8">
+        <p className="text-2xl font-bold flex items-center gap-2">
+          {address}
+          <CopyToClipboard content={address} />
+        </p>
+        <div className="flex gap-8 mt-4 font-semibold">
+          <div>
+            <span className="bg-green-500 p-1 px-2 rounded-md text-white">Issued</span> {data?.issued}{' '}
+            credentials
+          </div>
+          <div>
+            <span className="bg-orange-500 p-1 px-2 rounded-md text-white">Received</span>{' '}
+            {data?.received} credentials
+          </div>
         </div>
       </div>
       <SunTable
@@ -37,19 +50,14 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
         renderRow={CredentialSchemaRow}
         maxItems={ITEMS_PER_PAGE.CREDENTIAL}
         renderRightTop={
-          <div className="flex px-2 py-1 rounded-sm">
-            <button
-              className={`px-4 py-2 ${credentialType === 'onchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-              onClick={() => setCredentialType('onchain')}>
-              Onchain
-            </button>
-            <button
-              className={`px-4 py-2 ${credentialType === 'offchain' ? 'bg-blue-500 ' : 'bg-gray-200 text-black'}`}
-              onClick={() => setCredentialType('offchain')}>
-              Offchain
-            </button>
+          <div className="my-4">
+            <CredentialTypeSwitch
+              credentialType={credentialType}
+              setCredentialType={setCredentialType}
+            />
           </div>
         }
+        button="none"
       />
     </section>
   );
