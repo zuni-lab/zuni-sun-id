@@ -11,7 +11,8 @@
     "dev": "bun --filter='ui' dev",
     "build": "bun --filter='ui' run build",
     "start": "bun --filter='ui' start",
-    "lint": "bun --filter='ui' run lint"
+    "lint": "bun --filter='ui' run lint",
+    "api": "cd backend && make run"
   },
   "workspaces": [
     "ui",

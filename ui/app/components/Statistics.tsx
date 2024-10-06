@@ -33,7 +33,7 @@ export const Statistics: IComponent = () => {
       <section className="grow flex items-center justify-around gap-4 divide-x divide-white py-12 max-w-7xl !bg-white shadow-none">
         {stats.map((stat, i) => (
           <div className="px-4 text-center" key={i}>
-            <h3 className="text-xl font-semibold">{stat.value}</h3>
+            <h3 className="text-xl font-semibold">{stat.value ?? '-'}</h3>
             <p className="text-lg text-muted-foreground">{stat.label}</p>
           </div>
         ))}

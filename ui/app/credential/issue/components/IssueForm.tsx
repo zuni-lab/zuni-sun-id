@@ -176,6 +176,7 @@ export const IssueCredentialForm: IComponent<{
             refUID: refUID,
             data: rawData,
           });
+          
           const result = await CredentialApi.issue({
             issuer: `0x${tronWeb.address.toHex(address).replace('41', '')}`,
             signature: signature as THexString,
@@ -186,8 +187,6 @@ export const IssueCredentialForm: IComponent<{
             ref_uid: refUID as THexString,
             data: rawData,
           });
-
-          console.log({ result });
 
           ToastTemplate.Credential.SubmitOffChain();
           openTxResult('', 'IssueCredentialOffchain', result);
