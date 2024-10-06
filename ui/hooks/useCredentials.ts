@@ -352,7 +352,7 @@ export const useCredentialsByAddress = ({
           uid: ('0x' + e.result.uid) as THexString,
           issuer: e.result.issuer,
           recipient: e.result.recipient,
-          time: e.timestamp / 1000,
+          time: e.timestamp,
           type: 'onchain' as CredentialType,
         };
       });
@@ -367,7 +367,7 @@ export const useCredentialsByAddress = ({
           uid: c.uid,
           issuer: c.issuer,
           recipient: c.recipient,
-          time: c.created_at,
+          time: c.created_at * 1000,
           type: 'offchain' as CredentialType,
         };
       });

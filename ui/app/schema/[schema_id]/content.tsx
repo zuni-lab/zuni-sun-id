@@ -87,7 +87,7 @@ export const DetailSchema: IComponent<{ schemaId: THexString }> = ({ schemaId })
                 />
                 <DetailItem
                   title="Created At"
-                  value={`${new Date(data.timestamp).toLocaleDateString()}  ${new Date(data.timestamp).toLocaleTimeString()} (${getRelativeTime(data.timestamp / 1000)})`}
+                  value={`${new Date(data.timestamp).toLocaleDateString()}  ${new Date(data.timestamp).toLocaleTimeString()} (${getRelativeTime(data.timestamp)})`}
                 />
               </div>
               <div className="px-4 grow">
