@@ -1,0 +1,14 @@
+services:
+  btfs:
+    image: tranhuyducseven/go-btfs:${ARCH:-latest}
+    container_name: btfs2
+    environment:
+      - BTFS_PROFILE=storage-host-testnet
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+      - "8081:8081"
+      - "5101:5101"
+    volumes:
+      - ../data/testnet:/data/btfs
