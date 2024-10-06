@@ -209,7 +209,6 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
       const data = dataValues.map((v, i) => {
         return {
           name: definition[i].fieldName,
-          // 
           value: (v as any).toString(),
         };
       });
@@ -323,9 +322,7 @@ export const useCredentialsByAddress = ({
     queryFn: async (): Promise<{
       issued: number;
       received: number;
-      // 
       onchainCredentials: any[];
-      // 
       offchainCredentials: any[];
     }> => {
       const issueCredentailEvents =

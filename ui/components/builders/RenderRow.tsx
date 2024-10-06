@@ -3,7 +3,13 @@
 import { useRouter } from 'next/navigation';
 
 import { AppRouter } from '@/constants/router';
-import { cx, getRelativeTime, isZeroAddress, toTronAddress } from '@/utils/tools';
+import {
+  cx,
+  getRelativeTime,
+  isCredentialValid,
+  isZeroAddress,
+  toTronAddress,
+} from '@/utils/tools';
 
 import { TableCell, TableRow } from '../shadcn/Table';
 import { Chip } from './Chip';
@@ -19,9 +25,7 @@ export const CredentialRow = ({
   timestamp,
   type,
 }: TCredential) => {
-  const isValid =
-    (revocationTime == 0 || revocationTime * 1000 > new Date().getTime()) &&
-    (expirationTime == 0 || expirationTime * 1000 > new Date().getTime());
+  const isValid = isCredentialValid(revocationTime, expirationTime);
 
   const router = useRouter();
 

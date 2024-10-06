@@ -63,7 +63,7 @@ export const isValidFloat = (val: string) => {
 };
 
 export const hexToNumber = (hex: bigint | undefined) => {
-  // 
+  //
   return hex ? parseInt((hex as any)._hex, 16) : 0;
 };
 
@@ -92,4 +92,11 @@ export const formatBalance = (balance: number | undefined, decimals = 6): string
     minimumFractionDigits: 0,
     maximumFractionDigits: decimals,
   }).format(balance / Math.pow(10, decimals));
+};
+
+export const isCredentialValid = (revocationTime: number, expirationTime: number) => {
+  return (
+    (revocationTime == 0 || revocationTime > new Date().getTime()) &&
+    (expirationTime == 0 || expirationTime > new Date().getTime())
+  );
 };

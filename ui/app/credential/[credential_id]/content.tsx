@@ -15,7 +15,7 @@ import { ToastTemplate } from '@/constants/toast';
 import { useCredentialContract } from '@/hooks/useContract';
 import { useCredentialDetail } from '@/hooks/useCredentials';
 import { useTxResult } from '@/states/useTxResult';
-import { cx, EMPTY_UID, getRelativeTime, toTronAddress } from '@/utils/tools';
+import { cx, EMPTY_UID, getRelativeTime, isCredentialValid, toTronAddress } from '@/utils/tools';
 
 const RuleItem: IComponent<{
   type: string;
@@ -38,11 +38,14 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
   const [submitting, setSubmitting] = useState(false);
 
   const credentialType = (searchParams.get('type') || 'onchain') as CredentialType;
-  const { data: credential, isFetching } = useCredentialDetail(
-    credentialId as THexString,
-    credentialType
-  );
+  const {
+    data: credential,
+    isFetching,
+    refetch,
+  } = useCredentialDetail(credentialId as THexString, credentialType);
   const { data: contract } = useCredentialContract();
+  const isValid =
+    !!credential && isCredentialValid(credential.revocationTime, credential.expirationTime);
 
   const handleRevoke = async () => {
     setSubmitting(true);
@@ -54,7 +57,6 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       if (credential.type === 'onchain') {
         tx = await contract.send({
           method: 'revoke',
-          // 
           args: [[credential.schema.uid, credential.uid] as any],
         });
       } else {
@@ -66,7 +68,8 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       ToastTemplate.Credential.SubmitOnChain();
 
       openTxResult(tx, 'RevokeCredential');
-      // 
+      await new Promise((resolve) => setTimeout(resolve, 6_000));
+      refetch();
     } catch (error: any) {
       console.error(error);
       ToastTemplate.Credential.SubmitError();
@@ -85,7 +88,17 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
           <div className="flex items-center">
             <div className="flex items-center justify-between w-full">
               <div className="font-bold ps-4">{credential.uid}</div>
-              {credential.revocable &&
+              {!isValid ? (
+                <div>
+                  <Button
+                    className={'px-4 rounded grow bg-gray-500 w-48 font-bold'}
+                    size={'lg'}
+                    disabled={true}>
+                    Invalid
+                  </Button>
+                </div>
+              ) : (
+                credential.revocable &&
                 credential.revocationTime === 0 &&
                 toTronAddress(credential.issuer) === address && (
                   <div
@@ -111,7 +124,8 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
                       )}
                     </Button>
                   </div>
-                )}
+                )
+              )}
             </div>
           </div>
           <div className="flex items-center">
@@ -157,13 +171,13 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
           <div>
             Expiration at:
             {credential.expirationTime == 0
-              ? 'Never'
-              : `${new Date(credential.expirationTime).toUTCString()}${getRelativeTime(credential.expirationTime / 1000)}`}
+              ? ' Never'
+              : ` ${new Date(credential.expirationTime).toUTCString()} (${getRelativeTime(credential.expirationTime / 1000)})`}
           </div>
           {credential.refUID !== EMPTY_UID && <div>RefUID: {credential.refUID}</div>}
           {credential.revocationTime > 0 && (
             <div>
-              Revoked at:{new Date(credential.revocationTime).toUTCString()} (
+              Revoked at: {new Date(credential.revocationTime).toUTCString()} (
               {getRelativeTime(credential.revocationTime / 1000)})
             </div>
           )}
