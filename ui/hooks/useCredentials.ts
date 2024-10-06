@@ -87,9 +87,9 @@ export const useCredentials = ({
                 uid: schemas[idx].uid,
                 name: schemas[idx].name,
               },
-              timestamp: Number(c.time),
-              expirationTime: Number(c.expirationTime),
-              revocationTime: Number(c.revocationTime),
+              timestamp: Number(c.time) * 1000,
+              expirationTime: Number(c.expirationTime) * 1000,
+              revocationTime: Number(c.revocationTime) * 1000,
               type: 'onchain' as CredentialType,
             };
           })
@@ -116,8 +116,8 @@ export const useCredentials = ({
               uid: schemas[idx].uid,
               name: schemas[idx].name,
             },
-            timestamp: c.created_at,
-            expirationTime: c.expiration_time,
+            timestamp: c.created_at * 1000,
+            expirationTime: c.expiration_time * 1000,
             revocationTime: 0, // TODO: revoke offchain
             cid: c.cid,
             type: 'offchain' as CredentialType,
