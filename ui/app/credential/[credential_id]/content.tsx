@@ -8,9 +8,8 @@ import { useState } from 'react';
 import { Chip } from '@/components/builders/Chip';
 import { DetailItem } from '@/components/builders/DetailItem';
 import { HexLink } from '@/components/builders/HexLink';
-import { RuleItem } from '@/components/builders/RuleItem';
 import { NotFound } from '@/components/NotFound';
-import { buttonVariants } from '@/components/shadcn/Button';
+import { Button, buttonVariants } from '@/components/shadcn/Button';
 import { useTron } from '@/components/TronProvider';
 import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
@@ -105,7 +104,18 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
               })}>
               {credentialType.charAt(0).toUpperCase() + credentialType.slice(1)} Credential
             </h1>
-            {renderRevoke(credential)}
+            {isValid ? (
+              renderRevoke(credential)
+            ) : (
+              <div>
+                <Button
+                  className={'px-4 rounded grow bg-gray-500 w-48 font-bold'}
+                  size={'lg'}
+                  disabled={true}>
+                  Invalid
+                </Button>
+              </div>
+            )}
           </div>
           <div className="my-2">
             <p className="text-sm text-gray-600 font-bold">UID</p>
