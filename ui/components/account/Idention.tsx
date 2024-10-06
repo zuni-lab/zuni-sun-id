@@ -1,5 +1,7 @@
-import { formatWalletAddress } from '@/utils/tools';
 import { toSvg } from 'jdenticon';
+
+import { formatWalletAddress } from '@/utils/tools';
+
 import { Avatar, AvatarFallback, AvatarImage } from '../shadcn/Avatar';
 
 interface IdenticonProps {

@@ -1,10 +1,12 @@
+import { ProjectENV } from '@env';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+
 import { useTronWeb } from '@/components/TronProvider';
 import { QueryKeys } from '@/constants/configs';
 import { EventQuery } from '@/tron/query';
 import { EMPTY_UID, hexToNumber } from '@/utils/tools';
-import { ProjectENV } from '@env';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+
 import { useSchemaContract } from './useContract';
 
 const useSchemas = ({ page, limit }: { page: number; limit: number }) => {

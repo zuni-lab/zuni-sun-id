@@ -1,8 +1,7 @@
-import moment from 'moment';
 import classNames from 'classnames';
-
 // timeUtils.ts
 import { formatDistanceToNow } from 'date-fns';
+import moment from 'moment';
 //@ts-expect-error - no types for tronweb
 import TronWeb from 'tronweb';
 
@@ -64,7 +63,7 @@ export const isValidFloat = (val: string) => {
 };
 
 export const hexToNumber = (hex: bigint | undefined) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // 
   return hex ? parseInt((hex as any)._hex, 16) : 0;
 };
 

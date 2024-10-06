@@ -1,5 +1,7 @@
-import { RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
+
+import { RouterMeta } from '@/constants/router';
+
 import { Credentials } from './components/Credentials';
 import { RecentSchemas } from './components/RecentSchemas';
 import { Statistics } from './components/Statistics';

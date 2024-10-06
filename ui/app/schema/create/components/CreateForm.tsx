@@ -1,16 +1,11 @@
 'use client';
 
-import { Button } from '@/shadcn/Button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shadcn/Form';
-import { Input } from '@/shadcn/Input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { cx } from 'class-variance-authority';
+import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { AccountConnect } from '@/components/account/AccountConnect';
 import { TabSwitch } from '@/components/builders/TabSwitch';
@@ -24,16 +19,21 @@ import {
 import { defaultTronWeb, useTron } from '@/components/TronProvider';
 import { APP_NAME, TAPP_NAME } from '@/constants/configs';
 import { ToastTemplate } from '@/constants/toast';
+import { useSchemaContract } from '@/hooks/useContract';
+import { Button } from '@/shadcn/Button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shadcn/Form';
+import { Input } from '@/shadcn/Input';
 import { useTxResult } from '@/states/useTxResult';
 import { DataTypes } from '@/utils/rules';
 import { isValidAddress } from '@/utils/tools';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader, PlusIcon, TrashIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useSchemaContract } from '@/hooks/useContract';
-import { cx } from 'class-variance-authority';
 
 type TSchemaInput<T extends string> =
   | `${T}_Name`
@@ -66,7 +66,7 @@ const baseFormSchema = z.object({
         val.trim().length === 0
           ? true
           : defaultTronWeb
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ? // 
               (defaultTronWeb as any).isAddress(val.replace('0x', ''))
             : isValidAddress(val),
       'Invalid resolver address'
@@ -152,7 +152,7 @@ export const CreateSchemaForm: IComponent = () => {
           method: 'register',
           args: [
             values[SchemaFieldKeys.Name] as string,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // 
             schema as string,
             (values[SchemaFieldKeys.ResolverAddress] as THexString) ||
               ('0x0000000000000000000000000000000000000000' as THexString),
@@ -163,7 +163,7 @@ export const CreateSchemaForm: IComponent = () => {
         ToastTemplate.Schema.Submit();
         setSubmitting(false);
         openTxResult(tx, 'RegisterSchema');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // 
       } catch (error: any) {
         console.error(error);
         ToastTemplate.Schema.SubmitError();

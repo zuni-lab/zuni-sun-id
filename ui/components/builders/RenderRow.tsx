@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { AppRouter } from '@/constants/router';
 import { cx, getRelativeTime, isZeroAddress, toTronAddress } from '@/utils/tools';
-import { useRouter } from 'next/navigation';
+
 import { TableCell, TableRow } from '../shadcn/Table';
 import { Chip } from './Chip';
 import { HexLink } from './HexLink';

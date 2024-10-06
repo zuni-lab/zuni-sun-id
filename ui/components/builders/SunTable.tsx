@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useEffect, useRef } from 'react';
+
 import {
   Table,
   TableBody,
@@ -9,11 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/shadcn/Table';
-import React, { useEffect, useRef } from 'react';
+import { AppRouter } from '@/constants/router';
+
 import { PaginationButton } from '../PaginationButton';
 import { Skeleton } from '../shadcn/Skeleton';
 import { SunIDButton } from './SunIDButton';
-import { AppRouter } from '@/constants/router';
 
 interface SunTableProps<T> {
   title: string;

@@ -1,5 +1,10 @@
 'use client';
 
+import { ProjectENV } from '@env';
+import { Loader } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+
 import { Chip } from '@/components/builders/Chip';
 import { HexLink } from '@/components/builders/HexLink';
 import { NotFound } from '@/components/NotFound';
@@ -11,10 +16,6 @@ import { useCredentialContract } from '@/hooks/useContract';
 import { useCredentialDetail } from '@/hooks/useCredentials';
 import { useTxResult } from '@/states/useTxResult';
 import { cx, EMPTY_UID, getRelativeTime, toTronAddress } from '@/utils/tools';
-import { ProjectENV } from '@env';
-import { Loader } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 
 const RuleItem: IComponent<{
   type: string;
@@ -53,7 +54,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       if (credential.type === 'onchain') {
         tx = await contract.send({
           method: 'revoke',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // 
           args: [[credential.schema.uid, credential.uid] as any],
         });
       } else {
@@ -65,7 +66,7 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
       ToastTemplate.Credential.SubmitOnChain();
 
       openTxResult(tx, 'RevokeCredential');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 
     } catch (error: any) {
       console.error(error);
       ToastTemplate.Credential.SubmitError();

@@ -1,7 +1,9 @@
 'use client';
 
-import { useDetailSchema } from '@/hooks/useSchemas';
 import { Loader } from 'lucide-react';
+
+import { useDetailSchema } from '@/hooks/useSchemas';
+
 import { IssueCredentialForm } from '../components/IssueForm';
 
 export const IssuePage: IComponent<{

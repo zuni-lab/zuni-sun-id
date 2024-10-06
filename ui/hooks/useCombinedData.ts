@@ -1,10 +1,11 @@
+import { ProjectENV } from '@env';
+import { useQuery } from '@tanstack/react-query';
+
 import { CredentialApi, CredentialResponse } from '@/api/credential';
 import { useTronWeb } from '@/components/TronProvider';
 import { QueryKeys } from '@/constants/configs';
 import { EventQuery } from '@/tron/query';
 import { isTronAddress } from '@/utils/tools';
-import { ProjectENV } from '@env';
-import { useQuery } from '@tanstack/react-query';
 
 const SCHEMA_UID_LENGTH = 66;
 const ADDRESS_LENGTH = 34;

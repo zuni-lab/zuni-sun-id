@@ -1,5 +1,7 @@
-import { RouterMeta } from '@/constants/router';
 import { Metadata } from 'next';
+
+import { RouterMeta } from '@/constants/router';
+
 import { SchemaList } from './SchemaList';
 
 export const metadata: Metadata = RouterMeta.Schemas;

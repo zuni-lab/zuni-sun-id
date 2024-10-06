@@ -1,5 +1,7 @@
-import { cx } from '@/utils/tools';
 import Link from 'next/link';
+
+import { cx } from '@/utils/tools';
+
 import { buttonVariants } from '../shadcn/Button';
 
 export const Chip: IComponent<{

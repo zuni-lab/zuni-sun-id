@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "repository": "git@github.com:zuni-lab/zuni-sun-id.git",
   "private": true,
+  "devDependencies": {
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.0.11"
+  },
   "scripts": {
     "dev": "bun --filter='ui' dev",
     "build": "bun --filter='ui' run build",

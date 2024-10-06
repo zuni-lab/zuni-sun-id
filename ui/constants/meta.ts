@@ -1,7 +1,8 @@
 import { usePathname } from 'next/navigation';
+
 import { AppRouter, RouterKey, RouterMeta } from './router';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// 
 
 /**
  * Get current router meta

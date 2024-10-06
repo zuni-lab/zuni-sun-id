@@ -1,5 +1,6 @@
-import { cx } from '@/utils/tools';
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontal } from 'lucide-react';
+
+import { cx } from '@/utils/tools';
 
 export const PaginationButton: IComponent<{
   page?: number;

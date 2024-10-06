@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import { IssuePage } from './issue';
 
 export const metadata: Metadata = {

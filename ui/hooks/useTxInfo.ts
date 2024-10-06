@@ -1,7 +1,8 @@
-import { useTronWeb } from '@/components/TronProvider';
-import { EventQuery } from '@/tron/query';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+
+import { useTronWeb } from '@/components/TronProvider';
+import { EventQuery } from '@/tron/query';
 
 export const useTxInfo = <T>(txHash: string | undefined, maxRetries: number) => {
   const [count, setCount] = useState(0);

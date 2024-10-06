@@ -26,7 +26,7 @@ export class EventQuery {
 }
 
 export class TxQuery {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // 
   static async getTransactionInfo(provider: TronWebWithExt, transactionID: string): Promise<any> {
     return await provider.trx.getTransactionInfo(transactionID);
   }

@@ -1,12 +1,14 @@
 'use client';
 
+import Link from 'next/link';
+
 import { SchemaRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { buttonVariants } from '@/components/shadcn/Button';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
 import { AppRouter } from '@/constants/router';
 import useSchemas from '@/hooks/useSchemas';
-import Link from 'next/link';
+
 import { SchemaTableHeaders } from '../../constants/table';
 
 export const RecentSchemas: IComponent = () => {

@@ -1,5 +1,6 @@
-import { SchemaList } from '@/app/schema/SchemaList';
 import { Metadata } from 'next';
+
+import { SchemaList } from '@/app/schema/SchemaList';
 
 export const metadata: Metadata = {
   title: 'Create Credential | SunID',

@@ -1,8 +1,10 @@
-import { defaultTronWeb } from '@/components/TronProvider';
 import { z } from 'zod';
-import { isValidAddress } from './tools';
-import { getMaxValue, getMinValue, NumericTypes } from './numberic';
+
+import { defaultTronWeb } from '@/components/TronProvider';
+
 import { ByteTypes, isNBytesValue } from './bytes';
+import { getMaxValue, getMinValue, NumericTypes } from './numberic';
+import { isValidAddress } from './tools';
 
 export const DataTypes: Record<TDataType, string> = {
   address: 'address',
@@ -45,7 +47,7 @@ export const isSupportedType = (type: TDataType) => {
 };
 
 export const genRuleSchema = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // 
   const result = {} as Record<TDataType, any>;
 
   NumericTypes.forEach((type) => {
@@ -80,7 +82,7 @@ export const genRuleSchema = () => {
     .string()
     .transform((val) => val.trim())
     .refine(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 
       (val) => (val === '' ? true : (defaultTronWeb as any).isAddress(val)) || isValidAddress(val),
       {
         message: 'Must be a valid address',

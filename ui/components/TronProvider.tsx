@@ -1,15 +1,15 @@
 'use client';
 
+import { NetworkType } from '@tronweb3/tronwallet-abstract-adapter';
+import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
+import { getNetworkInfoByTronWeb } from '@tronweb3/tronwallet-adapters';
+import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react';
 //@ts-expect-error - no types for tronweb
 import TronWeb from 'tronweb';
 
 import { tronNetworks, TSupportedNetworks } from '@/constants/configs';
 import { MOCK_PRIVATE_KEY } from '@/constants/mock';
-import { NetworkType } from '@tronweb3/tronwallet-abstract-adapter';
-import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react';
-import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
-import { getNetworkInfoByTronWeb } from '@tronweb3/tronwallet-adapters';
-import { useWalletModal } from '@tronweb3/tronwallet-adapter-react-ui';
 
 type TronWebContextProps = {
   tronWeb: TronWeb | null;
@@ -81,7 +81,7 @@ const TronWebProvider: IComponent = ({ children }) => {
 
   const signTronData = useCallback(
     async (contract: string, types: object, values: object) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //
       return (tronWeb as any).trx._signTypedData(
         {
           name: 'SunID',
@@ -97,7 +97,7 @@ const TronWebProvider: IComponent = ({ children }) => {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //
     if ((window as any).tronWeb) {
       setTronWeb(window.tronWeb);
     } else {

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/Tooltip';
 
 export const CopyToClipboard: IComponent<{
