@@ -1,5 +1,9 @@
 'use client';
 
+import Link from 'next/link';
+
+import { AppRouter } from '@/constants/router';
+
 export const Logo: IComponent = () => {
   return (
     <svg
@@ -55,6 +59,25 @@ export const Footer: IComponent = () => {
           </svg>
           Github
         </a>
+        <Link
+          href={`${AppRouter.Docs}`}
+          className="text-white flex gap-2 items-center hover:underline">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-book">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          Documentation
+        </Link>
       </div>
     </footer>
   );

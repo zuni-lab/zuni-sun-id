@@ -6,9 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { Chip } from '@/components/builders/Chip';
+import { DetailItem } from '@/components/builders/DetailItem';
 import { HexLink } from '@/components/builders/HexLink';
+import { RuleItem } from '@/components/builders/RuleItem';
 import { NotFound } from '@/components/NotFound';
-import { Button } from '@/components/shadcn/Button';
+import { buttonVariants } from '@/components/shadcn/Button';
 import { useTron } from '@/components/TronProvider';
 import { AppRouter } from '@/constants/router';
 import { ToastTemplate } from '@/constants/toast';
@@ -16,20 +18,6 @@ import { useCredentialContract } from '@/hooks/useContract';
 import { useCredentialDetail } from '@/hooks/useCredentials';
 import { useTxResult } from '@/states/useTxResult';
 import { cx, EMPTY_UID, getRelativeTime, isCredentialValid, toTronAddress } from '@/utils/tools';
-
-const RuleItem: IComponent<{
-  type: string;
-  name: string;
-}> = ({ type, name }) => {
-  return (
-    <div className="flex gap-2 rounded-md overflow-hidden">
-      <div className="w-2/5 bg-gray-300 flex items-center px-4 font-medium uppercase">{type}</div>
-      <div className="w-3/5 bg-primary p-2">
-        <div className="font-bold">{name}</div>
-      </div>
-    </div>
-  );
-};
 
 export const DetailCredential: IComponent<{ credentialId: string }> = ({ credentialId }) => {
   const searchParams = useSearchParams();
@@ -79,129 +67,133 @@ export const DetailCredential: IComponent<{ credentialId: string }> = ({ credent
     return;
   };
 
+  const renderRevoke = (credential: TCredential) => {
+    return (
+      <>
+        {credential.revocable &&
+          credential.revocationTime === 0 &&
+          toTronAddress(credential.issuer) === address && (
+            <button
+              className={buttonVariants({
+                variant: 'secondary',
+                className: cx('bg-black/80 hover:bg-black/60', {
+                  'cursor-pointer': connected,
+                  'cursor-not-allowed': !connected,
+                  'bg-gray-500': submitting,
+                }),
+              })}
+              onClick={handleRevoke}
+              disabled={submitting}>
+              {submitting ? <Loader className="w-4 h-4 text-background animate-spin" /> : 'Revoke'}
+            </button>
+          )}
+      </>
+    );
+  };
+
   return (
     <main className="py-2">
       {isFetching ? (
         <Loader className="w-12 h-12 animate-spin m-auto mt-12" />
       ) : credential && credential.uid !== EMPTY_UID ? (
-        <section className="flex flex-col gap-4 mt-10">
-          <div className="flex items-center">
-            <div className="flex items-center justify-between w-full">
-              <div className="font-bold ps-4">{credential.uid}</div>
-              {!isValid ? (
-                <div>
-                  <Button
-                    className={'px-4 rounded grow bg-gray-500 w-48 font-bold'}
-                    size={'lg'}
-                    disabled={true}>
-                    Invalid
-                  </Button>
-                </div>
-              ) : (
-                credential.revocable &&
-                credential.revocationTime === 0 &&
-                toTronAddress(credential.issuer) === address && (
-                  <div
-                    className={cx('flex items-center rounded-xl overflow-hidden w-52', {
-                      'cursor-pointer': connected,
-                      'cursor-not-allowed': !connected,
-                      'bg-orange-500': !submitting,
-                      'bg-gray-500': submitting,
-                    })}>
-                    <Button
-                      type={'submit'}
-                      className={cx('px-4 rounded-r-none grow', {
-                        'bg-orange-500 hover:bg-orange-400': !submitting,
-                        'bg-gray-500': submitting,
-                      })}
-                      size={'lg'}
-                      onClick={handleRevoke}
-                      disabled={submitting}>
-                      {submitting ? (
-                        <Loader className="w-4 h-4 text-background animate-spin" />
-                      ) : (
-                        'Revoke'
-                      )}
-                    </Button>
-                  </div>
-                )
-              )}
-            </div>
+        <section className="mt-10">
+          <div className="flex justify-between">
+            <h1
+              className={cx('text-3xl font-bold my-2', {
+                'text-primary': credentialType === 'onchain',
+                'text-orange-600': credentialType === 'offchain',
+              })}>
+              {credentialType.charAt(0).toUpperCase() + credentialType.slice(1)} Credential
+            </h1>
+            {renderRevoke(credential)}
           </div>
-          <div className="flex items-center">
-            <Chip text={`#${credential.schema?.id}`} />
-            <div className="ms-4">
-              <div className="font-bold">{credential.schema?.name}</div>
-              <HexLink
-                content={credential.schema?.uid}
-                href={`${AppRouter.Schemas}/${credential.schema?.uid}`}
-                className="text-base pl-0"
-                isFull
-              />
-            </div>
+          <div className="my-2">
+            <p className="text-sm text-gray-600 font-bold">UID</p>
+            <p className="font-bold">{credential.uid}</p>
           </div>
-          <div className="flex flex-col gap-4">
-            {credential.data?.map(({ name, value }, index) => (
-              <RuleItem key={index} type={name} name={value as string} />
-            ))}
-          </div>
+          <hr className="my-2 border-gray-300" />
 
-          <div>
-            <span className="me-2">Holder:</span>
-            <HexLink
-              content={toTronAddress(credential.recipient)}
-              href={`${AppRouter.Address}/${toTronAddress(credential.recipient)}`}
-              className="text-base pl-0"
-              isFull
-            />
-          </div>
-          <div>
-            <span className="me-2">Issuer:</span>
-            <HexLink
-              content={toTronAddress(credential.issuer)}
-              href={`${AppRouter.Address}/${toTronAddress(credential.issuer)}`}
-              className="text-base pl-0"
-              isFull
-            />
-          </div>
-          <div>
-            Created at: {new Date(credential.timestamp).toUTCString()} (
-            {getRelativeTime(credential.timestamp / 1000)})
-          </div>
-          <div>
-            Expiration at:
-            {credential.expirationTime == 0
-              ? ' Never'
-              : ` ${new Date(credential.expirationTime).toUTCString()} (${getRelativeTime(credential.expirationTime / 1000)})`}
-          </div>
-          {credential.refUID !== EMPTY_UID && <div>RefUID: {credential.refUID}</div>}
-          {credential.revocationTime > 0 && (
+          <div className="flex flex-col gap-8">
             <div>
-              Revoked at: {new Date(credential.revocationTime).toUTCString()} (
-              {getRelativeTime(credential.revocationTime / 1000)})
+              <p className="text-sm text-gray-600 font-bold my-2">SCHEMA</p>
+              <div className="font-bold flex gap-4 items-center bg-red-50 p-4 rounded-xl">
+                <Chip text={`#${credential.schema?.id}`} />
+                <div>
+                  <p className="font-bold">{credential.schema?.name}</p>
+                  <HexLink
+                    content={credential.schema?.uid}
+                    href={`${AppRouter.Schemas}/${credential.schema?.uid}`}
+                    className="!font-normal"
+                    isFull
+                  />
+                </div>
+              </div>
+              <div className="space-y-6 mt-6">
+                <DetailItem
+                  title="Issuer"
+                  value={toTronAddress(credential.issuer)}
+                  link={`${AppRouter.Address}/${toTronAddress(credential.issuer)}`}
+                />
+
+                <DetailItem
+                  title="Holder"
+                  value={toTronAddress(credential.recipient)}
+                  link={`${AppRouter.Address}/${toTronAddress(credential.recipient)}`}
+                />
+
+                <DetailItem
+                  title="Created At"
+                  value={`${new Date(credential.timestamp).toLocaleDateString()} ${new Date(credential.timestamp).toLocaleTimeString()} (${getRelativeTime(credential.timestamp / 1000)})`}
+                />
+
+                <DetailItem
+                  title="Expiration"
+                  value={`${new Date(credential.expirationTime).toLocaleDateString()} ${new Date(credential.expirationTime).toLocaleTimeString()} (${getRelativeTime(credential.expirationTime / 1000)})`}
+                />
+                {credential.refUID !== EMPTY_UID && (
+                  <DetailItem title="Reference" value={credential.refUID} />
+                )}
+
+                {credential.revocationTime > 0 && (
+                  <DetailItem
+                    title="Revoked at"
+                    value={`${new Date(credential.revocationTime).toLocaleDateString()} ${new Date(credential.revocationTime).toLocaleTimeString()} (${getRelativeTime(credential.revocationTime / 1000)})`}
+                  />
+                )}
+              </div>
             </div>
+            <div>
+              <p className="text-sm text-gray-600 font-bold my-2 uppercase">Credential Data</p>
+              <div className="w-full flex flex-col gap-4">
+                {credential.data?.map(({ name, value }, index) => (
+                  <div key={index} className="flex gap-1 rounded-md overflow-hidden text-white">
+                    <div className="w-1/5 bg-main flex items-center px-4 font-semibold uppercase">
+                      {name}
+                    </div>
+                    <div className="w-4/5 p-2 bg-gray-700">
+                      <div className=" font-bold">{value}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <hr className="mb-4 border-gray-300" />
+
+          {credential.type === 'onchain' && (
+            <DetailItem
+              title="Transaction"
+              value={credential.txhash ?? ''}
+              link={`${ProjectENV.NEXT_PUBLIC_TRON_SCAN_URL}/#/transaction/${credential.txhash}`}
+            />
           )}
-          <hr className="my-4" />
-          {credential.type === 'onchain' ? (
-            <div className="flex gap-2">
-              Transaction Hash:
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href={`${ProjectENV.NEXT_PUBLIC_TRON_SCAN_URL}/#/transaction/${credential.txhash}`}>
-                {`${credential.txhash}`}
-              </a>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              Credential link:
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}>
-                {`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
-              </a>
-            </div>
+
+          {credential.type === 'offchain' && (
+            <DetailItem
+              title="BTFS link"
+              value={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
+              link={`${ProjectENV.NEXT_PUBLIC_BTFS_GATEWAY_URL}/btfs/${credential.cid}`}
+            />
           )}
         </section>
       ) : (
