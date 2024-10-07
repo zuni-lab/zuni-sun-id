@@ -10,13 +10,11 @@ export const HexLink: IComponent<{
   content?: string;
   isFull?: boolean;
   className?: string;
-  onClick?: () => void;
-}> = ({ content, isFull = false, href, className, onClick }) => {
+}> = ({ content, isFull = false, href, className }) => {
   const formattedContent = content?.startsWith('41') ? content.replace('41', '0x') : content;
   return (
     <div className="flex items-center gap-2">
       <Button
-        onClick={onClick}
         variant="link"
         className={cx('text-accent-foreground font-mono text-base px-0 justify-start', className)}>
         <Link href={href}>
