@@ -10,6 +10,7 @@ type CredentialPayload = {
   expiration_time: number;
   revocable: boolean;
   ref_uid: THexString;
+  is_revoked: boolean;
   data: THexString;
 };
 
