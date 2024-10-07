@@ -234,6 +234,7 @@ export const useCredentialDetail = (credentialId: THexString, credentialType: Cr
       } as TCredential;
     },
     enabled: !!sunId && !!schemaContract,
+    refetchOnWindowFocus: false,
   });
 };
 

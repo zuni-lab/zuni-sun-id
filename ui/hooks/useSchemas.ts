@@ -124,6 +124,7 @@ export const useDetailSchema = (schemaId: THexString) => {
       };
     },
     enabled: !!contract,
+    refetchOnWindowFocus: false,
   });
 };
 
