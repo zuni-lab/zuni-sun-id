@@ -10,7 +10,6 @@ type CredentialPayload = {
   expiration_time: number;
   revocable: boolean;
   ref_uid: THexString;
-  is_revoked: boolean;
   data: THexString;
 };
 
@@ -18,6 +17,7 @@ export type CredentialResponse = CredentialPayload & {
   id: THexString;
   uid: THexString;
   cid: string;
+  is_revoked: boolean;
   created_at: number;
   updated_at: number;
 };
