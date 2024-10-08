@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 import { DetailSchema } from './content';
 
 export const metadata: Metadata = {
-  title: 'Detail schema | SunID',
-  description: 'Detail schema',
+  title: 'Schema Details | SunID',
+  description: 'Schema Details',
 };
 
 const Page: TNextPage<{ schema_id: THexString }> = async ({ params: { schema_id } }) => {
