@@ -118,7 +118,7 @@ export const useCredentials = ({
             },
             timestamp: c.created_at * 1000,
             expirationTime: c.expiration_time * 1000,
-            revocationTime: 0, // TODO: revoke offchain
+            revocationTime: c.is_revoked ? new Date().getTime() - 5000 : 0, // TODO: revoke offchain
             cid: c.cid,
             type: 'offchain' as CredentialType,
           };
@@ -273,7 +273,7 @@ export const useCredentialsBySchema = ({
             uid: ('0x' + e.result.uid) as THexString,
             issuer: e.result.issuer,
             recipient: e.result.recipient,
-            time: e.timestamp / 1000,
+            time: e.timestamp,
             type: 'onchain' as CredentialType,
           };
         });
