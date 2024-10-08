@@ -53,8 +53,8 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 
 	if input.SchemaUID != "" {
 		filters = append(filters, bson.E{Key: "schema_uid", Value: input.SchemaUID})
-	} 
-	
+	}
+
 	if input.Address != "" {
 		filters = append(filters, bson.E{Key: "$or", Value: bson.A{
 			bson.D{{Key: "recipient", Value: input.Address}},
@@ -98,9 +98,15 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 				issuedCount += 1
 			}
 		}
+
+		items := creds
+		if len(creds) == 0 {
+			items = []models.Credential{}
+		}
+
 		return map[string]interface{}{
 			"total": count,
-			"items": creds,
+			"items": items,
 			"address_counts": map[string]interface{}{
 				"issued":   issuedCount,
 				"received": received,
@@ -108,8 +114,13 @@ func SearchCredential(ctx context.Context, input *SearchCredentialRequest) (inte
 		}, nil
 	}
 
+	items := creds
+	if len(creds) == 0 {
+		items = []models.Credential{}
+	}
+
 	return map[string]interface{}{
 		"total": count,
-		"items": creds,
+		"items": items,
 	}, nil
 }
