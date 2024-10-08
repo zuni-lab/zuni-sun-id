@@ -358,59 +358,69 @@ export const useCredentialsByAddress = ({
         return false;
       });
       const credentialUids = issuedCredentialEvents.map((e) => ('0x' + e.result.uid) as THexString);
-      const [issuedCredentials] = (await sunId?.call({
-        method: 'getCredentials',
-        args: [credentialUids],
-      })) || [[]];
 
-      const onchainSchemaUIDs = issuedCredentials.map((c) => c.schema);
-      const [onchainSchemas] = await schemaRegistry!.call({
-        method: 'getSchemas',
-        args: [onchainSchemaUIDs],
-      });
+      let onchainCredentials: TCredential[] = [];
 
-      const onchainCredentials = issuedCredentials.map((c, idx) => {
-        return {
-          ...c,
-          data: undefined,
-          schema: {
-            name: onchainSchemas[idx].name,
-            uid: onchainSchemas[idx].uid,
-            id: Number(onchainSchemas[idx].id),
-          },
-          expirationTime: Number(c.expirationTime) * 1000,
-          revocationTime: Number(c.revocationTime) * 1000,
-          timestamp: Number(c.time) * 1000,
-          type: 'onchain' as CredentialType,
-        } as TCredential;
-      });
+      if (credentialUids.length > 0) {
+        const [issuedCredentials] = (await sunId?.call({
+          method: 'getCredentials',
+          args: [credentialUids],
+        })) || [[]];
+
+        const onchainSchemaUIDs = issuedCredentials.map((c) => c.schema);
+        const [onchainSchemas] = await schemaRegistry!.call({
+          method: 'getSchemas',
+          args: [onchainSchemaUIDs],
+        });
+
+        onchainCredentials = issuedCredentials.map((c, idx) => {
+          return {
+            ...c,
+            data: undefined,
+            schema: {
+              name: onchainSchemas[idx].name,
+              uid: onchainSchemas[idx].uid,
+              id: Number(onchainSchemas[idx].id),
+            },
+            expirationTime: Number(c.expirationTime) * 1000,
+            revocationTime: Number(c.revocationTime) * 1000,
+            timestamp: Number(c.time) * 1000,
+            type: 'onchain' as CredentialType,
+          } as TCredential;
+        });
+      }
 
       const { items, address_counts } = (await CredentialApi.search({
         page,
         limit,
         address,
       })) as CredentialsPaginationResponse;
-      const offchainSchemaUIDs = items.map((c) => c.schema_uid);
-      const [offchainSchemas] = await schemaRegistry!.call({
-        method: 'getSchemas',
-        args: [offchainSchemaUIDs],
-      });
-      const offchainCredentials = items.map((c, idx) => {
-        return {
-          ...c,
-          refUID: c.ref_uid,
-          data: undefined,
-          schema: {
-            name: offchainSchemas[idx].name,
-            uid: offchainSchemas[idx].uid,
-            id: Number(offchainSchemas[idx].id),
-          },
-          expirationTime: Number(c.expiration_time) * 1000,
-          revocationTime: c.is_revoked ? new Date().getTime() - 1000 : 0,
-          timestamp: Number(c.created_at) * 1000,
-          type: 'offchain' as CredentialType,
-        } as TCredential;
-      });
+
+      let offchainCredentials: TCredential[] = [];
+
+      if (items !== null && items.length > 0) {
+        const offchainSchemaUIDs = items.map((c) => c.schema_uid);
+        const [offchainSchemas] = await schemaRegistry!.call({
+          method: 'getSchemas',
+          args: [offchainSchemaUIDs],
+        });
+        offchainCredentials = items.map((c, idx) => {
+          return {
+            ...c,
+            refUID: c.ref_uid,
+            data: undefined,
+            schema: {
+              name: offchainSchemas[idx].name,
+              uid: offchainSchemas[idx].uid,
+              id: Number(offchainSchemas[idx].id),
+            },
+            expirationTime: Number(c.expiration_time) * 1000,
+            revocationTime: c.is_revoked ? new Date().getTime() - 1000 : 0,
+            timestamp: Number(c.created_at) * 1000,
+            type: 'offchain' as CredentialType,
+          } as TCredential;
+        });
+      }
 
       return {
         issued: issued + address_counts.issued,

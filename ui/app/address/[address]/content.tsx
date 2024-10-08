@@ -31,11 +31,11 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
         <div className="flex gap-8 mt-4 font-semibold">
           <div>
             <span className="bg-green-500 p-1 px-2 rounded-md text-white">Issued</span>{' '}
-            {data?.issued} credentials
+            {data?.issued ?? '0'} credentials
           </div>
           <div>
             <span className="bg-orange-500 p-1 px-2 rounded-md text-white">Received</span>{' '}
-            {data?.received ?? '-'} credentials
+            {data?.received ?? '0'} credentials
           </div>
         </div>
       </div>
