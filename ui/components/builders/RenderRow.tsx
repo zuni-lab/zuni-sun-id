@@ -90,29 +90,47 @@ export const CredentialSchemaRow = ({
   issuer,
   recipient,
   time,
+  isValid,
   type,
-}: {
-  uid: string;
-  issuer: string;
-  recipient: string;
-  time: number;
-  type: CredentialType;
-}) => (
-  <TableRow key={uid}>
+}: TCredentialItem) => (
+  <TableRow
+    key={uid}
+    className={cx({
+      'bg-gray-200 hover:bg-gray-300 !text-gray-500': !isValid,
+    })}>
     <TableCell className="w-40">
-      <HexLink content={uid} href={`${AppRouter.Credentials}/${uid}?type=${type}`} />
+      <HexLink
+        content={uid}
+        href={`${AppRouter.Credentials}/${uid}?type=${type}`}
+        className={cx({
+          'text-gray-500': !isValid,
+        })}
+      />
     </TableCell>
     <TableCell className="w-80">
       <HexLink
         content={toTronAddress(issuer)}
         href={`${AppRouter.Address}/${toTronAddress(issuer)}`}
+        className={cx({
+          'text-gray-500': !isValid,
+        })}
       />
     </TableCell>
     <TableCell className="w-80">
       <HexLink
         content={toTronAddress(recipient)}
         href={`${AppRouter.Address}/${toTronAddress(recipient)}`}
+        className={cx({
+          'text-gray-500': !isValid,
+        })}
       />
+    </TableCell>
+    <TableCell>
+      {isValid ? (
+        <span className="font-bold text-green-700">Yes</span>
+      ) : (
+        <span className="font-bold text-red-700">No</span>
+      )}
     </TableCell>
     <TableCell>{getRelativeTime(time)}</TableCell>
   </TableRow>

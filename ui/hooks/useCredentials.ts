@@ -265,15 +265,20 @@ export const useCredentialsBySchema = ({
           ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
         );
         const issuedCredentialEvents = sunIdEvents.filter(
-          (e) => e.result.schemaUID === schema.slice(2)
+          (e) => e.result.schemaUID === schema.slice(2) && e.name === 'Issued'
+        );
+        const revokedCredentialEvents = sunIdEvents.filter(
+          (e) => e.result.schemaUID === schema.slice(2) && e.name === 'Revoked'
         );
 
         return issuedCredentialEvents.map((e) => {
+          const revoked = revokedCredentialEvents.find((r) => r.result.uid === e.result.uid);
           return {
             uid: ('0x' + e.result.uid) as THexString,
             issuer: e.result.issuer,
             recipient: e.result.recipient,
             time: e.timestamp,
+            isValid: !revoked,
             type: 'onchain' as CredentialType,
           };
         });
@@ -283,12 +288,15 @@ export const useCredentialsBySchema = ({
           limit,
           schema_uid: schema,
         })) as CredentialsPaginationResponse;
+        console.log(items);
         return items.map((c) => {
           return {
             uid: c.uid,
             issuer: c.issuer,
             recipient: c.recipient,
-            time: c.created_at,
+            time: c.created_at * 1000,
+            isValid:
+              !c.is_revoked && (c.expiration_time === 0 || c.expiration_time > Date.now() / 1000),
             type: 'offchain' as CredentialType,
           };
         });
@@ -317,25 +325,27 @@ export const useCredentialsByAddress = ({
   limit: number;
   address: THexString;
 }) => {
+  const { data: sunId } = useSundIdContract();
+  const { data: schemaRegistry } = useSchemaContract();
   const tronWeb = useTronWeb();
+
   return useQuery({
     queryKey: [QueryKeys.Credential.Address, address, page, limit],
     queryFn: async (): Promise<{
       issued: number;
       received: number;
-      onchainCredentials: any[];
-      offchainCredentials: any[];
+      onchainCredentials: TCredential[];
+      offchainCredentials: TCredential[];
     }> => {
-      const issueCredentailEvents =
-        await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
-          tronWeb,
-          ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
-        );
+      const sundIdEvents = await EventQuery.getEventsByContractAddress<IssueCredentialEvent>(
+        tronWeb,
+        ProjectENV.NEXT_PUBLIC_SUN_ID_ADDRESS as TTronAddress
+      );
 
       let issued = 0;
       let received = 0;
 
-      const issuedCredentialEvents = issueCredentailEvents.filter((e) => {
+      const issuedCredentialEvents = sundIdEvents.filter((e) => {
         if (e.name === 'Issued') {
           if (e.result.issuer === address) {
             issued++;
@@ -347,15 +357,32 @@ export const useCredentialsByAddress = ({
         }
         return false;
       });
+      const credentialUids = issuedCredentialEvents.map((e) => ('0x' + e.result.uid) as THexString);
+      const [issuedCredentials] = (await sunId?.call({
+        method: 'getCredentials',
+        args: [credentialUids],
+      })) || [[]];
 
-      const onchainCredentials = issuedCredentialEvents.map((e) => {
+      const onchainSchemaUIDs = issuedCredentials.map((c) => c.schema);
+      const [onchainSchemas] = await schemaRegistry!.call({
+        method: 'getSchemas',
+        args: [onchainSchemaUIDs],
+      });
+
+      const onchainCredentials = issuedCredentials.map((c, idx) => {
         return {
-          uid: ('0x' + e.result.uid) as THexString,
-          issuer: e.result.issuer,
-          recipient: e.result.recipient,
-          time: e.timestamp,
+          ...c,
+          data: undefined,
+          schema: {
+            name: onchainSchemas[idx].name,
+            uid: onchainSchemas[idx].uid,
+            id: Number(onchainSchemas[idx].id),
+          },
+          expirationTime: Number(c.expirationTime) * 1000,
+          revocationTime: Number(c.revocationTime) * 1000,
+          timestamp: Number(c.time) * 1000,
           type: 'onchain' as CredentialType,
-        };
+        } as TCredential;
       });
 
       const { items, address_counts } = (await CredentialApi.search({
@@ -363,14 +390,26 @@ export const useCredentialsByAddress = ({
         limit,
         address,
       })) as CredentialsPaginationResponse;
-      const offchainCredentials = items.map((c) => {
+      const offchainSchemaUIDs = items.map((c) => c.schema_uid);
+      const [offchainSchemas] = await schemaRegistry!.call({
+        method: 'getSchemas',
+        args: [offchainSchemaUIDs],
+      });
+      const offchainCredentials = items.map((c, idx) => {
         return {
-          uid: c.uid,
-          issuer: c.issuer,
-          recipient: c.recipient,
-          time: c.created_at * 1000,
+          ...c,
+          refUID: c.ref_uid,
+          data: undefined,
+          schema: {
+            name: offchainSchemas[idx].name,
+            uid: offchainSchemas[idx].uid,
+            id: Number(offchainSchemas[idx].id),
+          },
+          expirationTime: Number(c.expiration_time) * 1000,
+          revocationTime: c.is_revoked ? new Date().getTime() - 1000 : 0,
+          timestamp: Number(c.created_at) * 1000,
           type: 'offchain' as CredentialType,
-        };
+        } as TCredential;
       });
 
       return {

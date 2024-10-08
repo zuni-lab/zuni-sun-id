@@ -48,5 +48,6 @@ type TCredentialItem = {
   issuer: THexString;
   recipient: THexString;
   time: number;
+  isValid: boolean;
   type: CredentialType;
 };

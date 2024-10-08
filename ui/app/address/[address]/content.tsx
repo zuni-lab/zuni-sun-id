@@ -5,10 +5,10 @@ import {
   useCredentialType,
 } from '@/components/builders/CredentialTypeSwitch';
 import { CopyToClipboard } from '@/components/builders/HexLink';
-import { CredentialSchemaRow } from '@/components/builders/RenderRow';
+import { CredentialRow } from '@/components/builders/RenderRow';
 import { SunTable } from '@/components/builders/SunTable';
 import { ITEMS_PER_PAGE } from '@/constants/configs';
-import { CredentialSchemaTableHeaders } from '@/constants/table';
+import { CredentialTableHeaders } from '@/constants/table';
 import { useCredentialsByAddress } from '@/hooks/useCredentials';
 import { toHexAddress } from '@/utils/tools';
 
@@ -41,10 +41,10 @@ export const UserCredentialList: IComponent<{ address: string }> = ({ address })
       </div>
       <SunTable
         title="List of credentials"
-        columns={CredentialSchemaTableHeaders}
+        columns={CredentialTableHeaders}
         items={credentialType === 'onchain' ? data?.onchainCredentials : data?.offchainCredentials}
         isLoading={isFetching}
-        renderRow={CredentialSchemaRow}
+        renderRow={CredentialRow}
         maxItems={ITEMS_PER_PAGE.CREDENTIAL}
         renderRightTop={
           <div className="my-4">

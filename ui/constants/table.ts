@@ -46,6 +46,9 @@ export const CredentialSchemaTableHeaders = [
     className: 'w-40',
   },
   {
+    label: 'Valid',
+  },
+  {
     label: 'Time',
     className: 'w-40',
   },
