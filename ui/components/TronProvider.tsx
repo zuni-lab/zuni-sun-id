@@ -27,6 +27,7 @@ const TronWebContext = createContext<TronWebContextProps | null>(null);
 
 export const defaultTronWeb = new TronWeb({
   fullHost: tronNetworks.Shasta.fullNode,
+  eventServer: tronNetworks.Shasta.eventServer,
   privateKey: MOCK_PRIVATE_KEY,
 });
 
@@ -41,7 +42,8 @@ export const useTron: () => TronWebContextProps = () => {
 
 export const useTronWeb = () => {
   const { tronWeb } = useTron();
-  return tronWeb ? tronWeb : defaultTronWeb;
+  const { connected } = useWallet();
+  return connected ? tronWeb : defaultTronWeb;
 };
 
 const TronWebProvider: IComponent = ({ children }) => {
