@@ -1,9 +1,8 @@
 # ZUNI DAPP TEMPLATE
+
 > This repo helps you start the dapp faster.
 
 # Overview
-
-
 
 # Table of contents
 
@@ -26,14 +25,7 @@
 ```
 zuni-your-app/
 │
-├── contract/
-│   ├── src/
-│   │   ├── interfaces/
-│   │   │   ├── Interface.sol
-│   │   ├── libraries/
-│   │   │   ├── Lib.sol
-│   │   ├── Common.sol
-│   ├── scripts/
+├── contracts/
 │
 ├── ui/
 │   ├── app/
@@ -59,22 +51,26 @@ zuni-your-app/
 
 ## UI Features
 
-
 ## Smart Contract Features
 
+- Register schema
+- Issue onchain credential
+- Revoke onchain/offchain credential
 
 ## Deployment
 
 ### Website
 
+- [sunid.xyz](https://sunid.xyz)
 
 ### Smart contract addresses
 
-- Network: `ABC`, `XYZ`
-  |Contract|Address|
-  |---|---|
-  |Contract A|`0x123`|
-  |Contract B|`0x456`|
+- Network: `TRON Shasta Testnet`
+
+  | Contract        | Address                              |
+  | --------------- | ------------------------------------ |
+  | Schema Registry | `TKn3gkDn587qQFjh9CrmQYqetctCfniL5f` |
+  | SunID           | `TUYwo4WqGLVEpCrtbU7zHnrc7nzdoNNU5c` |
 
 # Getting Started
 
@@ -86,8 +82,9 @@ zuni-your-app/
 ## Installation
 
 1. Clone the repo
+
    ```sh
-  
+    git clone git@github.com:zuni-lab/zuni-sun-id.git
    ```
 
 2. Copy `.env.example` to `.env`:
@@ -95,6 +92,7 @@ zuni-your-app/
    ```sh
    cp .env.example .env
    ```
+
 3. Example:
 
 # UI
@@ -109,9 +107,7 @@ zuni-your-app/
 
 # Contract
 
-
 ## Testing
-
 
 # Contributing
 
@@ -125,4 +121,3 @@ We welcome contributions! Please follow these steps to contribute:
 - Create a new Pull Request
 
 # License
-
