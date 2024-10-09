@@ -28,5 +28,5 @@ export const RouterMeta: Record<RouterKey, { title: string; description?: string
     icon: null,
   },
   Address: { title: 'Address', description: 'Address', icon: null },
-  Docs: { title: 'Docs', description: 'Docs', icon: null },
+  Docs: { title: 'Documentation', description: 'Documentation for setting up and using BTFS as a service in the SUNID platform', icon: null },
 };

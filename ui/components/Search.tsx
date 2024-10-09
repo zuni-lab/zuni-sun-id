@@ -97,7 +97,7 @@ export const Search: IComponent<{
         </Button>
         <Input
           placeholder={placeholder}
-          className="focus:!border-none bg-transparent placeholder:text-gray-500 text-sm font-bold"
+          className="focus:!border-none bg-transparent placeholder:text-gray-400 text-sm font-bold"
           onChange={onSearch}
         />
         {/* <Button
