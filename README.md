@@ -1,6 +1,6 @@
-# ZUNI DAPP TEMPLATE
+# ZUNI SUN ID
 
-> This repo helps you start the dapp faster.
+> This the monorepo for SUNID project
 
 # Overview
 
@@ -24,43 +24,35 @@
 
 ```
 zuni-your-app/
-│
-├── contracts/
-│
-├── ui/
-│   ├── app/
-│   ├── components/
-│   │   ├── shadcn
-│   │   ├── ...
-│   │
-│   ├── constants/
-│   ├── hooks/
-│   ├── public/
-│   ├── stats/
-│   ├── types
-│   ├── utils/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── ...
-│
-├── README.md
-└── package.json
+├── contracts (Tron)
+├── ui (NextJS14)
+├── backend (Echo)
+├── go-btfs (BTFS deployment)
+...
+
 ```
 
 # Features
 
 ## UI Features
+- List schemas and credentials (on Tron) and BTFS
+- Create schemas and issue credentials
+- Revoke credentials 
 
 ## Smart Contract Features
-
 - Register schema
 - Issue onchain credential
 - Revoke onchain/offchain credential
 
+## APIs:
+- Listen onchain events
+- Issue offchain credentials
+- List offchain credentials
+
 ## Deployment
+>> This repo includes a basic deployment in the **docker** folder. Please check it!
 
 ### Website
-
 - [sunid.xyz](https://sunid.xyz)
 
 ### Smart contract addresses
@@ -72,28 +64,21 @@ zuni-your-app/
   | Schema Registry | `TKn3gkDn587qQFjh9CrmQYqetctCfniL5f` |
   | SunID           | `TUYwo4WqGLVEpCrtbU7zHnrc7nzdoNNU5c` |
 
+
 # Getting Started
 
 ## Prerequisites
 
 - Node.js v21
 - Bun
+- Golang
+- Docker
 
 ## Installation
 
-1. Clone the repo
-
-   ```sh
-    git clone git@github.com:zuni-lab/zuni-sun-id.git
-   ```
-
-2. Copy `.env.example` to `.env`:
-
-   ```sh
-   cp .env.example .env
-   ```
-
-3. Example:
+ ```sh
+  git clone git@github.com:zuni-lab/zuni-sun-id.git
+ ```
 
 # UI
 
@@ -106,6 +91,13 @@ zuni-your-app/
 - Run: `bun lint` for checking error and fix it
 
 # Contract
+
+# Backend
+Please read the `backend/README.md` carefully.
+
+# Go-BTFS
+We have pre-built the docker image for the btfs from the offical github repo.
+Please check its `README.md`
 
 ## Testing
 
